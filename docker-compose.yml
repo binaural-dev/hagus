@@ -1,0 +1,32 @@
+version: "2.3"
+services:
+  web-hagus:
+    #image: odoo:14
+    build:
+      context: .
+    container_name: hagus_container
+    depends_on:
+      - db-hagus
+    ports:
+      - "25000:8069"
+    volumes:
+      - odoo-web-hagus:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./enterprise:/mnt/extra-addons
+      - ./custom:/mnt/custom-addons
+    environment:
+      - PYTHONUNBUFFERED=0
+    restart: always
+  db-hagus:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-hagus:/var/lib/postgresql/data/pgdata
+    restart: always
+volumes:
+  odoo-web-hagus:
+  odoo-db-hagus:

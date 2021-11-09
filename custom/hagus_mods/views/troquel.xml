@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="hagus_troquel_list">
+            <field name="name">Listado Troqueles</field>
+            <field name="model">hagus.troquel</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="code"/>
+                    <field name="teeth" />
+                    <field name="cylinders" />
+                    <field name="width_inches" />
+                    <field name="width_inches_uom" />
+                    <field name="width_millimeters" />
+                    <field name="width_millimeters_uom" />
+                    <field name="length_inches" />
+                    <field name="length_inches_uom" />
+                    <field name="length_millimeters" />
+                    <field name="length_millimeters_uom" />
+                    <field name="lines_width" />
+                    <field name="repetition" />
+                    <field name="designed" />
+                    <field name="length_at_100" />
+                    <field name="reduction" />
+                    <field name="final_size" />
+
+                </tree>
+            </field>
+        </record>
+       
+        <!-- form -->
+        <record id="hagus_troquel_form" model="ir.ui.view">
+            <field name="name">Formulario Troquel</field>
+            <field name="model">hagus.troquel</field>
+            <field name="arch" type="xml">
+                <form string="Troquel">
+                    <header>
+                       
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="code"/>
+                            <h1>
+                                <field name="code"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="teeth"/>
+                                <field name="cylinders"/>
+                                <label for="width_inches" />
+                                <div class="o_row" name="invhces" >
+                                    <field name="width_inches"/>
+                                    <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="width_millimeters" />
+                                <field name="width_millimeters_uom" />
+                                <field name="length_inches" />
+                                <field name="length_inches_uom" />
+                                <field name="length_millimeters" />
+                                <field name="length_millimeters_uom" />
+                                <field name="lines_width" />
+                                <field name="repetition" />
+                                <field name="designed" />
+                                <field name="length_at_100" />
+                                <field name="reduction" />
+                                <field name="final_size" />
+                                <!--<field name="amount"/>
+                                <field name="currency_id"/>
+                                <field name="move_id" />
+                                <field name="attachment_ids" widget="many2many_binary"/>-->
+
+                            </group>
+                        </group>
+                        <!--<notebook attrs="{'invisible':[('seller_id','=',False)]}">
+                          
+                            <page name="Lineas de Recibos" string="Recibos">
+                                <field name="payment_approval_lines_ids" widget="many2many" >
+                                    <tree name="approbal_lines_tree_dep">
+                                        <field name="name"/>
+                                        <field name="partner_id" />
+                                        <field name="invoice_id" />
+                                        <field name="reference" />
+                                       
+                                        <field name="amount"/>
+                                        <field name="journal_id" />
+                                        <field name="payment_related" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>-->
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="hagus_troquel_action">
+            <field name="name">Troqueles</field>
+            <field name="res_model">hagus.troquel</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Top menu item -->
+        <menuitem name="Troqueles" id="hagus_mods.menu_troquel"
+                  action="hagus_troquel_action" parent="mrp.menu_mrp_configuration"/>
+
+    </data>
+</odoo>
