@@ -24,6 +24,7 @@
                     <field name="length_at_100" />
                     <field name="reduction" />
                     <field name="final_size" />
+                    <field name="active" />
 
                 </tree>
             </field>

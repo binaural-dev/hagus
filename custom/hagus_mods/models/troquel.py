@@ -28,6 +28,7 @@ class HagusTroquel(models.Model):
 	length_at_100 = fields.Float(string='Largo al 100%(mm)')
 	reduction = fields.Float(string='% Reducción')
 	final_size = fields.Float(string='Tamaño Final(mm)')
+	active = fields.Boolean(string='Activo')
 	
 	
 	

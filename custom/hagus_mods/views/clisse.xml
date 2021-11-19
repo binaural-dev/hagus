@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="hagus_clisse_list">
+            <field name="name">Listado Clisse</field>
+            <field name="model">hagus.clisse</field>
+            <field name="arch" type="xml">
+                <tree >
+                    <field name="code"/>
+                    <field name="description" />
+                    <field name="date" />
+                    <field name="partner_id" />
+                    <field name="troquel_id" />
+                    <field name="width_inches" />
+                    <field name="length_inches" />
+                    <field name="lines_width" />
+                    <field name="orientation_id" />
+                    <field name="state" />
+
+                </tree>
+            </field>
+        </record>
+       
+        <!-- form -->
+        <record id="hagus_clisse_form" model="ir.ui.view">
+            <field name="name">Formulario Clisse</field>
+            <field name="model">hagus.clisse</field>
+            <field name="arch" type="xml">
+                <form string="Clisse">
+                    <header>
+                       
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="code"/>
+                            <h1>
+                                <field name="code"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="description"/>
+                                <field name="date"/>
+                                <field name="partner_id" />
+                                <field name="troquel_id" />
+                                <label for="width_inches" />
+
+                                <div class="o_row" name="width" >
+                                    <field name="width_inches"/>
+                                    <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
+                                </div>
+                                <div class="o_row" name="length" >
+                                    <field name="length_inches"/>
+                                    <span><field name="length_inches_uom" options="{'no_create': True}"/></span>
+                                </div>
+                                <field name="lines_width" />
+                            </group>
+                            <group>
+                                <field name="orientation_id" />
+                                <field name="finish_type_id" />
+                                <field name="observations" />
+                                <field name="text" />
+                                <field name="image_design" />
+                                <field name="image_barcode" />
+                                <field name="description_label" />
+                                <field name="state" />
+                                
+                                
+                            </group>
+                        </group>
+                        <notebook ><!--attrs="{'invisible':[('seller_id','=',False)]}"-->
+                          
+                            <page name="Lineas de Materiales" string="Materiales">
+                                <field name="materials_lines_id" >
+                                    <tree name="materials_lines_id_tree" editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="description" />
+                                        <field name="qty" />
+                                        <field name="cost" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="hagus_clisse_action">
+            <field name="name">Clisse</field>
+            <field name="res_model">hagus.clisse</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Top menu item -->
+        <menuitem name="Clisse" id="hagus_mods.menu_clisse"
+                  action="hagus_clisse_action" parent="sale.sale_menu_root"/>
+
+    </data>
+</odoo>
