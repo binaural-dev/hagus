@@ -21,12 +21,17 @@ class HagusClisse(models.Model):
 	length_inches = fields.Float(string='Largo(Pulgadas)',realted="troquel_id.length_inches")
 	length_inches_uom = fields.Many2one('uom.uom', string='Medida',realted="troquel_id.length_inches_uom")
 	lines_width = fields.Integer(string='Lineas x ancho',related="troquel_id.lines_width")
+	labels_per_roll = fields.Float(string='Etiquetas por Rollo', digits=(10, 2))
+
+	size = fields.Char(string='Tamaño')
+	botton = fields.Char(string='Fondo')
 
 	orientation_id = fields.Many2one('hagus.orientation', string='Orientación')
 	finish_type_id = fields.Many2one('hagus.finish.types', string='Acabado')
 
 	observations = fields.Text(string='Obervaciones')
 	text = fields.Text(string='Texto')
+
 
 	#duda si dejarlos imagen o binary
 	"""design = fields.Binary(string='Diseño')
@@ -42,6 +47,7 @@ class HagusClisse(models.Model):
 	image_design = fields.Image("Diseño")
 	image_barcode = fields.Image("Código de Barras")
 	description_label = fields.Text(string='Descripción de la etiqueta')
+
 
 	materials_lines_id = fields.One2many('hagus.clisse.line', 'clisse_id', string='Lineas materiales')
 
