@@ -57,7 +57,7 @@
                                 </div>
                                 <field name="lines_width" />
                                 <field name="size" />
-                                <field name="botton" />
+                                <field name="background" />
                                 <field name="labels_per_roll" />
                             </group>
                             <group>
@@ -106,7 +106,7 @@
 
         <!-- Top menu item -->
         <menuitem name="Clisse" id="hagus_mods.menu_clisse"
-                  action="hagus_clisse_action" parent="sale.sale_menu_root"/>
+                  action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="20"/>
 
     </data>
 </odoo>

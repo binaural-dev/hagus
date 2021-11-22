@@ -14,14 +14,19 @@ class HagusTroquel(models.Model):
 	code = fields.Char(string='Código')
 	teeth = fields.Integer(string='Dientes')
 	cylinders = fields.Integer(string='Cilindros')
+
 	width_inches = fields.Float(string='Ancho(Pulgadas)')
-	width_inches_uom = fields.Many2one('uom.uom', string='Medida')
+	width_inches_uom = fields.Many2one('uom.uom', string='Medida')\
+
 	width_millimeters = fields.Float(string='Ancho(Milimetros)')
 	width_millimeters_uom = fields.Many2one('uom.uom', string='Medida')
+
 	length_inches = fields.Float(string='Largo(Pulgadas)')
 	length_inches_uom = fields.Many2one('uom.uom', string='Medida')
+
 	length_millimeters = fields.Float(string='Largo(Milimetros)')
 	length_millimeters_uom = fields.Many2one('uom.uom', string='Medida')
+	
 	lines_width = fields.Integer(string='Lineas x ancho')
 	repetition = fields.Integer(string='Repetición')
 	designed = fields.Char(string='Diseñado')
