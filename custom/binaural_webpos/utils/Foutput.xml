@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<FiscalDoc>
+  <PrintStationId>1</PrintStationId>
+  <PrinterId>2</PrinterId>
+  <DocType>F</DocType>
+  <DocNumber>001</DocNumber>
+  <CustomerName>Manuel Guerrero</CustomerName>
+  <CustomerRUC>J-29532196</CustomerRUC>
+  <CustomerAddress>Carrera &amp;amp;amp; entre &amp;amp;lt; y &amp;amp;gt;</CustomerAddress>
+  <Email>manuelgc1201@gmail.com</Email>
+  <AddInfo>
+    <Line Id="1">otra info</Line>
+    <Line Id="2"/>
+    <Line Id="3">mas info</Line>
+  </AddInfo>
+  <Items>
+    <Item Id="01" Price="101.00" Qty="2" Desc="audifonos" Tax="1" Code="001" damt="0"/>
+    <Item Id="02" Price="250.00" Qty="2" Desc="computadora" Tax="1" Code="002" dperc="10.00%" damt="0"/>
+  </Items>
+</FiscalDoc>
