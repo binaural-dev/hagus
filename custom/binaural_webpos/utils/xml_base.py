@@ -66,9 +66,31 @@ class XmlInteface():
                     if 'porc_descuento' in items_factura:
                         linea_factura.set('dperc',items_factura['porc_descuento']) #00.00%
                     linea_factura.set('damt','0')
-                        
-                        
-                    
+                                      
+            # 01 equivale a Efectivo
+            # 02 equivale a T.Crédito
+            # 03 equivales a T.Débito
+            # 04 equivale a Cheque
+            # 05 equivale a Abono
+            # 06 equivale a Certificado
+            # 07 equivale a Nota de crédito ▪ 08 equivale a Crédito
+            # 09 equivale a Transferencias
+            # 10 equivale a Otros
+            if 'pagos' in obj:
+                payments = etree.SubElement(root,'Payments')                        
+                for pago in obj['pagos']:
+                    linea_pago = etree.SubElement(payments,'Payment')    
+                    linea_pago.set('Id',pago['id'])
+                    linea_pago.set('amt',pago['monto'])
+                    linea_pago.set('type',pago['tipo'])
+            
+            if 'pie_pagina' in obj:
+                pie_pagina = etree.SubElement(root,'Tailer')
+                for index, item in enumerate(obj['pie_pagina']):
+                    line = etree.SubElement(pie_pagina,'Line')
+                    line.set('Id',str(index+1))
+                    if item[1]:
+                        line.text = item[1]                                        
 
             # Save to XML file
             outFile = open('/mnt/custom-addons/binaural_webpos/utils/' + self._prefijo_factura + 'output.xml', 'wb')
@@ -99,7 +121,18 @@ def main():
            'impuesto':'1',
            'codigo':'002',
            'porc_descuento':'10.00%'
-       }]
+       }],
+       'pagos':[{
+           'id':'001',
+           'monto':'26.66',
+           'tipo':'01'
+       },
+       {
+           'id':'002',
+           'monto':'30.66',
+           'tipo':'08'
+       }],
+       'pie_pagina':[(1,'otra info'),(2,''),(3,'mas info')]
     })
 
 if __name__ == "__main__":
