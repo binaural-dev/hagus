@@ -20,13 +20,18 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account'],
+    'depends': ['base','account','account_edi'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        'data/account_webpos_data.xml',
+        'data/facturx_webpos_templates.xml',
         'views/views.xml',
         'views/templates.xml',
+        'views/account_journal_inherit.xml',
+        'views/account_tax_inherit.xml',
+        'views/account_move_inherit.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

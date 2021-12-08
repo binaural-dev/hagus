@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="edi_facturx_pa" model="account.edi.format">
+            <field name="name">Factur-X (PA)</field>
+            <field name="code">facturx_pa</field>
+        </record>
+
+    </data>
+</odoo>

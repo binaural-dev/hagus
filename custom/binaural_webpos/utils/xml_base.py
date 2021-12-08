@@ -22,7 +22,7 @@ class XmlInteface():
         
         return escape(cadena, html_escape_table)
 
-    def xml_factura(self, obj):
+    def xml_factura_nota(self, obj):
         if obj:
             root = etree.Element('FiscalDoc')
             doc = etree.ElementTree(root)
@@ -30,8 +30,11 @@ class XmlInteface():
             #subelementos
             etree.SubElement(root, 'PrintStationId').text = obj['print_station_id']
             etree.SubElement(root, 'PrinterId').text = obj['printer_id']
-            etree.SubElement(root, 'DocType').text = self._prefijo_factura
+            if obj['tipo_documento']:                
+                etree.SubElement(root, 'DocType').text = obj['tipo_documento']
             etree.SubElement(root, 'DocNumber').text = obj['num_factura']
+            if obj['num_factura_nota']:
+                etree.SubElement(root, 'InvoiceNumber').text = obj['num_factura_nota']            
             etree.SubElement(root, 'CustomerName').text = self._sanitize_string(obj['cliente'])
             etree.SubElement(root, 'CustomerRUC').text = obj['ruc']
             etree.SubElement(root, 'CustomerAddress').text = self._sanitize_string(obj['direccion_cliente'])
@@ -92,15 +95,49 @@ class XmlInteface():
                     if item[1]:
                         line.text = item[1]                                        
 
-            # Save to XML file
-            outFile = open('/mnt/custom-addons/binaural_webpos/utils/' + self._prefijo_factura + 'output.xml', 'wb')
-            doc.write(outFile, xml_declaration=True, encoding='utf-8', pretty_print=True) 
+            # Save to XML file            
+            self._xml_print_to_file('/mnt/custom-addons/binaural_webpos/utils/',obj['tipo_documento'],doc)   
+            
+    def xml_nofiscal(self, obj):
+        if obj:
+            root = etree.Element('FiscalDoc')
+            doc = etree.ElementTree(root)
+
+            #subelementos
+            etree.SubElement(root, 'PrintStationId').text = obj['print_station_id']
+            etree.SubElement(root, 'PrinterId').text = obj['printer_id']
+            if obj['tipo_documento']:                
+                etree.SubElement(root, 'DocType').text = obj['tipo_documento']
+            etree.SubElement(root, 'DocNumber').text = obj['num_factura']
+            if obj['num_factura_nota']:
+                etree.SubElement(root, 'InvoiceNumber').text = obj['num_factura_nota']            
+            etree.SubElement(root, 'CustomerName').text = self._sanitize_string(obj['cliente'])
+            etree.SubElement(root, 'CustomerRUC').text = obj['ruc']
+            etree.SubElement(root, 'CustomerAddress').text = self._sanitize_string(obj['direccion_cliente'])
+            etree.SubElement(root, 'Email').text = obj['email']
+
+            #info extra que se imprime en el encabezado o pie de pagina
+            if 'add_info' in obj:
+                add_info = etree.SubElement(root, 'AddInfo')                                  
+                for index, item in enumerate(obj['add_info']):
+                    line = etree.SubElement(add_info,'Line')
+                    line.set('Id',str(index+1))
+                    if item[1]:
+                        line.text = item[1]
+
+            self._xml_print_to_file('/mnt/custom-addons/binaural_webpos/utils/',obj['tipo_documento'],doc)   
+
+    def _xml_print_to_file(self, uri, tipo_documento, doc_root):
+        outFile = open(uri + tipo_documento + 'output.xml', 'wb')
+        doc_root.write(outFile, xml_declaration=True, encoding='utf-8', pretty_print=True)     
 
 def main():
-    XmlInteface().xml_factura({
+    XmlInteface().xml_factura_nota({
        'print_station_id' : '1',
        'printer_id':'2',
+       'tipo_documento': 'C',
        'num_factura':'001',
+       'num_factura_nota':'001',
        'cliente':'Manuel Guerrero',
        'ruc' : 'J-29532196',
        'direccion_cliente':'Carrera & entre < y >',
@@ -134,6 +171,18 @@ def main():
        }],
        'pie_pagina':[(1,'otra info'),(2,''),(3,'mas info')]
     })
+
+    XmlInteface().xml_nofiscal({
+       'print_station_id' : '1',
+       'printer_id':'2',
+       'tipo_documento': 'N',
+       'num_factura':'001',
+       'num_factura_nota':'001',
+       'cliente':'Manuel Guerrero',
+       'ruc' : 'J-29532196',
+       'direccion_cliente':'Carrera & entre < y >',
+       'email':'manuelgc1201@gmail.com',
+       'add_info': [(1,'otra info'),(2,''),(3,'mas info')]})
 
 if __name__ == "__main__":
     main()

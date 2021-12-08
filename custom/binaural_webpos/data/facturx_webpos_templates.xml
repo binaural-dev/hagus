@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="binaural_webpos_xml_header">
+            <PrintStationId>1</PrintStationId>
+            <PrinterId>2</PrinterId>
+            <DocType>C</DocType>
+            <DocNumber><t t-esc="record.name" /></DocNumber>
+            <InvoiceNumber><t t-esc="record.name" /></InvoiceNumber>
+            <CustomerName><t t-esc="record.name"/></CustomerName>
+            <!-- <t t-if="record.vat">
+                <CustomerRUC><t t-esc="record.vat"/></CustomerRUC>
+            </t>            
+            <CustomerAddress>
+                <t t-esc="partner.street"/>
+            </CustomerAddress>            
+            <Email t-if="partner.email"><t t-esc="partner.email"/></Email> -->
+        </template>
+
+        <template id="binaural_webpos_xml_template" name="binaural_xml_webpos">
+            <FiscalDoc>
+                <t t-call="binaural_webpos.binaural_webpos_xml_header"/>
+            </FiscalDoc>
+        </template>
+    </data>
+</odoo>
