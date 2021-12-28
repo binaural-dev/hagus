@@ -2,24 +2,66 @@
 <odoo>
     <data>
         <template id="binaural_webpos_xml_header">
-            <PrintStationId>1</PrintStationId>
-            <PrinterId>2</PrinterId>
-            <DocType>C</DocType>
+            <PrintStationId><t t-esc="current_user_login.print_station_id"/></PrintStationId>
+            <PrinterId><t t-esc="record.fiscal_machine_id.name"/></PrinterId>
+            <DocType><t t-esc="type_document"/></DocType>
             <DocNumber><t t-esc="record.name" /></DocNumber>
-            <InvoiceNumber><t t-esc="record.name" /></InvoiceNumber>
-            <CustomerName><t t-esc="record.name"/></CustomerName>
-            <!-- <t t-if="record.vat">
-                <CustomerRUC><t t-esc="record.vat"/></CustomerRUC>
+
+            <t t-if="origin_document">
+                <InvoiceNumber><t t-esc="origin_document.fiscal_number" /></InvoiceNumber>
+            </t>            
+
+            <CustomerName><t t-esc="record.partner_id.name"/></CustomerName>
+            <t t-if="record.partner_id.vat">
+                <CustomerRUC><t t-esc="record.partner_id.vat"/></CustomerRUC>
             </t>            
             <CustomerAddress>
-                <t t-esc="partner.street"/>
+                <t t-esc="record.partner_id.street"/> <t t-esc="record.partner_id.state_id.name"/> <t t-esc="record.partner_id.country_id.name"/>
             </CustomerAddress>            
-            <Email t-if="partner.email"><t t-esc="partner.email"/></Email> -->
+            <Email t-if="record.partner_id.email"><t t-esc="record.partner_id.email"/></Email>
+        </template>
+
+        <template id="binaural_addinfo_header">
+            <AddInfo>
+                <t t-if="record.aditional_info_invoice_header1">
+                    <Line Id="1"><t t-esc="record.aditional_info_invoice_header1"/></Line>
+                </t>
+                <t t-if="record.aditional_info_invoice_header2">
+                    <Line Id="2"><t t-esc="record.aditional_info_invoice_header2"/></Line>
+                </t>
+            </AddInfo>
+        </template>
+
+        <template id="binaural_addinfo_tailer">
+            <Tailer>
+                <t t-if="record.aditional_info_invoice_tailer1">
+                    <Line Id="1"><t t-esc="record.aditional_info_invoice_tailer1"/></Line>                    
+                </t>
+                <t t-if="record.aditional_info_invoice_tailer2">
+                    <Line Id="2"><t t-esc="record.aditional_info_invoice_tailer2"/></Line>                    
+                </t>
+            </Tailer>
         </template>
 
         <template id="binaural_webpos_xml_template" name="binaural_xml_webpos">
             <FiscalDoc>
                 <t t-call="binaural_webpos.binaural_webpos_xml_header"/>
+                <t t-call="binaural_webpos.binaural_addinfo_header"/>
+                <Items>
+                    <t t-foreach="invoice_line_values" t-as="lineas">                                                
+                        <Item t-att-Id="lineas['index']" t-att-Price="format_monetary(lineas['line'].price_unit, lineas['line'].currency_id)" 
+                            t-att-Qty="lineas['line'].quantity" t-att-Desc="lineas['line'].name" t-att-Tax="lineas['tax_details']['tax_webpos']"
+                            t-att-Code="lineas['line'].product_id.default_code" t-att-dperc="lineas['format_discount']" t-att-damt="0" />                        
+                    </t>
+                </Items>
+                <t t-if="payments">
+                    <Payments>                        
+                        <t t-foreach="payments" t-as="pay">
+                            <Payment t-att-amt="pay.amount" t-att-type="pay.type_payment_id.code_payment_webpos"/>                            
+                        </t>
+                    </Payments>
+                </t>
+                <t t-call="binaural_webpos.binaural_addinfo_tailer"/>
             </FiscalDoc>
         </template>
     </data>

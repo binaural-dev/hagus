@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_binaural_webpos_binaural_webpos,binaural_webpos.binaural_webpos,model_binaural_webpos_binaural_webpos,base.group_user,1,1,1,1
+access_binaural_webpos_tipopagos_webpos,binaural_webpos.tipopagos_webpos,model_tipopago_webpos,,1,1,1,1
+access_binaural_webpos_fiscal_machine,binaural_webpos.binaural_mfwebpos,model_binaural_mfwebpos,,1,1,1,1

@@ -24,14 +24,17 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'data/account_webpos_data.xml',
         'data/facturx_webpos_templates.xml',
         'views/views.xml',
-        'views/templates.xml',
-        'views/account_journal_inherit.xml',
+        'views/templates.xml',        
         'views/account_tax_inherit.xml',
-        'views/account_move_inherit.xml'
+        'views/account_move_inherit.xml',
+        'views/account_payment_inherit.xml',
+        'views/tipo_pago_webpos.xml',
+        'views/res_users_inherit.xml',
+        'views/fiscal_machine.xml'        
     ],
     # only loaded in demonstration mode
     'demo': [

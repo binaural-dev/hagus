@@ -1,7 +1,17 @@
+from odoo import models, fields, api
 from xml.sax.saxutils import escape
 from lxml import etree
+import json
 
-class XmlInteface():
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_repr
+import base64
+import logging
+
+_logger = logging.getLogger(__name__)
+
+DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
+
+class XmlInterface():
     _prefijo_factura = 'F'
     _prefijo_nota_credito = 'C'
     _prefijo_nota_debito = 'D'
@@ -22,167 +32,122 @@ class XmlInteface():
         
         return escape(cadena, html_escape_table)
 
-    def xml_factura_nota(self, obj):
-        if obj:
-            root = etree.Element('FiscalDoc')
-            doc = etree.ElementTree(root)
+    def build_xml_to_print(self, invoice, type_document):
 
-            #subelementos
-            etree.SubElement(root, 'PrintStationId').text = obj['print_station_id']
-            etree.SubElement(root, 'PrinterId').text = obj['printer_id']
-            if obj['tipo_documento']:                
-                etree.SubElement(root, 'DocType').text = obj['tipo_documento']
-            etree.SubElement(root, 'DocNumber').text = obj['num_factura']
-            if obj['num_factura_nota']:
-                etree.SubElement(root, 'InvoiceNumber').text = obj['num_factura_nota']            
-            etree.SubElement(root, 'CustomerName').text = self._sanitize_string(obj['cliente'])
-            etree.SubElement(root, 'CustomerRUC').text = obj['ruc']
-            etree.SubElement(root, 'CustomerAddress').text = self._sanitize_string(obj['direccion_cliente'])
-            etree.SubElement(root, 'Email').text = obj['email']
+        def format_date(dt):
+            # Format the date in the Factur-x standard.
+            dt = dt or datetime.now()
+            return dt.strftime(DEFAULT_FACTURX_DATE_FORMAT)
 
-            #info extra que se imprime en el encabezado o pie de pagina
-            if 'add_info' in obj:
-                add_info = etree.SubElement(root, 'AddInfo')                                  
-                for index, item in enumerate(obj['add_info']):
-                    line = etree.SubElement(add_info,'Line')
-                    line.set('Id',str(index+1))
-                    if item[1]:
-                        line.text = item[1]
-                    
-            if 'items' in obj:
-                items = etree.SubElement(root,'Items')
-                for items_factura in obj['items']:
-                    linea_factura = etree.SubElement(items,'Item')
-                    linea_factura.set('Id',items_factura['id'])
-                    linea_factura.set('Price', items_factura['precio'])
-                    linea_factura.set('Qty',items_factura['cantidad'])
-                    linea_factura.set('Desc',items_factura['descripcion_producto'])
-                    linea_factura.set('Tax',items_factura['impuesto'])
-                    #0 si es exento,
-                    #1 si marca 7% de ITBMS,
-                    #2 si marca 10% de ITBMS (Licores)
-                    #3 si marca 15% de ITBMS (Cigarrillos).
-                    
-                    linea_factura.set('Code',items_factura['codigo'])
-                    if 'comentario' in items_factura:
-                        linea_factura.set('Comments',items_factura['comentario'])
-                    if 'porc_descuento' in items_factura:
-                        linea_factura.set('dperc',items_factura['porc_descuento']) #00.00%
-                    linea_factura.set('damt','0')
-                                      
-            # 01 equivale a Efectivo
-            # 02 equivale a T.Crédito
-            # 03 equivales a T.Débito
-            # 04 equivale a Cheque
-            # 05 equivale a Abono
-            # 06 equivale a Certificado
-            # 07 equivale a Nota de crédito ▪ 08 equivale a Crédito
-            # 09 equivale a Transferencias
-            # 10 equivale a Otros
-            if 'pagos' in obj:
-                payments = etree.SubElement(root,'Payments')                        
-                for pago in obj['pagos']:
-                    linea_pago = etree.SubElement(payments,'Payment')    
-                    linea_pago.set('Id',pago['id'])
-                    linea_pago.set('amt',pago['monto'])
-                    linea_pago.set('type',pago['tipo'])
+        def format_monetary(number, currency):
+            # Format the monetary values to avoid trailing decimals (e.g. 90.85000000000001).            
+            return float_repr(number, currency.decimal_places)            
+
+        invoice.ensure_one()    
+
+        #get notas de debito o credito
+        origin_document = ''
+        if type_document == self._prefijo_nota_credito and invoice.reversed_entry_id.id != False:
+            origin_document = invoice.env['account.move'].search([('reversed_entry_id','=',invoice.reversed_entry_id.id)])
+        elif type_document == self._prefijo_nota_debito and invoice.debit_origin_id != False:
+            origin_document = invoice.env['account.move'].search([('debit_origin_id','=',invoice.debit_origin_id.id)])
+        
+        #get user login
+        current_user_login = invoice.env['res.users'].browse(invoice._uid)
+
+        # Create file content.
+        template_values = {
+            'record': invoice,
+            'origin_document': origin_document,
+            'type_document':type_document,
+            'format_date': format_date,
+            'format_monetary': format_monetary,
+            'invoice_line_values': [],
+            'payments':[],
+            'current_user_login':current_user_login
+        }
+
+        # Tax lines.
+        aggregated_taxes_details = {line.tax_line_id.id: {
+            'line': line,
+            'tax_amount': -line.amount_currency if line.currency_id else -line.balance,
+            'tax_base_amount': 0.0,
+        } for line in invoice.line_ids.filtered('tax_line_id')}
+
+        # Invoice lines.
+        for i, line in enumerate(invoice.invoice_line_ids.filtered(lambda l: not l.display_type)):
+            price_unit_with_discount = line.price_unit * (1 - (line.discount / 100.0))
+            taxes_res = line.tax_ids.with_context(force_sign=line.move_id._get_tax_force_sign()).compute_all(
+                price_unit_with_discount,
+                currency=line.currency_id,
+                quantity=line.quantity,
+                product=line.product_id,
+                partner=invoice.partner_id,
+                is_refund=line.move_id.move_type in ('in_refund', 'out_refund'),
+            )
             
-            if 'pie_pagina' in obj:
-                pie_pagina = etree.SubElement(root,'Tailer')
-                for index, item in enumerate(obj['pie_pagina']):
-                    line = etree.SubElement(pie_pagina,'Line')
-                    line.set('Id',str(index+1))
-                    if item[1]:
-                        line.text = item[1]                                        
+            line_template_values = {
+                'line': line,
+                'index': i + 1,
+                'format_discount': str(line.discount) + '%',
+                'tax_details': {},
+                'net_price_subtotal': taxes_res['total_excluded'],
+            }
 
-            # Save to XML file            
-            self._xml_print_to_file('/mnt/custom-addons/binaural_webpos/utils/',obj['tipo_documento'],doc)   
-            
-    def xml_nofiscal(self, obj):
-        if obj:
-            root = etree.Element('FiscalDoc')
-            doc = etree.ElementTree(root)
+            #se iterara una sola vez asumiendo que cada producto tiene un solo impuesto (preguntar a Maria)
+            for tax_res in taxes_res['taxes']:
+                tax = invoice.env['account.tax'].browse(tax_res['id'])                
 
-            #subelementos
-            etree.SubElement(root, 'PrintStationId').text = obj['print_station_id']
-            etree.SubElement(root, 'PrinterId').text = obj['printer_id']
-            if obj['tipo_documento']:                
-                etree.SubElement(root, 'DocType').text = obj['tipo_documento']
-            etree.SubElement(root, 'DocNumber').text = obj['num_factura']
-            if obj['num_factura_nota']:
-                etree.SubElement(root, 'InvoiceNumber').text = obj['num_factura_nota']            
-            etree.SubElement(root, 'CustomerName').text = self._sanitize_string(obj['cliente'])
-            etree.SubElement(root, 'CustomerRUC').text = obj['ruc']
-            etree.SubElement(root, 'CustomerAddress').text = self._sanitize_string(obj['direccion_cliente'])
-            etree.SubElement(root, 'Email').text = obj['email']
+                #diccionario por lista
+                tax_details = {
+                    'tax': tax,
+                    'tax_webpos': tax.tipo_impuesto_webpos,
+                    'tax_amount': tax_res['amount'],
+                    'tax_base_amount': tax_res['base'],
+                }
 
-            #info extra que se imprime en el encabezado o pie de pagina
-            if 'add_info' in obj:
-                add_info = etree.SubElement(root, 'AddInfo')                                  
-                for index, item in enumerate(obj['add_info']):
-                    line = etree.SubElement(add_info,'Line')
-                    line.set('Id',str(index+1))
-                    if item[1]:
-                        line.text = item[1]
+                line_template_values['tax_details'] = tax_details                
 
-            self._xml_print_to_file('/mnt/custom-addons/binaural_webpos/utils/',obj['tipo_documento'],doc)   
+                if tax.id in aggregated_taxes_details:
+                    aggregated_taxes_details[tax.id]['tax_base_amount'] += tax_res['base']
 
-    def _xml_print_to_file(self, uri, tipo_documento, doc_root):
-        outFile = open(uri + tipo_documento + 'output.xml', 'wb')
-        doc_root.write(outFile, xml_declaration=True, encoding='utf-8', pretty_print=True)     
+                break #una sola iteracion
 
-def main():
-    XmlInteface().xml_factura_nota({
-       'print_station_id' : '1',
-       'printer_id':'2',
-       'tipo_documento': 'C',
-       'num_factura':'001',
-       'num_factura_nota':'001',
-       'cliente':'Manuel Guerrero',
-       'ruc' : 'J-29532196',
-       'direccion_cliente':'Carrera & entre < y >',
-       'email':'manuelgc1201@gmail.com',
-       'add_info': [(1,'otra info'),(2,''),(3,'mas info')],
-       'items':[{
-           'id': '01',
-           'precio': '101.00',
-           'cantidad':'2',
-           'descripcion_producto':'audifonos',
-           'impuesto':'1',
-           'codigo':'001'           
-       },{
-           'id': '02',
-           'precio': '250.00',
-           'cantidad':'2',
-           'descripcion_producto':'computadora',
-           'impuesto':'1',
-           'codigo':'002',
-           'porc_descuento':'10.00%'
-       }],
-       'pagos':[{
-           'id':'001',
-           'monto':'26.66',
-           'tipo':'01'
-       },
-       {
-           'id':'002',
-           'monto':'30.66',
-           'tipo':'08'
-       }],
-       'pie_pagina':[(1,'otra info'),(2,''),(3,'mas info')]
-    })
+            template_values['invoice_line_values'].append(line_template_values)
 
-    XmlInteface().xml_nofiscal({
-       'print_station_id' : '1',
-       'printer_id':'2',
-       'tipo_documento': 'N',
-       'num_factura':'001',
-       'num_factura_nota':'001',
-       'cliente':'Manuel Guerrero',
-       'ruc' : 'J-29532196',
-       'direccion_cliente':'Carrera & entre < y >',
-       'email':'manuelgc1201@gmail.com',
-       'add_info': [(1,'otra info'),(2,''),(3,'mas info')]})
+        # Payments
+        payments = self._get_payments_invoice(invoice)
+        if payments:            
+            template_values['payments'] = payments
 
-if __name__ == "__main__":
-    main()
+        template_values['tax_details'] = list(aggregated_taxes_details.values())
+
+        xml_content = b"<?xml version='1.0' encoding='UTF-8'?>"
+        xml_content += invoice.env.ref('binaural_webpos.binaural_webpos_xml_template')._render(template_values)        
+        xml_name = type_document + '%s.xml' % (invoice.name.replace('/', '_'))        
+        return xml_content, xml_name        
+
+    def _get_payments_invoice(self, invoice):
+        if invoice.invoice_payments_widget != False:
+            payments_list = []
+            payments_dict = json.loads(invoice.invoice_payments_widget)
+            for payment in payments_dict["content"]:                
+                pay = invoice.env['account.payment'].browse(payment["account_payment_id"])                
+                payments_list.append(pay)                      
+            return payments_list
+        else:
+            return False    
+
+    def xml_print_to_file(self, content, file_name, invoice):  
+        _logger.info(content)      
+        return invoice.env['ir.attachment'].create({
+            'name':file_name,
+            'datas': base64.encodebytes(content),
+            'mimetype': 'application/xml'
+        })
+
+    def xml_print_to_std(self, content):
+        _logger.info(content)
+
+    def _xml_to_service_mf(self):
+        pass
