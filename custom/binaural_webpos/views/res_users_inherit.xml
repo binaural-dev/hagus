@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+    
+        <record id="binaural_inherit_res_users" model="ir.ui.view">
+            <field name="name">binaural.res.users.view.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='preferences']" position="after">
+                    <group string="ID Estacion de impresora fiscal">
+                        <field name="print_station_id"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    
+    </data>
+    
+
+</odoo>
