@@ -5,6 +5,7 @@ services:
     build:
       context: .
     container_name: hagus_container
+    command: odoo --dev=all -u binaural_webpos
     depends_on:
       - db-hagus
     ports:
@@ -17,6 +18,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=0
     restart: always
+    networks:
+      - postgres_bd
   db-hagus:
     image: postgres:13
     environment:
@@ -27,6 +30,28 @@ services:
     volumes:
       - odoo-db-hagus:/var/lib/postgresql/data/pgdata
     restart: always
+    networks:
+      - postgres_bd
+  pgadmin:
+    container_name: pgadmin_container_webpos
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: binaural.ca@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: odoo
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    networks:
+      - postgres_bd
+    volumes:
+        - pgadmin:/root/.pgadmin
+
+    ports:
+      - "80:80"    
+    restart: unless-stopped
+
+networks:
+  postgres_bd:
+    external: true
 volumes:
   odoo-web-hagus:
   odoo-db-hagus:
+  pgadmin:
