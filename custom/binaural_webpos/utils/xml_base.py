@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from xml.sax.saxutils import escape
 from lxml import etree
 import json
+from suds.client import Client
+from suds.xsd.doctor import ImportDoctor, Import
 
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_repr
 import base64
@@ -17,6 +19,15 @@ class XmlInterface():
     _prefijo_nota_debito = 'D'
     _prefijo_no_fiscal = 'N'
     encoding_xml = 'UTF-8'
+    _url_test_soap = 'https://webpospanama.com/fptest/wsfprt.asmx?WSDL'
+    _url_production_soap = 'https://ventas.webpospanana.com/wsfprt.asmx?WSDL'
+    _url_schema_soap = 'http://www.w3.org/2001/XMLSchema'
+    _url_schema_location_soap = 'http://www.w3.org/2001/XMLSchema.xsd'
+    _url_namespace_soap = 'http://www.webpospanama.com/FPrint'
+    #valor entregado por webpos, considerar agregarlo como modelo en odoo
+    _company_id = '' 
+    _user_webpos = ''
+    _password_webpos = ''
 
     def __init__(self):
         pass
@@ -123,8 +134,9 @@ class XmlInterface():
         template_values['tax_details'] = list(aggregated_taxes_details.values())
 
         xml_content = b"<?xml version='1.0' encoding='UTF-8'?>"
-        xml_content += invoice.env.ref('binaural_webpos.binaural_webpos_xml_template')._render(template_values)        
+        xml_content += invoice.env.ref('binaural_webpos.binaural_webpos_xml_template')._render(template_values)                
         xml_name = type_document + '%s.xml' % (invoice.name.replace('/', '_'))        
+
         return xml_content, xml_name        
 
     def _get_payments_invoice(self, invoice):
@@ -138,8 +150,7 @@ class XmlInterface():
         else:
             return False    
 
-    def xml_print_to_file(self, content, file_name, invoice):  
-        _logger.info(content)      
+    def xml_print_to_file(self, content, file_name, invoice):          
         return invoice.env['ir.attachment'].create({
             'name':file_name,
             'datas': base64.encodebytes(content),
@@ -148,6 +159,22 @@ class XmlInterface():
 
     def xml_print_to_std(self, content):
         _logger.info(content)
+        return content
 
-    def _xml_to_service_mf(self):
-        pass
+    def _connect_soap(self, test_mode=False):
+        
+        imp = Import(self._url_schema_soap, location=self._url_schema_location_soap)
+        imp.filter.add(self._url_namespace_soap)
+        doctor = ImportDoctor(imp)
+        
+        if test_mode:                              
+            return Client(self._url_production_soap, doctor=doctor)
+        else:            
+            return Client(self._url_test_soap, doctor=doctor)
+            
+
+    def xml_to_service_mf(self, xml_content ,test_mode=False):
+        client_soap = self._connect_soap(test_mode)        
+        response = client_soap.service.SendxmlFileToPrint(xml_content.decode("utf-8"),self._user_webpos,self._password_webpos,self._company_id)
+
+        print(response) #TODO: en espera de respuesta de Panama para terminar implementacion

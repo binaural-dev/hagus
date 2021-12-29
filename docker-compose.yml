@@ -5,7 +5,7 @@ services:
     build:
       context: .
     container_name: hagus_container
-    command: odoo --dev=all
+    command: odoo --dev=all -u binaural_webpos
     depends_on:
       - db-hagus
     ports:

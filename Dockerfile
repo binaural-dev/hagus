@@ -56,6 +56,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' > /etc/
 RUN npm install -g rtlcss
 #add pandas and another
 RUN pip3 install num2words xlwt xlrd openpyxl xlwt pytest-odoo pandas wheel
+RUN pip3 install suds
 # Install Odoo
 ENV ODOO_VERSION 14.0
 #ARG ODOO_RELEASE=latest

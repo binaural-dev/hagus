@@ -36,4 +36,6 @@ class binaural_account_move(models.Model):
         elif invoice.move_type == 'out_invoice' and invoice.debit_origin_id.id != False:            
             xml_content, xml_name = XmlInterface().build_xml_to_print(invoice, XmlInterface()._prefijo_nota_debito)
 
-        XmlInterface().xml_print_to_std(xml_content)
+        xml = XmlInterface().xml_print_to_std(xml_content)        
+        raise UserError(xml)
+        #XmlInterface().xml_to_service_mf(xml_content)

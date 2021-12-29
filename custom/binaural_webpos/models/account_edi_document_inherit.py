@@ -12,9 +12,8 @@ _logger = logging.getLogger(__name__)
 class binaural_account_edi_document(models.Model):
     _inherit = 'account.edi.document'
     _description = 'Herencia de documento electronico para account.move'
-
-    # state = fields.Selection([('to_send', 'To Send'), ('sent', 'Sent'), ('to_cancel', 'To Cancel'), ('cancelled', 'Cancelled'),('to_pay','To pay')])
-
+    
+    state = fields.Selection(selection_add=[('to_pay','To pay')])
     # def write(self, vals):
     #     _logger.info('===========================================')
     #     _logger.info(vals)

@@ -24,6 +24,25 @@
             </field>
         </record>    
 
+        <!-- Campos adicionales para la factura -->
+        <record id="binaural_account_move_fields_inherit" model="ir.ui.view">
+            <field name="name">binaural.account.move.fields</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='journal_div']" position="after">                    
+                    <label for="fiscal_number"/>
+                    <div name="fiscal_number_div" class="d-flex">
+                        <field name="fiscal_number" />
+                    </div>
+                    <label for="fiscal_machine_id" />
+                    <div name="fiscal_machine_id_div" class="d-flex">
+                        <field name="fiscal_machine_id" widget="selection" />
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
         <!-- campos adicionales factura fiscal (header, footer) -->
         <record id="binaural_inherit_account_move_other_tab" model="ir.ui.view">
             <field name="name">binaural.account.move.inherit.othertab</field>
@@ -52,24 +71,7 @@
                 </button>
             </field>
         </record>
-
-        <record id="binaural_account_move_fields_inherit" model="ir.ui.view">
-            <field name="name">binaural.account.move.fields</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_move_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//div[@name='journal_div']" position="after">                    
-                    <label for="fiscal_number"/>
-                    <div name="fiscal_number_div" class="d-flex">
-                        <field name="fiscal_number" />
-                    </div>
-                    <label for="fiscal_machine_id" />
-                    <div name="fiscal_machine_id_div" class="d-flex">
-                        <field name="fiscal_machine_id" widget="selection" />
-                    </div>
-                </xpath>
-            </field>
-        </record>
+        
     </data>
     
 

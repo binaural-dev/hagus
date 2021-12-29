@@ -7,5 +7,25 @@
             <field name="code">facturx_pa</field>
         </record>
 
+        <record id="binaural_tipo_pago_efectivo" model="tipopago.webpos">
+            <field name="code_payment_webpos">01</field>
+            <field name="name_payment_webpos">Efectivo</field>
+        </record>
+
+        <record id="binaural_tipo_pago_tdc" model="tipopago.webpos">
+            <field name="code_payment_webpos">02</field>
+            <field name="name_payment_webpos">Tarjeta de Crédito</field>
+        </record>
+
+        <record id="binaural_tipo_pago_tdd" model="tipopago.webpos">
+            <field name="code_payment_webpos">03</field>
+            <field name="name_payment_webpos">Tarjeta de Débito</field>
+        </record>
+
+        <record id="binaural_tipo_pago_cheque" model="tipopago.webpos">
+            <field name="code_payment_webpos">03</field>
+            <field name="name_payment_webpos">Cheque</field>
+        </record>
+
     </data>
 </odoo>
