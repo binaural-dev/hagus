@@ -17,7 +17,7 @@
     # Check https://github.com/odoo/odoo/blob/14.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Accounting',
-    'version': '0.2',
+    'version': '0.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base','account','account_edi','account_debit_note'],
@@ -25,16 +25,16 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'views/fiscal_machine.xml',        
+        'views/tipo_pago_webpos.xml',
         'data/account_webpos_data.xml',
         'data/facturx_webpos_templates.xml',
         'views/views.xml',
         'views/templates.xml',        
         'views/account_tax_inherit.xml',
         'views/account_move_inherit.xml',
-        'views/account_payment_inherit.xml',
-        'views/tipo_pago_webpos.xml',
-        'views/res_users_inherit.xml',
-        'views/fiscal_machine.xml'        
+        'views/account_payment_inherit.xml',        
+        'views/res_users_inherit.xml'        
     ],
     # only loaded in demonstration mode
     'demo': [
