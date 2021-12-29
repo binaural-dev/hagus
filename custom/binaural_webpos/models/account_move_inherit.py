@@ -14,7 +14,7 @@ class binaural_account_move(models.Model):
     _description = 'Herencia para editar el post de la factura para faturacion electronica'
 
     fiscal_number = fields.Char(string="Numero fiscal", help="Numero devuelto por la maquina fiscal una vez impresa la factura", index=True, copy=False) #readonly=True
-    fiscal_machine_id = fields.Many2one('binaural.mfwebpos', string='Maquina fiscal asociada', required=True, 
+    fiscal_machine_id = fields.Many2one('binaural.mfwebpos', string='Maquina fiscal asociada', 
         default=(lambda self:self.env['binaural.mfwebpos'].search([('default_machine','=',True)], limit=1)))
 
     aditional_info_invoice_header1 = fields.Char(string='Informacion adicional factura (cabecera 1)', size=80, copy=False)
@@ -36,6 +36,9 @@ class binaural_account_move(models.Model):
         elif invoice.move_type == 'out_invoice' and invoice.debit_origin_id.id != False:            
             xml_content, xml_name = XmlInterface().build_xml_to_print(invoice, XmlInterface()._prefijo_nota_debito)
 
-        xml = XmlInterface().xml_print_to_std(xml_content)        
-        raise UserError(xml)
-        #XmlInterface().xml_to_service_mf(xml_content)
+        if self.fiscal_machine_id:        
+            xml = XmlInterface().xml_print_to_std(xml_content)        
+            raise UserError(xml)
+            #XmlInterface().xml_to_service_mf(xml_content)
+        else:
+            raise UserError('Debe seleccionar una maquina para realizar la impresion')
