@@ -21,6 +21,7 @@
         'views/finish_types.xml',
         'views/clisse.xml',
         'views/sequence_views.xml',
+        'views/res_company.xml',
     ],
     'installable': True,
     'auto_install': False,
