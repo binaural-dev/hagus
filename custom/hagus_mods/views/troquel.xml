@@ -6,7 +6,7 @@
             <field name="name">Listado Troqueles</field>
             <field name="model">hagus.troquel</field>
             <field name="arch" type="xml">
-                <tree editable="top">
+                <tree>
                     <field name="code"/>
                     <field name="teeth" />
                     <field name="cylinders" />
@@ -51,18 +51,36 @@
                                 <field name="teeth"/>
                                 <field name="cylinders"/>
                                 <label for="width_inches" />
-                                <div class="o_row" name="invhces" >
+                                <div class="o_row">
                                     <field name="width_inches"/>
                                     <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
                                 </div>
                             </group>
                             <group>
-                                <field name="width_millimeters" />
-                                <field name="width_millimeters_uom" />
-                                <field name="length_inches" />
-                                <field name="length_inches_uom" />
-                                <field name="length_millimeters" />
-                                <field name="length_millimeters_uom" />
+								<label for="width_millimeters"/>
+								<div class="o_row">
+                                	<field name="width_millimeters" />
+									<span><field name="width_millimeters_uom" options="{'no_create': True}"/></span>
+								</div>
+
+								<label for="length_inches"/>
+								<div class="o_row">
+                                	<field name="length_inches" />
+                                	<field name="length_inches_uom" />
+								</div>
+
+								<label for="length_millimeters"/>
+								<div class="o_row">
+                                	<field name="length_millimeters" />
+                                	<field name="length_millimeters_uom" />
+								</div>
+
+								<label for="paper_cut_centimeters"/>
+								<div class="o_row">
+									<field name="paper_cut_centimeters"/>
+									<field name="paper_cut_centimeters_uom"/>
+								</div>
+
                                 <field name="lines_width" />
                                 <field name="repetition" />
                                 <field name="designed" />
@@ -107,7 +125,7 @@
         <record model="ir.actions.act_window" id="hagus_troquel_action">
             <field name="name">Troqueles</field>
             <field name="res_model">hagus.troquel</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <!-- Top menu item -->
