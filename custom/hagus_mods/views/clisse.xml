@@ -120,9 +120,16 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <!-- Top menu item -->
-        <menuitem name="Clisse" id="hagus_mods.menu_clisse"
+        <!-- Top menu item sales -->
+        <menuitem name="Clisse" id="hagus_mods.menu_clisse_sales"
                   action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="20"/>
 
+		<!-- Top menu item mrp -->
+		<menuitem id="hagus_mods.menu_clisse_mrp" name="Clisse"
+				  action="hagus_clisse_action" parent="mrp.menu_mrp_root" sequence="999"/>
+
+		<!-- Top menu item stock -->
+		<menuitem id="hagus_mods.menu_clisse_stock" name="Clisse"
+			      action="hagus_clisse_action" parent="stock.menu_stock_root" sequence="999"/>
     </data>
 </odoo>
