@@ -16,6 +16,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'data/orientation.xml',
         'views/troquel.xml',
         'views/orientation.xml',
         'views/finish_types.xml',
