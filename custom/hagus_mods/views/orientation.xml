@@ -6,7 +6,7 @@
             <field name="name">Listado Tipo de Orientación</field>
             <field name="model">hagus.orientation</field>
             <field name="arch" type="xml">
-                <tree editable="top">
+                <tree>
                     <field name="abbreviation" />
                     <field name="description"/>
                 </tree>
@@ -30,6 +30,10 @@
                             </group>
                 
                         </group>
+						<group>
+							<field name="filename" invisible="1"/>
+							<field name="files" filename="filename" widget="image"/>
+						</group>
 
                     </sheet>
                     <div class="oe_chatter">
@@ -45,7 +49,7 @@
         <record model="ir.actions.act_window" id="hagus_orientation_action">
             <field name="name">Tipo de Orientación</field>
             <field name="res_model">hagus.orientation</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <!-- Top menu item -->

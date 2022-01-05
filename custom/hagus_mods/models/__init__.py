@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
-from . import troquel
+from . import clisse
 from . import finish_types
 from . import orientation
-from . import clisse
-
-from . import res_partner
+from . import res_company
+from . import troquel
