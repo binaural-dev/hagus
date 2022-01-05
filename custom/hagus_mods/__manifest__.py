@@ -17,6 +17,7 @@
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'views/troquel.xml',
+        'views/res_partner.xml',
         'views/orientation.xml',
         'views/finish_types.xml',
         'views/clisse.xml',
