@@ -24,6 +24,7 @@
         'views/sequence_views.xml',
         'views/res_company.xml',
         'views/product_template.xml',
+        'views/mrp_production.xml',
     ],
     'installable': True,
     'auto_install': False,
