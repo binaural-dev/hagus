@@ -111,6 +111,7 @@
 									<group>
 										<field name="seller_id"/>
 										<field name="payment_method_id"/>
+										<field name="quantity"/>
 										<field name="decrease"/>
 										<field name="handm_cost"/>
 									</group>
