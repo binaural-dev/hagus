@@ -23,6 +23,7 @@
         'views/clisse.xml',
         'views/sequence_views.xml',
         'views/res_company.xml',
+        'views/product_template.xml',
     ],
     'installable': True,
     'auto_install': False,
