@@ -105,6 +105,35 @@
                                     </tree>
                                 </field>
                             </page>
+
+							<page name="clisse_sale_order" string="Venta">
+								<group>
+									<group>
+										<field name="seller_id"/>
+										<field name="payment_method_id"/>
+										<field name="decrease"/>
+										<field name="handm_cost"/>
+									</group>
+									<group>
+										<field name="product_type"/>
+										<field name="payment_term"/>
+									</group>
+								</group>
+								<group>
+									<group>
+										<field name="paper_cost"/>
+										<field name="print_cost"/>
+										<field name="coiling_cost"/>
+										<field name="rubber_cost"/>
+										<field name="art_cost"/>
+										<field name="profit"/>
+									</group>
+									<group>
+										<field name="percentage"/>
+										<field name="thousand_cost"/>
+									</group>
+								</group>
+							</page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">

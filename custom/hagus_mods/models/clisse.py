@@ -11,7 +11,10 @@ class HagusClisse(models.Model):
 	_inherit = ['mail.thread', 'mail.activity.mixin']
 	_rec_name = 'code'
 
-	code = fields.Char(string='Código',copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))#usar secuencia
+	code = fields.Char(
+            string='Código',copy=False, readonly=True,
+            states={'draft': [('readonly', False)]},
+            index=True, default=lambda self: _('New'))#usar secuencia
 	description = fields.Char(string='Descripción')
 	date = fields.Date(string='Fecha',default=fields.Date.context_today,required=True)
 	partner_id = fields.Many2one('res.partner', string='Cliente',domain="[('active', '=',True)]") #filtrar solo clientes
@@ -58,15 +61,41 @@ class HagusClisse(models.Model):
 		('cancel', 'Cancelado'),
 	], string='Estado')
 
+	seller_id = fields.Many2one('res.partner', string='Vendedor', domain="[('active', '=', True)]")
+
+	payment_method_id = fields.Many2one(
+            "account.payment.method", string="Tipo de Pago",
+            domain="[('payment_type', '=', 'inbound')]")
+	quantity = fields.Integer(string="Cantidad a Producir")
+	decrease = fields.Float(string="Merma", digits=(14,5))
+	handm_cost = fields.Float(string="Costo H/M", digits=(14,2))
+	product_type = fields.Many2one(
+            "product.category", string="Tipo de Producto",
+            domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]")
+	payment_term = fields.Many2one("account.payment.term", string="Plazo de Pago")
+
+	paper_cost = fields.Float(string="Costo de Papel", digits=(14,2))
+	print_cost = fields.Float(string="Costo de Impresión", digits=(14,2))
+	coiling_cost = fields.Float(string="Costo de Embobinado", digits=(14,2))
+	rubber_cost = fields.Float(string="Costo de Caucho", digits=(14,2))
+	art_cost = fields.Float(string="Costo de Arte", digits=(14,2))
+	profit = fields.Float(string="Ganancia", digits=(14,2))
+	percentage = fields.Float(string="Porcentaje a Aplicar", digits=(3,2))
+	total_cost = fields.Float(string="Costo Total", digits=(14,2))
+	thousand_cost = fields.Float(string="Precio por Millar", digits=(14,2))
+
 
 
 	@api.model
 	def create(self, vals):
+		# Set Code
 		if vals.get('code', _('New')) == _('New'):
 			seq_date = None
 			if 'date' in vals:
 				seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date']))
 			vals['code'] = self.env['ir.sequence'].next_by_code('hagus.clisse', sequence_date=seq_date) or _('New')
+
+		# Set default basic materials
 		result = super(HagusClisse, self).create(vals)
 		return result
 
@@ -78,3 +107,4 @@ class HagusClisseLines(models.Model):
 	qty = fields.Float(string='Cantidad', digits=(16, 2))
 	cost = fields.Float(string='Costo', digits=(16, 3))
 	clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
+
