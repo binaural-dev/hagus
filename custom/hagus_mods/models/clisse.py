@@ -27,6 +27,7 @@ class HagusClisse(models.Model):
 	background = fields.Char(string='Fondo')
 
 	orientation_id = fields.Many2one('hagus.orientation', string='Orientación')
+	orientation_image = fields.Binary(related="orientation_id.files")
 	finish_type_id = fields.Many2one('hagus.finish.types', string='Acabado')
 
 	observations = fields.Text(string='Obervaciones')

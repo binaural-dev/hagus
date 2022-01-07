@@ -77,7 +77,13 @@
                                 <field name="labels_per_roll" />
                             </group>
                             <group>
-                                <field name="orientation_id" />
+								<label for="orientation_id"/>
+								<div class="o_row" style="margin-bottom: 2rem;">
+									<field name="orientation_id"
+										   style="margin-right: 1rem;"/>
+									<field name="orientation_image"
+										   widget="image" options="{'size': [100,50]}"/>
+								</div>
                                 <field name="finish_type_id" />
                                 <field name="observations" />
                                 <field name="text" />
@@ -85,9 +91,6 @@
                                 <field name="state" />
                                 <field name="image_design" />
                                 <field name="image_barcode" />
-
-                                
-                                
                             </group>
                         </group>
                         <notebook ><!--attrs="{'invisible':[('seller_id','=',False)]}"-->
