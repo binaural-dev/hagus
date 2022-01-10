@@ -129,7 +129,7 @@
         </record>
 
         <!-- Top menu item -->
-        <menuitem name="Troqueles" id="hagus_mods.menu_troquel"
+        <menuitem name="Troqueles" id="binaural_hagus_mods.menu_troquel"
                   action="hagus_troquel_action" parent="mrp.menu_mrp_configuration"/>
 
     </data>

@@ -2,38 +2,34 @@
 <odoo>
     <data>
         <!-- explicit list view definition -->
-        <record model="ir.ui.view" id="hagus_orientation_list">
-            <field name="name">Listado Tipo de Orientación</field>
-            <field name="model">hagus.orientation</field>
+        <record model="ir.ui.view" id="hagus_finish_types_list">
+            <field name="name">Listado Acabados</field>
+            <field name="model">hagus.finish.types</field>
             <field name="arch" type="xml">
-                <tree>
-                    <field name="abbreviation" />
+                <tree editable="top">
                     <field name="description"/>
+
+
                 </tree>
             </field>
         </record>
        
         <!-- form -->
-        <record id="hagus_orientation_form" model="ir.ui.view">
-            <field name="name">Formulario Tipo de Orientación</field>
-            <field name="model">hagus.orientation</field>
+        <record id="hagus_finish_types_form" model="ir.ui.view">
+            <field name="name">Formulario Acabados</field>
+            <field name="model">hagus.finish.types</field>
             <field name="arch" type="xml">
-                <form string="Tipo de Orientación">
+                <form string="Acabado">
                     <header>
                        
                     </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="abbreviation" />
                                 <field name="description"/>
                             </group>
                 
                         </group>
-						<group>
-							<field name="filename" invisible="1"/>
-							<field name="files" filename="filename" widget="image"/>
-						</group>
 
                     </sheet>
                     <div class="oe_chatter">
@@ -46,15 +42,15 @@
         </record>
 
         <!-- actions opening views on models -->
-        <record model="ir.actions.act_window" id="hagus_orientation_action">
-            <field name="name">Tipo de Orientación</field>
-            <field name="res_model">hagus.orientation</field>
-            <field name="view_mode">tree,form</field>
+        <record model="ir.actions.act_window" id="hagus_finish_types_action">
+            <field name="name">Acabados</field>
+            <field name="res_model">hagus.finish.types</field>
+            <field name="view_mode">tree</field>
         </record>
 
         <!-- Top menu item -->
-        <menuitem name="Tipo de Orientación" id="hagus_mods.menu_orientation"
-                  action="hagus_orientation_action" parent="mrp.menu_mrp_configuration"/>
+        <menuitem name="Acabados" id="binaural_hagus_mods.menu_finish_types"
+                  action="hagus_finish_types_action" parent="mrp.menu_mrp_configuration"/>
 
     </data>
 </odoo>
