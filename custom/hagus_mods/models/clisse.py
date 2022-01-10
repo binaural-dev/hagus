@@ -86,7 +86,6 @@ class HagusClisse(models.Model):
 	paper_cost = fields.Float(string="Costo de Papel", digits=(14, 2))
 	print_cost = fields.Float(string="Costo de Impresión", digits=(14, 2))
 	coiling_cost = fields.Float(string="Costo de Embobinado", digits=(14, 2))
-	rubber_cost = fields.Float(string="Costo de Caucho", digits=(14, 2))
 	art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
 	profit = fields.Float(string="Ganancia", digits=(14, 2))
 	percentage = fields.Float(string="Porcentaje a Aplicar", digits=(3, 2))
@@ -108,10 +107,10 @@ class HagusClisse(models.Model):
 		negative = self.env["product.product"].search([("name", '=', "Negativo")])
 		rubber = self.env["product.product"].search([("name", '=', "Caucho")])
 
-		vals["materials_lines_id"] = [
+		vals["materials_lines_id"].extend([
             (
                 0,
-                0,
+                4,
                 {
                     "product_id": negative.id,
                     "cost": negative.standard_price
@@ -119,16 +118,15 @@ class HagusClisse(models.Model):
             ),
             (
                 0,
-                0,
+                4,
                 {
                     "product_id": rubber.id,
                     "cost": rubber.standard_price
                 },
             )
-        ]
+        ])
 
-		result = super(HagusClisse, self).create(vals)
-		return result
+		return super().create(vals)
 
 
 class HagusClisseLines(models.Model):

@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-
+from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
@@ -18,4 +18,15 @@ class ProductTemplate(models.Model):
                     product.category_is_not_sticker = False
                     return
             product.category_is_not_sticker = True
+
+    @api.model
+    def create(self, vals):
+        if vals["name"].lower() == "negativo" and \
+            bool(self.env["product.template"].search([("name", '=', "Negativo")])):
+            raise ValidationError("Este producto ya existe, si quiere modificar su costo debe editarlo.")
+        if vals["name"].lower() == "caucho" and \
+            bool(self.env["product.template"].search([("name", '=', "Caucho")])):
+            raise ValidationError("Este producto ya existe, si quiere modificar su costo debe editarlo.")
+            
+        return super().create(vals)
 
