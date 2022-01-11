@@ -29,11 +29,11 @@ class HagusClisseTestCase(SavepointCase):
         cls.products = [
             cls.env["product.product"].create({
                 "name": "Tinta Negra",
-                "categ_id": cls.categories[0].id
+                "categ_id": cls.categories[0].id,
             }),
             cls.env["product.product"].create({
                 "name": "Tinta Azul",
-                "categ_id": cls.categories[0].id
+                "categ_id": cls.categories[0].id,
             }),
             cls.env["product.product"].create({
                 "name": "Bushing Test",
@@ -56,6 +56,7 @@ class HagusClisseTestCase(SavepointCase):
         cls.clisse = cls.env["hagus.clisse"].create({
             "description": "cli012345",
             "troquel_id": cls.troquels[0].id,
+            "labels_per_roll": 10,
             "quantity": 15,
             "decrease": 2952.75,
             "handm_cost": .2312,
@@ -64,14 +65,16 @@ class HagusClisseTestCase(SavepointCase):
                     0,
                     4,
                     {
-                        "product_id": cls.products[0].id
+                        "product_id": cls.products[0].id,
+                        "cost": 1.5,
                     }
                 ),
                 (
                     0,
                     4,
                     {
-                        "product_id": cls.products[1].id
+                        "product_id": cls.products[1].id,
+                        "cost": 2,
                     }
                 ),
                 (
@@ -79,7 +82,7 @@ class HagusClisseTestCase(SavepointCase):
                     4,
                     {
                         "product_id": cls.products[2].id,
-                        "cost": .37
+                        "cost": .085,
                     }
                 ),
                 (
@@ -110,3 +113,10 @@ class HagusClisseTestCase(SavepointCase):
         clisse = self.clisse
         self.assertEqual(float_compare(
             clisse.print_cost, 75.51, precision_digits=2), 0)
+
+    def test_coiling_cost(self):
+        """Probar que el resultado del costo de embobinado se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(
+            clisse.coiling_cost, .29, precision_digits=2), 0)
+
