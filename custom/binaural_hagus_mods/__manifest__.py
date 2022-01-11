@@ -15,8 +15,10 @@
     'depends': ['mrp','sale_management'],
     'data': [
         'security/ir.model.access.csv',
-        'data/sequence.xml',
         'data/orientation.xml',
+        'data/product.xml',
+        'data/product_category.xml',
+        'data/sequence.xml',
         'views/troquel.xml',
         'views/res_partner.xml',
         'views/orientation.xml',

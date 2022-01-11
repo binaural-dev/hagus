@@ -1,0 +1,18 @@
+<odoo>
+	<data noupdate="1">
+
+		<record id="product_category_1" model="product.category">
+			<field name="name">Calcomanía</field>
+		</record>
+		<record id="product_category_2" model="product.category">
+			<field name="name">Etiqueta</field>
+		</record>
+		<record id="product_category_3" model="product.category">
+			<field name="name">Buje</field>
+		</record>
+		<record id="product_category_4" model="product.category">
+			<field name="name">Tinta</field>
+		</record>
+
+	</data>
+</odoo>
