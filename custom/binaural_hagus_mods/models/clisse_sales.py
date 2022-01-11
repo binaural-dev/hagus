@@ -16,7 +16,7 @@ class ClisseSales(models.Model):
     negative_cost = fields.Float(string="Costo del Negativo", digits=(
         14, 2), compute="_compute_negative_cost")
     negative_plus_rubber_cost = fields.Float(string="Costo Negativo / Caucho", digits=(
-        14, 2), compute="_compute_negative_per_rubber_cost")
+        14, 2), compute="_compute_negative_plus_rubber_cost")
 
     paper_cost = fields.Float(string="Costo de Papel", digits=(
         14, 2), compute="_compute_paper_cost")
@@ -30,10 +30,28 @@ class ClisseSales(models.Model):
 
     @api.model
     def create(self, vals):
+        rubber = 0
+        negative = 0
         coil = 0
         bushing = 0
         res = super().create(vals)
         for material in res.materials_lines_id:
+            # Check if a clisse has more than one material with the name "Caucho".
+            if bool(material.product_id) and \
+               material.product_id.name.lower() == "caucho":
+                rubber += 1
+            if rubber > 1:
+                raise ValidationError(
+                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
+
+            # Check if a clisse has more than one material with the name "Negativo".
+            if bool(material.product_id) and \
+               material.product_id.name.lower() == "negativo":
+                negative += 1
+            if negative > 1:
+                raise ValidationError(
+                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
+
             # Check if a clisse has more than one material with the "Bobina" category.
             if bool(material.product_id.categ_id) and \
                material.product_id.categ_id.name.lower() == "bobina":
@@ -56,9 +74,27 @@ class ClisseSales(models.Model):
 
     @api.onchange("materials_lines_id")
     def _onchange_materials_lines_id(self):
+        rubber = 0
+        negative = 0
         coil = 0
         bushing = 0
         for material in self.materials_lines_id:
+            # Check if a clisse has more than one material with the name "Caucho".
+            if bool(material.product_id) and \
+               material.product_id.name.lower() == "caucho":
+                rubber += 1
+            if rubber > 1:
+                raise ValidationError(
+                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
+
+            # Check if a clisse has more than one material with the name "Negativo".
+            if bool(material.product_id) and \
+               material.product_id.name.lower() == "negativo":
+                negative += 1
+            if negative > 1:
+                raise ValidationError(
+                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
+ 
             # Check if a clisse has more than one material with the "Bobina" category.
             if bool(material.product_id.categ_id) and \
                material.product_id.categ_id.name.lower() == "bobina":
@@ -66,6 +102,7 @@ class ClisseSales(models.Model):
             if coil > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
+
             # Check if a clisse has more than one material with the "Buje" category.
             if bool(material.product_id.categ_id) and \
                material.product_id.categ_id.name.lower() == "buje":
