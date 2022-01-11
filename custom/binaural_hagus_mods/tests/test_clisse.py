@@ -9,7 +9,7 @@ class HagusClisseTestCase(SavepointCase):
 
     @classmethod
     def setUpClass(cls):
-        super (HagusClisseTestCase, cls).setUpClass()
+        super(HagusClisseTestCase, cls).setUpClass()
 
         cls.categories = [
             cls.env["product.category"].create({
@@ -21,6 +21,9 @@ class HagusClisseTestCase(SavepointCase):
             cls.env["product.category"].create({
                 "name": "Buje"
             }),
+            cls.env["product.category"].create({
+                "name": "Bobina"
+            })
         ]
 
         cls.products = [
@@ -33,8 +36,12 @@ class HagusClisseTestCase(SavepointCase):
                 "categ_id": cls.categories[0].id
             }),
             cls.env["product.product"].create({
-                "name": "Coil Test",
+                "name": "Bushing Test",
                 "categ_id": cls.categories[2].id,
+            }),
+            cls.env["product.product"].create({
+                "name": "Coil Test",
+                "categ_id": cls.categories[3].id,
             }),
         ]
 
@@ -74,15 +81,25 @@ class HagusClisseTestCase(SavepointCase):
                         "cost": .37
                     }
                 ),
+                (
+                    0,
+                    4,
+                    {
+                        "product_id": cls.products[3].id,
+                        "cost": .37
+                    }
+                ),
             ]
         })
 
     def test_rubber_plus_negative_cost(self):
         """Probar que el resultado del costo Negativo / Caucho se calcula correctamente."""
         clisse = self.clisse
-        self.assertEqual(clisse.rubber_cost, 210)
+        self.assertEqual(float_compare(
+            clisse.rubber_cost, 210, precision_digits=2), 0)
 
     def test_paper_cost(self):
         """Probar que el resultado del costo del papel se cacula correctamente."""
         clisse = self.clisse
-        self.assertEqual(float_compare(clisse.paper_cost, 565.93, precision_digits=2), 0)
+        self.assertEqual(float_compare(clisse.paper_cost,
+                         565.93, precision_digits=2), 0)

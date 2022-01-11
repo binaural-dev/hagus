@@ -3,6 +3,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
+
 class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
@@ -26,10 +27,11 @@ class ClisseSales(models.Model):
         coil = 0
         res = super().create(vals)
         for material in res.materials_lines_id:
-            if material.product_id.categ_id.name.lower() == "buje":
+            if material.product_id.categ_id.name.lower() == "bobina":
                 coil += 1
             if coil > 1:
-                raise ValidationError("Un clisse no puede tener más de una bobina como material.")
+                raise ValidationError(
+                    "Un clisse no puede tener más de una bobina como material.")
         return res
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
@@ -71,7 +73,7 @@ class ClisseSales(models.Model):
             width = clisse.width_inches
             for material in clisse.materials_lines_id:
                 if bool(material.product_id.categ_id.name) and \
-                   material.product_id.categ_id.name.lower() == "buje":
+                   material.product_id.categ_id.name.lower() == "bobina":
                     material_cost = material.cost
                     break
             clisse.paper_cost = (width * clisse.length_inches * material_cost * clisse.quantity) + \
