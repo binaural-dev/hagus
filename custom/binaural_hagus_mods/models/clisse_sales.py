@@ -21,6 +21,10 @@ class ClisseSales(models.Model):
     paper_cost = fields.Float(string="Costo de Papel", digits=(
         14, 2), compute="_compute_paper_cost")
 
+    handm_cost = fields.Float(string="Costo H/M", digits=(14, 6))
+    print_cost = fields.Float(string="Costo de Impresión", digits=(
+        14, 2), compute="_compute_print_cost")
+
     @api.model
     def create(self, vals):
         # Check if a clisse has more than one "Bobina" material category.
@@ -78,3 +82,13 @@ class ClisseSales(models.Model):
                     break
             clisse.paper_cost = (width * clisse.length_inches * material_cost * clisse.quantity) + \
                                 (clisse.decrease * width / 1000 * material_cost)
+
+    @api.depends("length_inches", "quantity", "materials_lines_id", "handm_cost")
+    def _compute_print_cost(self):
+        for clisse in self:
+            total_colors = 0
+            for product in clisse.materials_lines_id:
+                if product.product_id.categ_id.name == "Tinta":
+                    total_colors += 1
+            clisse.print_cost = ((clisse.length_inches * 25.4 * clisse.quantity / 13.33) + (
+                total_colors * 10)) * clisse.handm_cost + (total_colors * 2.4)

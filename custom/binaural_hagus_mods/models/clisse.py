@@ -75,13 +75,11 @@ class HagusClisse(models.Model):
 	payment_method_id = fields.Many2one(
             "account.payment.method", string="Tipo de Pago",
             domain="[('payment_type', '=', 'inbound')]")
-	handm_cost = fields.Float(string="Costo H/M", digits=(14, 2))
 	product_type = fields.Many2one(
             "product.category", string="Tipo de Producto",
             domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]")
 	payment_term = fields.Many2one("account.payment.term", string="Plazo de Pago")
 
-	print_cost = fields.Float(string="Costo de Impresión", digits=(14, 2))
 	coiling_cost = fields.Float(string="Costo de Embobinado", digits=(14, 2))
 	art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
 	profit = fields.Float(string="Ganancia", digits=(14, 2))

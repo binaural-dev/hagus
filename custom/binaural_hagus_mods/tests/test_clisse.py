@@ -58,6 +58,7 @@ class HagusClisseTestCase(SavepointCase):
             "troquel_id": cls.troquels[0].id,
             "quantity": 15,
             "decrease": 2952.75,
+            "handm_cost": .2312,
             "materials_lines_id": [
                 (
                     0,
@@ -101,5 +102,11 @@ class HagusClisseTestCase(SavepointCase):
     def test_paper_cost(self):
         """Probar que el resultado del costo del papel se cacula correctamente."""
         clisse = self.clisse
-        self.assertEqual(float_compare(clisse.paper_cost,
-                         565.93, precision_digits=2), 0)
+        self.assertEqual(float_compare(
+            clisse.paper_cost, 565.93, precision_digits=2), 0)
+
+    def test_print_cost(self):
+        """Probar que el resultado del costo de impresion se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(
+            clisse.print_cost, 75.51, precision_digits=2), 0)
