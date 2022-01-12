@@ -126,9 +126,9 @@ class HagusClisse(models.Model):
 class HagusClisseLines(models.Model):
 	_name = 'hagus.clisse.line'
 	_rec_name = 'product_id'
-	product_id = fields.Many2one('product.product', string='Producto', required=True) #ojo con product template
+	product_id = fields.Many2one('product.product', string='Producto') #ojo con product template
 	description = fields.Char(string='Descripción')
-	qty = fields.Float(string='Cantidad', digits=(16, 6), required=True)
-	cost = fields.Float(string='Costo', digits=(16, 6), required=True)
+	qty = fields.Float(string='Cantidad', digits=(16, 6))
+	cost = fields.Float(string='Costo', digits=(16, 6))
 	clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
 
