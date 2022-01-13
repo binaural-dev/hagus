@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+	<!-- search view definition -->
+	<record id="hagus_troquel_view_search" model="ir.ui.view">
+	    <field name="name">hagus.troquel.view</field>
+	    <field name="model">hagus.troquel</field>
+	    <field name="arch" type="xml">
+		<search string="Troquel">
+		    <field name="code"/>
+		    <field name="teeth"/>
+		    <field name="width_inches"/>
+		    <field name="length_inches"/>
+		    <separator/>
+		    <filter string="Inactivos"
+			    name="inactive"
+			    domain="[('active', '=', False)]"/>
+		</search>
+	    </field>
+	</record>
+
         <!-- explicit list view definition -->
         <record model="ir.ui.view" id="hagus_troquel_list">
             <field name="name">Listado Troqueles</field>
@@ -25,7 +44,6 @@
                     <field name="reduction" />
                     <field name="final_size" />
                     <field name="active" />
-
                 </tree>
             </field>
         </record>
@@ -57,29 +75,29 @@
                                 </div>
                             </group>
                             <group>
-								<label for="width_millimeters"/>
-								<div class="o_row">
-                                	<field name="width_millimeters" />
-									<span><field name="width_millimeters_uom" options="{'no_create': True}"/></span>
-								</div>
+				<label for="width_millimeters"/>
+				<div class="o_row">
+                                    <field name="width_millimeters" />
+				    <span><field name="width_millimeters_uom" options="{'no_create': True}"/></span>
+				</div>
 
-								<label for="length_inches"/>
-								<div class="o_row">
-                                	<field name="length_inches" />
-                                	<field name="length_inches_uom" />
-								</div>
+				<label for="length_inches"/>
+				<div class="o_row">
+                                    <field name="length_inches" />
+                                    <field name="length_inches_uom" />
+				</div>
 
-								<label for="length_millimeters"/>
-								<div class="o_row">
-                                	<field name="length_millimeters" />
-                                	<field name="length_millimeters_uom" />
-								</div>
+				<label for="length_millimeters"/>
+				<div class="o_row">
+                                    <field name="length_millimeters" />
+                                    <field name="length_millimeters_uom" />
+				</div>
 
-								<label for="paper_cut_centimeters"/>
-								<div class="o_row">
-									<field name="paper_cut_centimeters"/>
-									<field name="paper_cut_centimeters_uom"/>
-								</div>
+				<label for="paper_cut_centimeters"/>
+				<div class="o_row">
+				    <field name="paper_cut_centimeters"/>
+				    <field name="paper_cut_centimeters_uom"/>
+				</div>
 
                                 <field name="lines_width" />
                                 <field name="repetition" />
@@ -87,30 +105,9 @@
                                 <field name="length_at_100" />
                                 <field name="reduction" />
                                 <field name="final_size" />
-                                <!--<field name="amount"/>
-                                <field name="currency_id"/>
-                                <field name="move_id" />
-                                <field name="attachment_ids" widget="many2many_binary"/>-->
 
                             </group>
                         </group>
-                        <!--<notebook attrs="{'invisible':[('seller_id','=',False)]}">
-                          
-                            <page name="Lineas de Recibos" string="Recibos">
-                                <field name="payment_approval_lines_ids" widget="many2many" >
-                                    <tree name="approbal_lines_tree_dep">
-                                        <field name="name"/>
-                                        <field name="partner_id" />
-                                        <field name="invoice_id" />
-                                        <field name="reference" />
-                                       
-                                        <field name="amount"/>
-                                        <field name="journal_id" />
-                                        <field name="payment_related" />
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>-->
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
