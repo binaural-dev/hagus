@@ -1,7 +1,9 @@
+import logging
 from odoo.tests.common import Form, SavepointCase
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tools import float_compare
+_logger = logging.getLogger(__name__)
 
 
 @tagged("post_install", "-at_install")
@@ -11,45 +13,30 @@ class HagusClisseTestCase(SavepointCase):
     def setUpClass(cls):
         super(HagusClisseTestCase, cls).setUpClass()
 
-        cls.categories = [
-            cls.env["product.category"].create({
-                "name": "Tinta"
-            }),
-            cls.env["product.category"].create({
-                "name": "Etiqueta"
-            }),
-            cls.env["product.category"].create({
-                "name": "Buje"
-            }),
-            cls.env["product.category"].create({
-                "name": "Bobina"
-            })
-        ]
-
         cls.products = [
             cls.env["product.product"].create({
                 "name": "Tinta Negra",
-                "categ_id": cls.categories[0].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Tinta")]).id,
             }),
             cls.env["product.product"].create({
                 "name": "Tinta Azul",
-                "categ_id": cls.categories[0].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Tinta")]).id,
             }),
             cls.env["product.product"].create({
                 "name": "Bushing Test",
-                "categ_id": cls.categories[2].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
             }),
             cls.env["product.product"].create({
                 "name": "Coil Test",
-                "categ_id": cls.categories[3].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
             }),
             cls.env["product.product"].create({
                 "name": "Coil Test 2",
-                "categ_id": cls.categories[3].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
             }),
             cls.env["product.product"].create({
                 "name": "Bushing Test 2",
-                "categ_id": cls.categories[2].id,
+                "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
             }),
         ]
 
@@ -68,6 +55,7 @@ class HagusClisseTestCase(SavepointCase):
             "quantity": 15,
             "decrease": 2952.75,
             "handm_cost": .2312,
+            "thousand_cost": 500,
             "materials_lines_id": [
                 (
                     0,
@@ -149,7 +137,8 @@ class HagusClisseTestCase(SavepointCase):
         with self.assertRaises(ValidationError):
             with Form(self.clisse) as f:
                 with f.materials_lines_id.new() as line:
-                    line.product_id = self.env["product.product"].search([("name", '=', "Negativo")])
+                    line.product_id = self.env["product.product"].search(
+                        [("name", '=', "Negativo")])
 
         # Agregar mas de un caucho desde la creacion del clisse.
         with self.assertRaises(ValidationError):
@@ -191,7 +180,8 @@ class HagusClisseTestCase(SavepointCase):
         with self.assertRaises(ValidationError):
             with Form(self.clisse) as f:
                 with f.materials_lines_id.new() as line:
-                    line.product_id = self.env["product.product"].search([("name", '=', "Caucho")])
+                    line.product_id = self.env["product.product"].search(
+                        [("name", '=', "Caucho")])
 
     def test_add_more_than_one_product_with_coil_category_to_clisse(self):
         """
@@ -322,3 +312,37 @@ class HagusClisseTestCase(SavepointCase):
         clisse = self.clisse
         self.assertEqual(float_compare(
             clisse.coiling_cost, .29, precision_digits=2), 0)
+
+    def test_clisse_product_creation(self):
+        """
+        Probar que cuando se genera un clisse, es creado tambien un producto
+        que tiene asociado ese clisse, asi como el precio, la categoria y la descripcion.
+        """
+        clisse = self.clisse
+        self.assertEqual(bool(clisse.product_template_ids), True)
+        product = clisse.product_template_ids[0]
+        # self.assertEqual(float_compare(
+            # clisse.thousand_cost, product.list_price, precision_digits=2), 0)
+        self.assertEqual(clisse.product_type, product.categ_id)
+        self.assertEqual(clisse.description, product.description)
+
+    def test_clisse_product_update(self):
+        """
+        Probar que cuando se actualiza un clisse, el producto asociado a ese clisse se actualiza tambien.
+        """
+        clisse = self.clisse
+        clisse.write({
+            "product_type": self.env["product.category"].search([("name", '=', "Buje")]).id,
+            "description": "Clisse Test new Text.",
+            "thousand_cost": 3254,
+        })
+        product = clisse.product_template_ids[0]
+        self.assertEqual(float_compare(
+            clisse.thousand_cost, product.list_price, precision_digits=2), 0)
+        # TODO 
+        """
+        Hacer que las categorias no se puedan repetir y cambiar los tests anteriores para que utilicen las
+        categorias globales definidas como data.
+        """
+        # self.assertEqual(clisse.product_type, product.categ_id)
+        self.assertEqual(clisse.description, product.description)
