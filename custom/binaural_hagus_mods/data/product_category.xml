@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
 
 	<record id="product_category_1" model="product.category">
 	    <field name="name">Calcomanía</field>

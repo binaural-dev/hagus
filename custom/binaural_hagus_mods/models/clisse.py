@@ -33,7 +33,7 @@ class HagusClisse(models.Model):
 	    'uom.uom', string='Medida', related="troquel_id.length_inches_uom")
 	lines_width = fields.Integer(
 	    string='Lineas x ancho', related="troquel_id.lines_width")
-	labels_per_roll = fields.Float(string='Etiquetas por Rollo', digits=(10, 2))
+	labels_per_roll = fields.Float(string='Etiquetas por Rollo', digits=(10, 2), required=True)
 
 	size = fields.Char(string='Tamaño')
 	background = fields.Char(string='Fondo')
@@ -75,14 +75,11 @@ class HagusClisse(models.Model):
 	payment_method_id = fields.Many2one(
             "account.payment.method", string="Tipo de Pago",
             domain="[('payment_type', '=', 'inbound')]")
-	handm_cost = fields.Float(string="Costo H/M", digits=(14, 2))
 	product_type = fields.Many2one(
             "product.category", string="Tipo de Producto",
             domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]")
 	payment_term = fields.Many2one("account.payment.term", string="Plazo de Pago")
 
-	print_cost = fields.Float(string="Costo de Impresión", digits=(14, 2))
-	coiling_cost = fields.Float(string="Costo de Embobinado", digits=(14, 2))
 	art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
 	profit = fields.Float(string="Ganancia", digits=(14, 2))
 	percentage = fields.Float(string="Porcentaje a Aplicar", digits=(3, 2))
@@ -131,7 +128,7 @@ class HagusClisseLines(models.Model):
 	_rec_name = 'product_id'
 	product_id = fields.Many2one('product.product', string='Producto') #ojo con product template
 	description = fields.Char(string='Descripción')
-	qty = fields.Float(string='Cantidad', digits=(16, 2))
-	cost = fields.Float(string='Costo', digits=(16, 2))
+	qty = fields.Float(string='Cantidad', digits=(16, 6))
+	cost = fields.Float(string='Costo', digits=(16, 6))
 	clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
 
