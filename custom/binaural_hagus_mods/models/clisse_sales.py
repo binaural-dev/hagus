@@ -28,6 +28,8 @@ class ClisseSales(models.Model):
     coiling_cost = fields.Float(string="Costo de Embobinado", digits=(
         14, 2), compute="_compute_coiling_cost")
 
+    packing_cost = fields.Float(string="Costo de Empaquetado", digits=(
+        14, 2), compute="_compute_packing_cost")
     @api.model
     def create(self, vals):
         rubber = 0
@@ -182,3 +184,8 @@ class ClisseSales(models.Model):
                     qty = product.qty
                     break
             clisse.coiling_cost = (cost * qty) + (qty * .1089)
+
+    @api.depends("quantity")
+    def _compute_packing_cost(selg):
+        for clisse in self:
+            clisse.packing_cost = clisse.quantity * .1
