@@ -14,7 +14,7 @@ class HagusClisse(models.Model):
 
 	code = fields.Char(
             string='Código', copy=False, readonly=True,
-            states={'draft': [('readonly', False)]},
+            # states={'draft': [('readonly', False)]},
             index=True, default=lambda self: _('New'))  # usar secuencia
 	description = fields.Char(string='Descripción')
 	date = fields.Date(
@@ -75,16 +75,10 @@ class HagusClisse(models.Model):
 	payment_method_id = fields.Many2one(
             "account.payment.method", string="Tipo de Pago",
             domain="[('payment_type', '=', 'inbound')]")
-	product_type = fields.Many2one(
-            "product.category", string="Tipo de Producto",
-            domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]")
 	payment_term = fields.Many2one("account.payment.term", string="Plazo de Pago")
 
 	art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
-	profit = fields.Float(string="Ganancia", digits=(14, 2))
-	percentage = fields.Float(string="Porcentaje a Aplicar", digits=(3, 2))
 	total_cost = fields.Float(string="Costo Total", digits=(14, 2))
-	thousand_cost = fields.Float(string="Precio por Millar", digits=(14, 2))
 
 	@api.model
 	def create(self, vals):

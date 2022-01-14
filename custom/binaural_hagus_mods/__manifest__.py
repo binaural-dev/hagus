@@ -16,8 +16,8 @@
     'data': [
         'security/ir.model.access.csv',
         'data/orientation.xml',
-        'data/product.xml',
         'data/product_category.xml',
+        'data/product.xml',
         'data/sequence.xml',
         'views/troquel.xml',
         'views/res_partner.xml',

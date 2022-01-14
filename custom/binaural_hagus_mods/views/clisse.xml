@@ -32,7 +32,6 @@
                     <field name="length_inches" />
                     <field name="lines_width" />
                     <field name="orientation_id" />
-                    <field name="state" />
                 </tree>
             </field>
         </record>
@@ -44,7 +43,10 @@
             <field name="arch" type="xml">
                 <form string="Clisse">
                     <header>
-                       
+			<field name="product_template_ids" invisible="1"/>
+			<field name="state" widget="statusbar"/>
+			<button name="action_create_sale_order" string="Crear orden de venta"
+				type="object" attrs="{'invisible': [('product_template_ids', '=', [])]}"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -87,7 +89,6 @@
                                 <field name="observations" />
                                 <field name="text" />
                                 <field name="description_label" />
-                                <field name="state" />
                                 <field name="image_design" />
                                 <field name="image_barcode" />
                             </group>
@@ -129,7 +130,11 @@
 					<field name="profit"/>
 				    </group>
 				    <group>
-					<field name="percentage"/>
+					<label for="percentage"/>
+					<div class="o_row">
+					    <field name="percentage"/>
+					    <b>%</b>
+					</div>
 					<field name="thousand_cost"/>
 				    </group>
 				</group>
