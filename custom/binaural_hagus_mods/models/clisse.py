@@ -14,7 +14,7 @@ class HagusClisse(models.Model):
 
 	code = fields.Char(
             string='Código', copy=False, readonly=True,
-            states={'draft': [('readonly', False)]},
+            # states={'draft': [('readonly', False)]},
             index=True, default=lambda self: _('New'))  # usar secuencia
 	description = fields.Char(string='Descripción')
 	date = fields.Date(
