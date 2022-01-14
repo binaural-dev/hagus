@@ -8,7 +8,7 @@ class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
 
-    quantity = fields.Integer(string="Cantidad a Producir")
+    quantity = fields.Integer(string="Cantidad a Producir", default=1)
     decrease = fields.Float(string="Merma", digits=(14, 5))
 
     rubber_cost = fields.Float(string="Costo de Caucho", digits=(
