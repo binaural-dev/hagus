@@ -106,14 +106,43 @@ class ClisseSales(models.Model):
         self.product_template_ids.write({
             "price": self.thousand_cost,
             "description": self.description,
+            "categ_id": self.product_type.id,
             "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
         })
         return res
 
     def action_create_sale_order(self):
         for clisse in self:
-            pass
-        return True
+            if not bool(clisse.partner_id):
+                raise ValidationError(
+                    "Antes de generar un presupuesto debe seleccionar al cliente.")
+            sale_order = self.env["sale.order"].create({
+                "partner_id": clisse.partner_id.id,
+            })
+            sale_order.write({
+                "order_line": [
+                    (
+                        0,
+                        0,
+                        {
+                            "order_id": sale_order.id,
+                            "name": clisse.product_template_ids[0].name,
+                            "product_id": clisse.product_template_ids[0].product_variant_id.id,
+                            "product_uom_qty": 1,
+                            "customer_lead": 7,
+                        }
+                    ),
+                ]
+            })
+        return {
+            "type": "ir.actions.act_window",
+            "name": "sale.order.form",
+            "res_model": "sale.order",
+            "res_id": sale_order.id,
+            "view_type": "form",
+            "view_mode": "form",
+            "target": "self",
+        }
 
     @api.onchange("materials_lines_id")
     def _onchange_materials_lines_id(self):
@@ -156,6 +185,13 @@ class ClisseSales(models.Model):
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
+
+    @api.onchange("quantity")
+    def onchange_quantity(self):
+        for clisse in self:
+            if clisse.quantity <= 0:
+                raise ValidationError(
+                    "La cantidad a producir debe ser un numero positivo mayor a cero.")
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):
@@ -247,3 +283,10 @@ class ClisseSales(models.Model):
             if len(clisse.product_template_ids) > 1:
                 raise ValidationError(
                     "El clisse no puede tener mas de un producto.")
+
+    @api.constrains("quantity")
+    def check_quantity(self):
+        for clisse in self:
+            if clisse.quantity <= 0:
+                raise ValidationError(
+                    "La cantidad debe ser un numero positivo mayor a cero.")

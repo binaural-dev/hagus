@@ -94,7 +94,7 @@ class HagusClisseTestCase(SavepointCase):
 
     def test_add_more_than_one_rubber_or_negative_product_to_clisse(self):
         """
-        Probar que no se pued eagregar mas de un producto con los nombres
+        Probar que no se puede agregar mas de un producto con los nombres
         'caucho' o 'negativo' a la lista de materiales de un clisse.
         """
         # Agregar mas de un negativo desde la creacion del clisse.
@@ -322,7 +322,7 @@ class HagusClisseTestCase(SavepointCase):
         self.assertEqual(bool(clisse.product_template_ids), True)
         product = clisse.product_template_ids[0]
         # self.assertEqual(float_compare(
-            # clisse.thousand_cost, product.list_price, precision_digits=2), 0)
+        # clisse.thousand_cost, product.list_price, precision_digits=2), 0)
         self.assertEqual(clisse.product_type, product.categ_id)
         self.assertEqual(clisse.description, product.description)
 
@@ -330,19 +330,11 @@ class HagusClisseTestCase(SavepointCase):
         """
         Probar que cuando se actualiza un clisse, el producto asociado a ese clisse se actualiza tambien.
         """
-        clisse = self.clisse
-        clisse.write({
-            "product_type": self.env["product.category"].search([("name", '=', "Buje")]).id,
+        self.clisse.write({
+            "product_type": self.env["product.category"].search([("name", '=', "Etiqueta")]).id,
             "description": "Clisse Test new Text.",
-            "thousand_cost": 3254,
         })
+        clisse = self.clisse
         product = clisse.product_template_ids[0]
-        self.assertEqual(float_compare(
-            clisse.thousand_cost, product.list_price, precision_digits=2), 0)
-        # TODO 
-        """
-        Hacer que las categorias no se puedan repetir y cambiar los tests anteriores para que utilicen las
-        categorias globales definidas como data.
-        """
-        # self.assertEqual(clisse.product_type, product.categ_id)
+        self.assertEqual(clisse.product_type.name, product.categ_id.name)
         self.assertEqual(clisse.description, product.description)
