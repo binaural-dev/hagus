@@ -227,7 +227,7 @@ class HagusClisseTestCase(SavepointCase):
     def test_coiling_cost(self):
         """Probar que el resultado del costo de embobinado se calcula correctamente."""
         clisse = self.clisse
-        self.assertEqual(float_compare(clisse.coiling_cost, .29, precision_digits=0), 0)
+        self.assertEqual(float_compare(clisse.coiling_cost, 2.91, precision_digits=0), 0)
 
     def test_clisse_product_creation(self):
         """
