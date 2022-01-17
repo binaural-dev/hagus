@@ -241,15 +241,16 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
-    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "percentage", "profit")
+    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "percentage", "profit", "quantity")
     def _compute_thousand_cost(self):
         for clisse in self:
-            total_cost = clisse.paper_cost + clisse.print_cost + \
-                clisse.coiling_cost + clisse.packing_cost
-            total_price_without_profit = total_cost + \
-                (total_cost * (clisse.percentage / 100))
-            clisse.thousand_cost = (total_price_without_profit + (
-                total_price_without_profit * (clisse.profit / 100))) / clisse.quantity
+            if clisse.quantity > 0:
+                total_cost = clisse.paper_cost + clisse.print_cost + \
+                    clisse.coiling_cost + clisse.packing_cost
+                total_price_without_profit = total_cost + \
+                    (total_cost * (clisse.percentage / 100))
+                clisse.thousand_cost = (total_price_without_profit + (
+                    total_price_without_profit * (clisse.profit / 100))) / clisse.quantity
 
     @api.constrains("product_template_ids")
     def _check_product_template_ids(self):
