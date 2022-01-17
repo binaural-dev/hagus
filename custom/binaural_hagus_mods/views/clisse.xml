@@ -130,7 +130,12 @@
 					<field name="coiling_cost"/>
 					<field name="rubber_cost"/>
 					<field name="art_cost"/>
-					<field name="profit"/>
+
+					<label for="profit"/>
+					<div class="o_row">
+					    <field name="profit"/>
+					    <b>%</b>
+					</div>
 				    </group>
 				    <group>
 					<label for="percentage"/>
