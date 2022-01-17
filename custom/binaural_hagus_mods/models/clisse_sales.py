@@ -169,7 +169,10 @@ class ClisseSales(models.Model):
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
                         product.product_category_id.name.lower() == "tinta":
-                    total_colors += 1
+                    if product.qty >= 1:
+                        total_colors += product.qty
+                    else:
+                        total_colors += 1
             clisse.rubber_cost = clisse.width_inches * \
                 clisse.length_inches * total_colors * rubber_base
 
@@ -180,7 +183,10 @@ class ClisseSales(models.Model):
             negative_base = clisse.negative_base
             for product in clisse.materials_lines_id:
                 if product.product_category_id.name.lower() == "tinta":
-                    total_colors += 1
+                    if product.qty >= 1:
+                        total_colors += product.qty
+                    else:
+                        total_colors += 1
             clisse.negative_cost = clisse.width_inches * \
                 clisse.length_inches * total_colors * negative_base
 
@@ -210,7 +216,10 @@ class ClisseSales(models.Model):
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
                    product.product_category_id.name.lower() == "tinta":
-                    total_colors += 1
+                    if product.qty >= 1:
+                        total_colors += product.qty
+                    else:
+                        total_colors += 1
             clisse.print_cost = ((clisse.length_inches * 25.4 * clisse.quantity / 13.33) + (
                 total_colors * 10)) * clisse.handm_cost + (total_colors * 2.4)
 
@@ -263,9 +272,9 @@ class HagusClisseLines(models.Model):
     # ojo con product template
     product_id = fields.Many2one('product.product', string='Producto')
     description = fields.Char(string='Descripción')
-    qty = fields.Float(string='Cantidad', digits=(16, 6))
-    cost = fields.Float(string='Costo', digits=(16, 6), related="product_id.standard_price", readonly=False,, store_true=True)
+    qty = fields.Float(string='Cantidad', digits=(16, 6), default=1)
+    cost = fields.Float(string='Costo', digits=(
+        16, 6), related="product_id.standard_price", readonly=False, store_true=True)
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
-
