@@ -10,16 +10,6 @@ class ProductTemplate(models.Model):
         string="La categoria es Calcomanía o Etiqueta",
         compute="_compute_category_is_not_sticker")
 
-    @api.depends("categ_id.name")
-    def _compute_category_is_not_sticker(self):
-        for product in self:
-            category_name = product.categ_id.name
-            if type(category_name) == str:
-                if product.categ_id.name.lower() in ("calcomanía", "calcomania", "etiqueta"):
-                    product.category_is_not_sticker = False
-                    return
-            product.category_is_not_sticker = True
-
     @api.model
     def create(self, vals):
 
@@ -39,6 +29,16 @@ class ProductTemplate(models.Model):
 
         res = super().create(vals)
         return res
+
+    @api.depends("categ_id.name")
+    def _compute_category_is_not_sticker(self):
+        for product in self:
+            category_name = product.categ_id.name
+            if type(category_name) == str:
+                if product.categ_id.name.lower() in ("calcomanía", "calcomania", "etiqueta"):
+                    product.category_is_not_sticker = False
+                    return
+            product.category_is_not_sticker = True
 
 class ProductCategory:
     _inherit = "product.category"

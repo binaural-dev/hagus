@@ -25,18 +25,26 @@ class HagusClisseTestCase(SavepointCase):
             cls.env["product.product"].create({
                 "name": "Bushing Test",
                 "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
+                "price": .085,
+                "standard_price": .085,
             }),
             cls.env["product.product"].create({
                 "name": "Coil Test",
                 "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
+                "price": .37,
+                "standard_price": .37,
             }),
             cls.env["product.product"].create({
                 "name": "Coil Test 2",
                 "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
+                "price": 1,
+                "standard_price": 1,
             }),
             cls.env["product.product"].create({
                 "name": "Bushing Test 2",
                 "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
+                "price": 1,
+                "standard_price": 1,
             }),
         ]
 
@@ -91,97 +99,6 @@ class HagusClisseTestCase(SavepointCase):
                 ),
             ]
         })
-
-    def test_add_more_than_one_rubber_or_negative_product_to_clisse(self):
-        """
-        Probar que no se puede agregar mas de un producto con los nombres
-        'caucho' o 'negativo' a la lista de materiales de un clisse.
-        """
-        # Agregar mas de un negativo desde la creacion del clisse.
-        with self.assertRaises(ValidationError):
-            self.env["hagus.clisse"].create({
-                "description": "cl01234",
-                "troquel_id": self.troquels[0].id,
-                "labels_per_roll": 10,
-                "quantity": 15,
-                "decrease": 2952.75,
-                "handm_cost": .2312,
-                "materials_lines_id": [
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.products[2].id,
-                            "cost": .085,
-                        }
-                    ),
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.products[3].id,
-                            "cost": .37
-                        }
-                    ),
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.env["product.product"].search([("name", '=', "Negativo")]).id,
-                            "cost": 1
-                        }
-                    ),
-                ]
-            })
-        # Agregar un negativo a un clisse que ya lo tiene.
-        with self.assertRaises(ValidationError):
-            with Form(self.clisse) as f:
-                with f.materials_lines_id.new() as line:
-                    line.product_id = self.env["product.product"].search(
-                        [("name", '=', "Negativo")])
-
-        # Agregar mas de un caucho desde la creacion del clisse.
-        with self.assertRaises(ValidationError):
-            self.env["hagus.clisse"].create({
-                "description": "cl01234",
-                "troquel_id": self.troquels[0].id,
-                "labels_per_roll": 10,
-                "quantity": 15,
-                "decrease": 2952.75,
-                "handm_cost": .2312,
-                "materials_lines_id": [
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.products[2].id,
-                            "cost": .085,
-                        }
-                    ),
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.products[3].id,
-                            "cost": .37
-                        }
-                    ),
-                    (
-                        0,
-                        4,
-                        {
-                            "product_id": self.env["product.product"].search([("name", '=', "Caucho")]).id,
-                            "cost": 1
-                        }
-                    ),
-                ]
-            })
-        # Agregar un caucho a un clisse que ya lo tiene.
-        with self.assertRaises(ValidationError):
-            with Form(self.clisse) as f:
-                with f.materials_lines_id.new() as line:
-                    line.product_id = self.env["product.product"].search(
-                        [("name", '=', "Caucho")])
 
     def test_add_more_than_one_product_with_coil_category_to_clisse(self):
         """
@@ -310,8 +227,7 @@ class HagusClisseTestCase(SavepointCase):
     def test_coiling_cost(self):
         """Probar que el resultado del costo de embobinado se calcula correctamente."""
         clisse = self.clisse
-        self.assertEqual(float_compare(
-            clisse.coiling_cost, .29, precision_digits=2), 0)
+        self.assertEqual(float_compare(clisse.coiling_cost, .29, precision_digits=0), 0)
 
     def test_clisse_product_creation(self):
         """

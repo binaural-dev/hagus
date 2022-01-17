@@ -11,8 +11,12 @@ class ClisseSales(models.Model):
     quantity = fields.Integer(string="Cantidad a Producir", default=1)
     decrease = fields.Float(string="Merma", digits=(14, 5))
 
+    rubber_base = fields.Float(
+        string="Caucho base", digits=(14, 2), default=1.05)
     rubber_cost = fields.Float(string="Costo de Caucho", digits=(
         14, 2), compute="_compute_rubber_cost")
+    negative_base = fields.Float(
+        string="Negativo base", digits=(14, 2), default=.1)
     negative_cost = fields.Float(string="Costo del Negativo", digits=(
         14, 2), compute="_compute_negative_cost")
     negative_plus_rubber_cost = fields.Float(string="Costo Negativo / Caucho", digits=(
@@ -49,15 +53,13 @@ class ClisseSales(models.Model):
 
     @api.model
     def create(self, vals):
-        rubber = 0
-        negative = 0
         coil = 0
         bushing = 0
         res = super().create(vals)
 
         # Creating a product based on the clisse information.
         res.product_template_ids = self.env["product.template"].create({
-            "name": f"Clisse {res.code}",
+            "name": res.description,
             "price": res.thousand_cost,
             "categ_id": res.product_type.id,
             "description": res.description,
@@ -65,37 +67,20 @@ class ClisseSales(models.Model):
         })
 
         for material in res.materials_lines_id:
-            # Check if a clisse has more than one material with the name "Caucho".
-            if bool(material.product_id) and \
-               material.product_id.name.lower() == "caucho":
-                rubber += 1
-            if rubber > 1:
-                raise ValidationError(
-                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
-
-            # Check if a clisse has more than one material with the name "Negativo".
-            if bool(material.product_id) and \
-               material.product_id.name.lower() == "negativo":
-                negative += 1
-            if negative > 1:
-                raise ValidationError(
-                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
-
             # Check if a clisse has more than one material with the "Bobina" category.
-            if bool(material.product_id.categ_id) and \
-               material.product_id.categ_id.name.lower() == "bobina":
+            if bool(material.product_category_id) and \
+               material.product_category_id.name.lower() == "bobina":
                 coil += 1
             if coil > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
 
             # Check if a clisse has more than one material with the "Buje" category.
-            if bool(material.product_id.categ_id) and \
-               material.product_id.categ_id.name.lower() == "buje":
+            if bool(material.product_category_id) and \
+               material.product_category_id.name.lower() == "buje":
                 bushing += 1
                 # Calculate the bushing quantity
-                if bool(res.labels_per_roll):
-                    material.qty = res.quantity / res.labels_per_roll
+                material.qty = res.quantity
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
@@ -151,25 +136,9 @@ class ClisseSales(models.Model):
         coil = 0
         bushing = 0
         for material in self.materials_lines_id:
-            # Check if a clisse has more than one material with the name "Caucho".
-            if bool(material.product_id) and \
-               material.product_id.name.lower() == "caucho":
-                rubber += 1
-            if rubber > 1:
-                raise ValidationError(
-                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
-
-            # Check if a clisse has more than one material with the name "Negativo".
-            if bool(material.product_id) and \
-               material.product_id.name.lower() == "negativo":
-                negative += 1
-            if negative > 1:
-                raise ValidationError(
-                    "Un clisse no puede tener más de un producto con el nombre Caucho.")
-
             # Check if a clisse has more than one material with the "Bobina" category.
             if bool(material.product_id.categ_id) and \
-               material.product_id.categ_id.name.lower() == "bobina":
+               material.product_category_id.name.lower() == "bobina":
                 coil += 1
             if coil > 1:
                 raise ValidationError(
@@ -177,11 +146,10 @@ class ClisseSales(models.Model):
 
             # Check if a clisse has more than one material with the "Buje" category.
             if bool(material.product_id.categ_id) and \
-               material.product_id.categ_id.name.lower() == "buje":
+               material.product_category_id.name.lower() == "buje":
                 bushing += 1
                 # Calculate the bushing quantity
-                if bool(self.labels_per_roll):
-                    material.qty = 15
+                material.qty = self.quantity
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
@@ -197,27 +165,24 @@ class ClisseSales(models.Model):
     def _compute_rubber_cost(self):
         for clisse in self:
             total_colors = 0
-            rubber = 1.05
+            rubber_base = clisse.rubber_base
             for product in clisse.materials_lines_id:
-                if product.product_id.categ_id.name == "Tinta":
+                if bool(product.product_category_id) and \
+                        product.product_category_id.name.lower() == "tinta":
                     total_colors += 1
-                if product.product_id.name == "Caucho":
-                    rubber = product.cost
             clisse.rubber_cost = clisse.width_inches * \
-                clisse.length_inches * total_colors * rubber
+                clisse.length_inches * total_colors * rubber_base
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_negative_cost(self):
         for clisse in self:
             total_colors = 0
-            negative = .1
+            negative_base = clisse.negative_base
             for product in clisse.materials_lines_id:
-                if product.product_id.categ_id.name == "Tinta":
+                if product.product_category_id.name.lower() == "tinta":
                     total_colors += 1
-                if product.product_id.name == "Negativo":
-                    negative = product.cost
             clisse.negative_cost = clisse.width_inches * \
-                clisse.length_inches * total_colors * negative
+                clisse.length_inches * total_colors * negative_base
 
     @api.depends("negative_cost", "rubber_cost")
     def _compute_negative_plus_rubber_cost(self):
@@ -231,8 +196,8 @@ class ClisseSales(models.Model):
             material_cost = 0
             width = clisse.width_inches
             for material in clisse.materials_lines_id:
-                if bool(material.product_id.categ_id.name) and \
-                   material.product_id.categ_id.name.lower() == "bobina":
+                if bool(material.product_category_id) and \
+                   material.product_category_id.name.lower() == "bobina":
                     material_cost = material.cost
                     break
             clisse.paper_cost = (width * clisse.length_inches * material_cost * clisse.quantity) + \
@@ -243,8 +208,8 @@ class ClisseSales(models.Model):
         for clisse in self:
             total_colors = 0
             for product in clisse.materials_lines_id:
-                if bool(product.product_id.categ_id) and \
-                   product.product_id.categ_id.name.lower() == "tinta":
+                if bool(product.product_category_id) and \
+                   product.product_category_id.name.lower() == "tinta":
                     total_colors += 1
             clisse.print_cost = ((clisse.length_inches * 25.4 * clisse.quantity / 13.33) + (
                 total_colors * 10)) * clisse.handm_cost + (total_colors * 2.4)
@@ -255,8 +220,8 @@ class ClisseSales(models.Model):
             cost = 0
             qty = 0
             for product in clisse.materials_lines_id:
-                if bool(product.product_id.categ_id) and \
-                   product.product_id.categ_id.name.lower() == "buje":
+                if bool(product.product_category_id) and \
+                   product.product_category_id.name.lower() == "buje":
                     cost = product.cost
                     qty = product.qty
                     break
@@ -290,3 +255,17 @@ class ClisseSales(models.Model):
             if clisse.quantity <= 0:
                 raise ValidationError(
                     "La cantidad debe ser un numero positivo mayor a cero.")
+
+
+class HagusClisseLines(models.Model):
+    _name = 'hagus.clisse.line'
+    _rec_name = 'product_id'
+    # ojo con product template
+    product_id = fields.Many2one('product.product', string='Producto')
+    description = fields.Char(string='Descripción')
+    qty = fields.Float(string='Cantidad', digits=(16, 6))
+    cost = fields.Float(string='Costo', digits=(16, 6), related="product_id.standard_price", readonly=False,, store_true=True)
+    clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
+    product_category_id = fields.Many2one(
+        string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
+

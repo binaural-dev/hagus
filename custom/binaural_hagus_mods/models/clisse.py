@@ -91,38 +91,6 @@ class HagusClisse(models.Model):
 			vals['code'] = self.env['ir.sequence'].next_by_code(
 			    'hagus.clisse', sequence_date=seq_date) or _('New')
 
-		# Set default basic materials
-		negative = self.env["product.product"].search([("name", '=', "Negativo")])
-		rubber = self.env["product.product"].search([("name", '=', "Caucho")])
-
-		vals["materials_lines_id"].extend([
-            (
-                0,
-                4,
-                {
-                    "product_id": negative.id,
-                    "cost": negative.standard_price
-                },
-            ),
-            (
-                0,
-                4,
-                {
-                    "product_id": rubber.id,
-                    "cost": rubber.standard_price
-                },
-            )
-        ])
-
 		return super().create(vals)
 
-
-class HagusClisseLines(models.Model):
-	_name = 'hagus.clisse.line'
-	_rec_name = 'product_id'
-	product_id = fields.Many2one('product.product', string='Producto') #ojo con product template
-	description = fields.Char(string='Descripción')
-	qty = fields.Float(string='Cantidad', digits=(16, 6))
-	cost = fields.Float(string='Costo', digits=(16, 6))
-	clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
 
