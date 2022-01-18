@@ -99,6 +99,7 @@
                                 <field name="materials_lines_id" >
                                     <tree name="materials_lines_id_tree" editable="bottom">
                                         <field name="product_id"/>
+					<field name="product_category_id"/>
                                         <field name="description" />
                                         <field name="qty" />
                                         <field name="cost" />
@@ -109,13 +110,15 @@
 			    <page name="clisse_sale_order" string="Venta">
 			        <group>
 				    <group>
-				        <field name="seller_id"/>
-					<field name="payment_method_id"/>
+					<field name="rubber_base"/>
+					<field name="negative_base"/>
 					<field name="quantity"/>
 					<field name="decrease"/>
 					<field name="handm_cost"/>
 				    </group>
 				    <group>
+					<field name="seller_id"/>
+					<field name="payment_method_id"/>
 				        <field name="product_type"/>
 					<field name="payment_term"/>
 				    </group>
@@ -127,7 +130,12 @@
 					<field name="coiling_cost"/>
 					<field name="rubber_cost"/>
 					<field name="art_cost"/>
-					<field name="profit"/>
+
+					<label for="profit"/>
+					<div class="o_row">
+					    <field name="profit"/>
+					    <b>%</b>
+					</div>
 				    </group>
 				    <group>
 					<label for="percentage"/>
@@ -138,6 +146,9 @@
 					<field name="thousand_cost"/>
 				    </group>
 				</group>
+				<group string="Ordenes de venta">
+				    <field name="sale_order_ids" nolabel="1"/>
+			        </group>
 			    </page>
                         </notebook>
                     </sheet>
