@@ -38,7 +38,7 @@
        
         <!-- form -->
         <record id="hagus_clisse_form" model="ir.ui.view">
-            <field name="name">Formulario Clisse</field>
+            <field name="name">hagus.clisse.form</field>
             <field name="model">hagus.clisse</field>
             <field name="arch" type="xml">
                 <form string="Clisse">

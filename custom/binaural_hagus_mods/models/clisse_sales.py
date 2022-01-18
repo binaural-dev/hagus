@@ -1,6 +1,6 @@
 import logging
 from odoo import api, fields, models
-from odoo.exceptions import UserError ,ValidationError
+from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -8,7 +8,8 @@ class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
 
-    quantity = fields.Integer(string="Cantidad a Producir (Por Millar)", default=1)
+    quantity = fields.Integer(
+        string="Cantidad a Producir (Por Millar)", default=1)
     decrease = fields.Float(string="Merma", digits=(14, 5))
 
     rubber_base = fields.Float(
@@ -52,10 +53,13 @@ class ClisseSales(models.Model):
         14, 2), compute="_compute_thousand_cost")
     sale_order_ids = fields.Many2many("sale.order", string="Ordenes de Venta")
 
+    crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
+
     @api.model
     def create(self, vals):
         coil = 0
         bushing = 0
+
         res = super().create(vals)
 
         # Creating a product based on the clisse information.
@@ -85,6 +89,11 @@ class ClisseSales(models.Model):
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
+
+        lead_id = self.env.context.get("lead_id")
+        if bool(lead_id):
+            res.crm_lead_id = lead_id
+
         return res
 
     def write(self, vals):
@@ -126,7 +135,11 @@ class ClisseSales(models.Model):
                     ),
                 ]
             })
+
             clisse.sale_order_ids += sale_order
+            if bool(clisse.crm_lead_id):
+                clisse.crm_lead_id.order_ids += sale_order
+
         return {
             "type": "ir.actions.act_window",
             "name": "sale.order.form",

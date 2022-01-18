@@ -28,6 +28,7 @@
         'views/res_company.xml',
         'views/product_template.xml',
         'views/mrp_production.xml',
+        'views/crm_lead.xml',
     ],
     'installable': True,
     'auto_install': False,
