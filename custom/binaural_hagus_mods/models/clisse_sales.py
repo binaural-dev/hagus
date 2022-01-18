@@ -99,11 +99,13 @@ class ClisseSales(models.Model):
 
     def action_create_sale_order(self):
         for clisse in self:
-            last_order_quantity = clisse.sale_order_ids.search([], limit=1, order="date_order desc").order_line[0].product_uom_qty
+            last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
+                clisse.sale_order_ids) else None
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
-            if  last_order_quantity == clisse.quantity:
+            if bool(last_order_quantity) and \
+                    last_order_quantity == clisse.quantity:
                 raise UserError(
                     "La misma orden de venta no puede ser generada dos veces.")
             sale_order = self.env["sale.order"].create({
