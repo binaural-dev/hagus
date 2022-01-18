@@ -146,6 +146,9 @@
 					<field name="thousand_cost"/>
 				    </group>
 				</group>
+				<group string="Ordenes de venta">
+				    <field name="sale_order_ids" nolabel="1"/>
+			        </group>
 			    </page>
                         </notebook>
                     </sheet>

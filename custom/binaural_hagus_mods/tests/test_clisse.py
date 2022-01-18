@@ -232,13 +232,11 @@ class HagusClisseTestCase(SavepointCase):
     def test_clisse_product_creation(self):
         """
         Probar que cuando se genera un clisse, es creado tambien un producto
-        que tiene asociado ese clisse, asi como el precio, la categoria y la descripcion.
+        que tiene asociado ese clisse, asi como la categoria y la descripcion.
         """
         clisse = self.clisse
         self.assertEqual(bool(clisse.product_template_ids), True)
         product = clisse.product_template_ids[0]
-        # self.assertEqual(float_compare(
-        # clisse.thousand_cost, product.list_price, precision_digits=2), 0)
         self.assertEqual(clisse.product_type, product.categ_id)
         self.assertEqual(clisse.description, product.description)
 
@@ -254,3 +252,31 @@ class HagusClisseTestCase(SavepointCase):
         product = clisse.product_template_ids[0]
         self.assertEqual(clisse.product_type.name, product.categ_id.name)
         self.assertEqual(clisse.description, product.description)
+
+    def test_action_create_sale_order_needs_a_client(self):
+        """
+        Probar que cuando se ejecuta la accion "action_create_sale_order" sin haber seleccionado antes un
+        cliente, se muestra el mensaje de error correspondiente que no permite generar la orden de venta.
+        """
+        with self.assertRaises(UserError):
+            self.clisse.action_create_sale_order()
+            self.assertEqual(self.clisse.sale_order_ids[-1], 3450)
+
+    def test_sale_order_creation(self):
+        """
+        Probar que cuando se ejecuta la accion "action_create_sale_order" se genera correctamente una orden
+        de venta con los datos del producto asociado al clisse y se agrega al campo sale_order_ids del clisse.
+        """
+        self.clisse.write({"partner_id": 1, "quantity": 500})
+        sale_order = self.clisse.action_create_sale_order()
+        self.assertEqual(self.env["sale.order"].search([("id", '=', sale_order["res_id"])]), self.clisse.sale_order_ids[-1])
+
+    def test_same_sale_order_creation_twice(self):
+        """
+        Probar que cuando se intentan crear dos ordenes de venta seguidas con la misma cantidad a producir
+        se muestra el mensaje de error correspondiente.
+        """
+        with self.assertRaises(UserError):
+            self.clisse.write({"partner_id": 1, "quantity": 350})
+            self.clisse.action_create_sale_order()
+            self.clisse.action_create_sale_order()

@@ -1,6 +1,6 @@
 import logging
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError ,ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -8,7 +8,7 @@ class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
 
-    quantity = fields.Integer(string="Cantidad a Producir", default=1)
+    quantity = fields.Integer(string="Cantidad a Producir (Por Millar)", default=1)
     decrease = fields.Float(string="Merma", digits=(14, 5))
 
     rubber_base = fields.Float(
@@ -50,6 +50,7 @@ class ClisseSales(models.Model):
 
     thousand_cost = fields.Float(string="Precio por Millar", digits=(
         14, 2), compute="_compute_thousand_cost")
+    sale_order_ids = fields.Many2many("sale.order", string="Ordenes de Venta")
 
     @api.model
     def create(self, vals):
@@ -98,9 +99,13 @@ class ClisseSales(models.Model):
 
     def action_create_sale_order(self):
         for clisse in self:
+            last_order_quantity = clisse.sale_order_ids.search([], limit=1, order="date_order desc").order_line[0].product_uom_qty
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
+            if  last_order_quantity == clisse.quantity:
+                raise UserError(
+                    "La misma orden de venta no puede ser generada dos veces.")
             sale_order = self.env["sale.order"].create({
                 "partner_id": clisse.partner_id.id,
             })
@@ -113,12 +118,13 @@ class ClisseSales(models.Model):
                             "order_id": sale_order.id,
                             "name": clisse.product_template_ids[0].name,
                             "product_id": clisse.product_template_ids[0].product_variant_id.id,
-                            "product_uom_qty": 1,
+                            "product_uom_qty": clisse.quantity,
                             "customer_lead": 7,
                         }
                     ),
                 ]
             })
+            clisse.sale_order_ids += sale_order
         return {
             "type": "ir.actions.act_window",
             "name": "sale.order.form",
