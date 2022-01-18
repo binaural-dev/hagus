@@ -12,6 +12,9 @@
 				   'required': [('category_is_not_sticker', '=', False)],
 				   'readonly': 1}"/>
 		</div>
+		<field name="categ_id" position="after">
+		    <field name="msi"/>
+		</field>
 	    </field>
 	</record>
     </data>

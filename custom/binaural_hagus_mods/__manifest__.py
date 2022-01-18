@@ -29,6 +29,7 @@
         'views/product_template.xml',
         'views/mrp_production.xml',
         'views/crm_lead.xml',
+        'views/purchase.xml',
     ],
     'installable': True,
     'auto_install': False,
