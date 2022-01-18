@@ -1,48 +1,47 @@
 <odoo>
-	<data>
-		<record id="mrp_production_hagus_form_view" model="ir.ui.view">
-			<field name="name">mrp.production.view.form.inherit.hagus</field>
-			<field name="model">mrp.production</field>
-			<field name="inherit_id" ref="mrp.mrp_production_form_view"/>
-			<field name="arch" type="xml">
-				<notebook position="inside">
-					<field name="product_is_not_sticker" invisible="1"/>
-					<page name="product_clisse" string="Clisse"
-						  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
-						<group>
-							<group>
-								<field name="clisse_code"/>
-								<field name="clisse_date"/>
-								<field name="clisse_partner"/>
-								<field name="clisse_troquel"/>
-								<field name="clisse_width_inches"/>
-								<field name="clisse_length_inches"/>
-								<field name="clisse_lines_width"/>
-								<field name="clisse_size"/>
-								<field name="clisse_background"/>
-								<field name="clisse_labels_per_roll"/>
-							</group>
-							<group>
-								<label for="clisse_orientation"/>
-								<div class="o_row" style="margin-bottom: 2rem;">
-									<field name="clisse_orientation"
-										   style="margin-right: 1rem;"/>
-									<field name="clisse_orientation_image"
-										   widget="image" options="{'size': [100,50]}"/>
-								</div>
-								<field name="clisse_finish_type"/>
-								<field name="clisse_observations"/>
-								<field name="clisse_text"/>
-								<field name="clisse_description_label"/>
-								<field name="clisse_state"/>
-								<field name="clisse_desing"/>
-								<field name="clisse_barcode"/>
-							</group>
-						</group>
-					</page>
-				</notebook>
-			</field>
-		</record>
-	</data>
+    <data>
+	<record id="mrp_production_hagus_form_view" model="ir.ui.view">
+	    <field name="name">mrp.production.view.form.inherit.hagus</field>
+	    <field name="model">mrp.production</field>
+	    <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+	    <field name="arch" type="xml">
+		<notebook position="inside">
+		    <field name="product_is_not_sticker" invisible="1"/>
+		    <page name="product_clisse" string="Clisse"
+			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
+			<group>
+			    <group>
+				<field name="clisse_code"/>
+				<field name="clisse_date"/>
+				<field name="clisse_partner"/>
+				<field name="clisse_troquel"/>
+				<field name="clisse_width_inches"/>
+				<field name="clisse_length_inches"/>
+				<field name="clisse_lines_width"/>
+				<field name="clisse_size"/>
+				<field name="clisse_background"/>
+				<field name="clisse_labels_per_roll"/>
+			    </group>
+			    <group>
+				<label for="clisse_orientation"/>
+			        <div class="o_row" style="margin-bottom: 2rem;">
+				    <field name="clisse_orientation"
+				           style="margin-right: 1rem;"/>
+				    <field name="clisse_orientation_image"
+				           widget="image" options="{'size': [100,50]}"/>
+			        </div>
+			    	<field name="clisse_finish_type"/>
+			    	<field name="clisse_observations"/>
+		            	<field name="clisse_text"/>
+			    	<field name="clisse_description_label"/>
+			    	<field name="clisse_state"/>
+			    	<field name="clisse_desing"/>
+			    	<field name="clisse_barcode"/>
+			    </group>
+		    	</group>
+	    	    </page>
+	    	</notebook>
+	    </field>
+	</record>
+    </data>
 </odoo>
-

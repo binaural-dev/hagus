@@ -94,7 +94,7 @@ class HagusClisseTestCase(SavepointCase):
                     4,
                     {
                         "product_id": cls.products[3].id,
-                        "cost": .37
+                        "cost": .37,
                     }
                 ),
             ]
