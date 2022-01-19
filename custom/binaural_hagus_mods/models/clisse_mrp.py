@@ -71,3 +71,6 @@ class ClisseMrp(models.Model):
     t_roll = fields.Char(string="Rollo T")
     surplus_roll = fields.Float(string="Sobrante Rollo", digits=(14, 6))
     coiling_problems = fields.Text(string="Problemas de Embobinado")
+
+    def action_create_mrp_production(self):
+        pass
