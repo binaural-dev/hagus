@@ -93,7 +93,7 @@
                                 <field name="image_barcode" />
                             </group>
                         </group>
-                        <notebook ><!--attrs="{'invisible':[('seller_id','=',False)]}"-->
+                        <notebook>
                           
                             <page name="Lineas de Materiales" string="Materiales">
                                 <field name="materials_lines_id" >
@@ -149,6 +149,82 @@
 				<group string="Ordenes de venta">
 				    <field name="sale_order_ids" nolabel="1"/>
 			        </group>
+			    </page>
+			    <page name="clisse_mrp" string="Producción">
+				<group>
+				    <group name="troquel" string="TROQUEL">
+					<field name="cut_width"/>
+					<field name="troquel_line"/>
+					<field name="troquel_teeth"/>
+					<field name="troquel_cylinders"/>
+					<field name="troquel_repetition"/>
+					<field name="paper_cut_inches"/>
+				    </group>
+				    <group name="cut" string="CORTE">
+					<field name="cut_date"/>
+					<field name="coil_qty"/>
+					<field name="cutter"/>
+					<field name="coil"/>
+					<field name="scrap"/>
+					<field name="estimate_msi"/>
+					<field name="consumed_msi"/>
+					<field name="margin"/>
+					<field name="total_mts"/>
+					<field name="mts_settings"/>
+					<field name="mts_print"/>
+				    </group>
+				</group>
+				<group name="press" string="PRENSA">
+				    <group name="mount" string="Montaje">
+					<field name="mount_start_date"/>
+					<field name="mount_start_time" widget="float_time"/>
+					<field name="mount_end_date"/>
+				    </group>
+				    <group name="printing" string="Tiraje">
+					<group name="pressman_1">
+					    <field name="pressman_1"/>
+					    <field name="turn_pressman_1" string="Turno"/>
+					    <field name="start_pressman_1" 
+						   string="Inició"
+						   widget="float_time"/>
+					    <field name="end_pressman_2"
+						   string="Terminó"
+						   widget="float_time"/>
+					    <field name="produced_meters_pressman_1"
+						   string="Metros Producidos"/>
+					</group>
+					<group name="pressman_2">
+					    <field name="pressman_2"/>
+					    <field name="turn_pressman_2" string="Turno"/>
+					    <field name="start_pressman_2" 
+						   string="Inició"
+						   widget="float_time"/>
+					    <field name="end_pressman_2"
+						   string="Terminó"
+						   widget="float_time"/>
+					    <field name="produced_meters_pressman_2"
+						   string="Metros Producidos"/>
+					</group>
+				    </group>
+				</group>
+				<group name="coiling" string="EMBOBINADO">
+				    <group>
+					<field name="digits_number"/>
+					<field name="coiling_start_date"/>
+					<field name="coiling_start_time"
+					       widget="float_time"/>
+					<field name="coiling_end_date"/>
+					<field name="delivered_msi"/>
+					<field name="msi_to_return"/>
+				    </group>
+				    <group>
+					<field name="coiler"/>
+					<field name="turn_coiler"
+					       string="Turno"/>
+					<field name="t_roll"/>
+					<field name="coiling_problems"/>
+				    </group>
+				</group>
 			    </page>
                         </notebook>
                     </sheet>
