@@ -91,12 +91,13 @@
                                 <field name="observations" />
                                 <field name="text" />
                                 <field name="description_label" />
-                                <field name="image_design" />
-                                <field name="image_barcode" />
+				<field name="image_design"
+				       widget="image" options="{'size': [100,100]}"/>
+				<field name="image_barcode"
+				       widget="image" options="{'size': [100,100]}"/>
                             </group>
                         </group>
                         <notebook>
-                          
                             <page name="Lineas de Materiales" string="Materiales">
                                 <field name="materials_lines_id" >
                                     <tree name="materials_lines_id_tree" editable="bottom">
