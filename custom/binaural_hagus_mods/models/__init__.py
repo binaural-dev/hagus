@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import clisse
+from . import clisse_mrp
 from . import clisse_sales
 from . import crm
 from . import finish_types
