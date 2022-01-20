@@ -16,13 +16,13 @@ class HagusClisse(models.Model):
             string='Código', copy=False, readonly=True,
             # states={'draft': [('readonly', False)]},
             index=True, default=lambda self: _('New'))  # usar secuencia
-	description = fields.Char(string='Descripción')
+	description = fields.Char(string='Descripción', required=True)
 	date = fields.Date(
 	    string='Fecha', default=fields.Date.context_today, required=True)
 	partner_id = fields.Many2one('res.partner', string='Cliente',
 	                             domain="[('active', '=',True)]")  # filtrar solo clientes
 	troquel_id = fields.Many2one(
-	    'hagus.troquel', string='Troquel', domain="[('active', '=',True)]")
+	    'hagus.troquel', string='Troquel', domain="[('active', '=',True)]", required=True)
 	width_inches = fields.Float(
 	    string='Ancho(Pulgadas)', related="troquel_id.width_inches")
 	width_inches_uom = fields.Many2one(

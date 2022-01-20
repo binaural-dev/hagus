@@ -12,7 +12,7 @@ class HagusTroquel(models.Model):
 	_rec_name = 'code'
 
 	code = fields.Char(string='Código')
-	teeth = fields.Integer(string='Dientes')
+	teeth = fields.Integer(string='Dientes', required=True)
 	cylinders = fields.Integer(string='Cilindros')
 
 	width_inches = fields.Float(string='Ancho(Pulgadas)')
@@ -38,7 +38,7 @@ class HagusTroquel(models.Model):
         default=lambda self: self.env['uom.uom'].search([('name', '=', u'cm')]).id)
 
 	lines_width = fields.Integer(string='Lineas x ancho')
-	repetition = fields.Integer(string='Repetición')
+	repetition = fields.Integer(string='Repetición', required=True)
 	designed = fields.Char(string='Diseñado')
 	length_at_100 = fields.Float(string='Largo al 100%(mm)')
 	reduction = fields.Float(string='% Reducción')

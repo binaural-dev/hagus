@@ -8,9 +8,9 @@ class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
 
-    quantity = fields.Integer(
-        string="Cantidad a Producir (Por Millar)", default=1)
-    decrease = fields.Float(string="Merma", digits=(14, 5))
+    quantity = fields.Float(
+        string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1, required=True)
+    decrease = fields.Float(string="Merma", digits=(14, 2))
 
     rubber_base = fields.Float(
         string="Caucho base", digits=(14, 2), default=1.05)
@@ -26,7 +26,7 @@ class ClisseSales(models.Model):
     paper_cost = fields.Float(string="Costo de Papel", digits=(
         14, 2), compute="_compute_paper_cost")
 
-    handm_cost = fields.Float(string="Costo H/M", digits=(14, 6))
+    handm_cost = fields.Float(string="Costo H/M", digits=(14, 2))
     print_cost = fields.Float(string="Costo de Impresión", digits=(
         14, 2), compute="_compute_print_cost")
 
@@ -51,9 +51,11 @@ class ClisseSales(models.Model):
 
     thousand_cost = fields.Float(string="Precio por Millar", digits=(
         14, 2), compute="_compute_thousand_cost")
-    sale_order_ids = fields.Many2many("sale.order", string="Ordenes de Venta")
+    sale_order_ids = fields.Many2many(
+        "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
+    mrp_bom_id = fields.Many2one("mrp.bom", string="Lista de materiales del producto")
 
     @api.model
     def create(self, vals):
@@ -62,17 +64,24 @@ class ClisseSales(models.Model):
 
         res = super().create(vals)
 
-        # Creating a product based on the clisse information.
+        # Creando un producto basado en la informacion del clisse.
         res.product_template_ids = self.env["product.template"].create({
             "name": res.description,
             "price": res.thousand_cost,
             "categ_id": res.product_type.id,
             "description": res.description,
             "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
+            "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
         })
+        # Creando la lista de materiales del producto.
+        mrp_bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": res.product_template_ids[0].id,
+            "product_qty": res.quantity,
+            "code": res.code,
+            })
 
         for material in res.materials_lines_id:
-            # Check if a clisse has more than one material with the "Bobina" category.
+            # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
             if bool(material.product_category_id) and \
                material.product_category_id.name.lower() == "bobina":
                 coil += 1
@@ -80,7 +89,7 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
 
-            # Check if a clisse has more than one material with the "Buje" category.
+            # Comprobar que un clisse no pueda tener mas de un material con la categoria "Buje".
             if bool(material.product_category_id) and \
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
@@ -90,6 +99,14 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
 
+            # Creando una linea de la lista de materiales del producto.
+            mrp_bom.bom_line_ids += self.env["mrp.bom.line"].create({
+                "bom_id": mrp_bom.id,
+                "product_id": material.product_id.id,
+                "product_qty": material.qty,
+            })
+            res.mrp_bom_id = mrp_bom
+
         lead_id = self.env.context.get("lead_id")
         if bool(lead_id):
             res.crm_lead_id = lead_id
@@ -98,12 +115,21 @@ class ClisseSales(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
+        bom_line_ids = []
         self.product_template_ids.write({
             "price": self.thousand_cost,
             "description": self.description,
             "categ_id": self.product_type.id,
             "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
         })
+
+        for material in self.materials_lines_id:
+            if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
+                self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
+                    "bom_id": self.mrp_bom_id.id,
+                    "product_id": material.product_id.id,
+                    "product_qty": material.qty,
+                })
         return res
 
     def action_create_sale_order(self):
@@ -184,6 +210,7 @@ class ClisseSales(models.Model):
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):
+        self.rubber_cost = 0
         for clisse in self:
             total_colors = 0
             rubber_base = clisse.rubber_base
@@ -199,6 +226,7 @@ class ClisseSales(models.Model):
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_negative_cost(self):
+        self.negative_cost = 0
         for clisse in self:
             total_colors = 0
             negative_base = clisse.negative_base
@@ -213,12 +241,14 @@ class ClisseSales(models.Model):
 
     @api.depends("negative_cost", "rubber_cost")
     def _compute_negative_plus_rubber_cost(self):
+        self.negative_plus_rubber_cost = 0
         for clisse in self:
             clisse.negative_plus_rubber_cost = clisse.negative_cost + \
                 clisse.rubber_cost
 
     @api.depends("width_inches", "length_inches", "materials_lines_id", "quantity", "decrease")
     def _compute_paper_cost(self):
+        self.paper_cost = 0
         for clisse in self:
             material_cost = 0
             width = clisse.width_inches
@@ -232,6 +262,7 @@ class ClisseSales(models.Model):
 
     @api.depends("length_inches", "quantity", "materials_lines_id", "handm_cost")
     def _compute_print_cost(self):
+        self.print_cost = 0
         for clisse in self:
             total_colors = 0
             for product in clisse.materials_lines_id:
@@ -246,6 +277,7 @@ class ClisseSales(models.Model):
 
     @api.depends("materials_lines_id", "quantity")
     def _compute_coiling_cost(self):
+        self.coiling_cost = 0
         for clisse in self:
             cost = 0
             qty = 0
@@ -259,11 +291,13 @@ class ClisseSales(models.Model):
 
     @api.depends("quantity")
     def _compute_packing_cost(self):
+        self.packing_cost = 0
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
     @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "percentage", "profit", "quantity")
     def _compute_thousand_cost(self):
+        self.thousand_cost = 0
         for clisse in self:
             if clisse.quantity > 0:
                 total_cost = clisse.paper_cost + clisse.print_cost + \
@@ -294,9 +328,9 @@ class HagusClisseLines(models.Model):
     # ojo con product template
     product_id = fields.Many2one('product.product', string='Producto')
     description = fields.Char(string='Descripción')
-    qty = fields.Float(string='Cantidad', digits=(16, 6), default=1)
+    qty = fields.Float(string='Cantidad', digits=(16, 2), default=1)
     cost = fields.Float(string='Costo', digits=(
-        16, 6), related="product_id.standard_price", readonly=False, store_true=True)
+        16, 2), related="product_id.standard_price", readonly=False, store_true=True)
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
