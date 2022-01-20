@@ -55,6 +55,7 @@ class ClisseSales(models.Model):
         "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
+    mrp_bom_id = fields.Many2one("mrp.bom", string="Lista de materiales del producto")
 
     @api.model
     def create(self, vals):
@@ -63,7 +64,7 @@ class ClisseSales(models.Model):
 
         res = super().create(vals)
 
-        # Creating a product based on the clisse information.
+        # Creando un producto basado en la informacion del clisse.
         res.product_template_ids = self.env["product.template"].create({
             "name": res.description,
             "price": res.thousand_cost,
@@ -72,9 +73,15 @@ class ClisseSales(models.Model):
             "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
             "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
         })
+        # Creando la lista de materiales del producto.
+        mrp_bom = self.env["mrp.bom"].create({
+            "product_tmpl_id": res.product_template_ids[0].id,
+            "product_qty": res.quantity,
+            "code": res.code,
+            })
 
         for material in res.materials_lines_id:
-            # Check if a clisse has more than one material with the "Bobina" category.
+            # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
             if bool(material.product_category_id) and \
                material.product_category_id.name.lower() == "bobina":
                 coil += 1
@@ -82,7 +89,7 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
 
-            # Check if a clisse has more than one material with the "Buje" category.
+            # Comprobar que un clisse no pueda tener mas de un material con la categoria "Buje".
             if bool(material.product_category_id) and \
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
@@ -92,6 +99,14 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
 
+            # Creando una linea de la lista de materiales del producto.
+            mrp_bom.bom_line_ids += self.env["mrp.bom.line"].create({
+                "bom_id": mrp_bom.id,
+                "product_id": material.product_id.id,
+                "product_qty": material.qty,
+            })
+            res.mrp_bom_id = mrp_bom
+
         lead_id = self.env.context.get("lead_id")
         if bool(lead_id):
             res.crm_lead_id = lead_id
@@ -100,12 +115,21 @@ class ClisseSales(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
+        bom_line_ids = []
         self.product_template_ids.write({
             "price": self.thousand_cost,
             "description": self.description,
             "categ_id": self.product_type.id,
             "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
         })
+
+        for material in self.materials_lines_id:
+            if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
+                self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
+                    "bom_id": self.mrp_bom_id.id,
+                    "product_id": material.product_id.id,
+                    "product_qty": material.qty,
+                })
         return res
 
     def action_create_sale_order(self):

@@ -76,7 +76,21 @@ class ClisseMrp(models.Model):
     coiling_problems = fields.Text(string="Problemas de Embobinado")
 
     def action_create_mrp_production(self):
-        return
+        for clisse in self:
+            mrp_production = self.env["mrp.production"].create({
+                "product_id": clisse.product_template_ids[0].id,
+                "product_qty": clisse.quantity,
+                "product_uom_id": 1,
+            })
+        return {
+            "type": "ir.actions.act_window",
+            "name": "mrp.production.form",
+            "res_model": "mrp.production",
+            "res_id": mrp_production.id,
+            "view_type": "form",
+            "view_mode": "form",
+            "target": "self",
+        }
 
     @api.depends("troquel_id", "troquel_teeth", "troquel_repetition", "quantity")
     def _compute_total_mts(self):
