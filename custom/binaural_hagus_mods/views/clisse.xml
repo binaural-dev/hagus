@@ -46,9 +46,9 @@
 			<field name="product_template_ids" invisible="1"/>
 			<field name="state" widget="statusbar"/>
 			<button name="action_create_sale_order" string="Generar orden de venta"
-				type="object" attrs="{'invisible': [('product_template_ids', '=', [])]}"/>
+				type="object"/>
 			<button name="action_create_mrp_production" string="Generar orden de Producción"
-				type="object" attrs="{'invisible': [('product_template_ids', '=', [])]}"/>
+				type="object"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
