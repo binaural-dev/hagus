@@ -9,7 +9,7 @@ class ClisseSales(models.Model):
     _inherit = "hagus.clisse"
 
     quantity = fields.Float(
-        string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1)
+        string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1, required=True)
     decrease = fields.Float(string="Merma", digits=(14, 2))
 
     rubber_base = fields.Float(
@@ -185,6 +185,7 @@ class ClisseSales(models.Model):
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):
+        self.rubber_cost = 0
         for clisse in self:
             total_colors = 0
             rubber_base = clisse.rubber_base
@@ -200,6 +201,7 @@ class ClisseSales(models.Model):
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_negative_cost(self):
+        self.negative_cost = 0
         for clisse in self:
             total_colors = 0
             negative_base = clisse.negative_base
@@ -214,12 +216,14 @@ class ClisseSales(models.Model):
 
     @api.depends("negative_cost", "rubber_cost")
     def _compute_negative_plus_rubber_cost(self):
+        self.negative_plus_rubber_cost = 0
         for clisse in self:
             clisse.negative_plus_rubber_cost = clisse.negative_cost + \
                 clisse.rubber_cost
 
     @api.depends("width_inches", "length_inches", "materials_lines_id", "quantity", "decrease")
     def _compute_paper_cost(self):
+        self.paper_cost = 0
         for clisse in self:
             material_cost = 0
             width = clisse.width_inches
@@ -233,6 +237,7 @@ class ClisseSales(models.Model):
 
     @api.depends("length_inches", "quantity", "materials_lines_id", "handm_cost")
     def _compute_print_cost(self):
+        self.print_cost = 0
         for clisse in self:
             total_colors = 0
             for product in clisse.materials_lines_id:
@@ -247,6 +252,7 @@ class ClisseSales(models.Model):
 
     @api.depends("materials_lines_id", "quantity")
     def _compute_coiling_cost(self):
+        self.coiling_cost = 0
         for clisse in self:
             cost = 0
             qty = 0
@@ -260,11 +266,13 @@ class ClisseSales(models.Model):
 
     @api.depends("quantity")
     def _compute_packing_cost(self):
+        self.packing_cost = 0
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
     @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "percentage", "profit", "quantity")
     def _compute_thousand_cost(self):
+        self.thousand_cost = 0
         for clisse in self:
             if clisse.quantity > 0:
                 total_cost = clisse.paper_cost + clisse.print_cost + \
