@@ -8,9 +8,9 @@ class ClisseSales(models.Model):
     """Clisse functionality related to Sales."""
     _inherit = "hagus.clisse"
 
-    quantity = fields.Integer(
-        string="Cantidad a Producir (Por Millar)", default=1)
-    decrease = fields.Float(string="Merma", digits=(14, 5))
+    quantity = fields.Float(
+        string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1)
+    decrease = fields.Float(string="Merma", digits=(14, 2))
 
     rubber_base = fields.Float(
         string="Caucho base", digits=(14, 2), default=1.05)
@@ -26,7 +26,7 @@ class ClisseSales(models.Model):
     paper_cost = fields.Float(string="Costo de Papel", digits=(
         14, 2), compute="_compute_paper_cost")
 
-    handm_cost = fields.Float(string="Costo H/M", digits=(14, 6))
+    handm_cost = fields.Float(string="Costo H/M", digits=(14, 2))
     print_cost = fields.Float(string="Costo de Impresión", digits=(
         14, 2), compute="_compute_print_cost")
 
@@ -51,7 +51,8 @@ class ClisseSales(models.Model):
 
     thousand_cost = fields.Float(string="Precio por Millar", digits=(
         14, 2), compute="_compute_thousand_cost")
-    sale_order_ids = fields.Many2many("sale.order", string="Ordenes de Venta")
+    sale_order_ids = fields.Many2many(
+        "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
 
@@ -294,9 +295,9 @@ class HagusClisseLines(models.Model):
     # ojo con product template
     product_id = fields.Many2one('product.product', string='Producto')
     description = fields.Char(string='Descripción')
-    qty = fields.Float(string='Cantidad', digits=(16, 6), default=1)
+    qty = fields.Float(string='Cantidad', digits=(16, 2), default=1)
     cost = fields.Float(string='Costo', digits=(
-        16, 6), related="product_id.standard_price", readonly=False, store_true=True)
+        16, 2), related="product_id.standard_price", readonly=False, store_true=True)
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
