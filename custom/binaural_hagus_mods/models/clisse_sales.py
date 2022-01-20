@@ -70,6 +70,7 @@ class ClisseSales(models.Model):
             "categ_id": res.product_type.id,
             "description": res.description,
             "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
+            "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
         })
 
         for material in res.materials_lines_id:
