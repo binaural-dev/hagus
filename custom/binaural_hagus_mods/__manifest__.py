@@ -27,6 +27,7 @@
         'views/sequence_views.xml',
         'views/res_company.xml',
         'views/product_template.xml',
+        'views/sale_order.xml',
         'views/mrp_production.xml',
         'views/crm_lead.xml',
         'views/purchase.xml',
