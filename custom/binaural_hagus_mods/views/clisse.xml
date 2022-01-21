@@ -166,8 +166,6 @@
 					<field name="cut_date"/>
 					<field name="coil_qty"/>
 					<field name="cutter"/>
-					<field name="coil"/>
-					<field name="scrap"/>
 					<field name="estimate_msi"/>
 					<field name="consumed_msi"/>
 					<field name="margin"/>

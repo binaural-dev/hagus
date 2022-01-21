@@ -72,6 +72,8 @@ class ClisseSales(models.Model):
             "description": res.description,
             "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
             "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
+            "image_1920": res.image_design,
+            "invoice_policy": "order",
         })
         # Creando la lista de materiales del producto.
         mrp_bom = self.env["mrp.bom"].create({
@@ -113,8 +115,11 @@ class ClisseSales(models.Model):
 
         return res
 
-    # def write(self, vals):
-        # res = super().write(vals)
+    def write(self, vals):
+        res = super().write(vals)
+        self.product_template_ids[0].write({
+            "image_1920": self.image_design,
+        })
         # bom_line_ids = []
         # self.product_template_ids.write({
             # "price": self.thousand_cost,
