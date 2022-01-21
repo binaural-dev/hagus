@@ -141,6 +141,9 @@ class ClisseSales(models.Model):
         for clisse in self:
             last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
                 clisse.sale_order_ids) else None
+            if not bool(clisse.sale_order_ids):
+                raise ValidationError(
+                    "Este clisse no tiene un producto asociado.")
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
