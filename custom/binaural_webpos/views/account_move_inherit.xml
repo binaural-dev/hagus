@@ -2,8 +2,8 @@
 <odoo>
 
     <data>
-        <!-- pestanna edi_documents para impresion fiscal electronica -->
-        <record id="binaural_account_move_inherit" model="ir.ui.view">
+        <!-- pestanna edi_documents para impresion fiscal electronica, activar cuando se implemente facturacion electornica -->
+        <!-- <record id="binaural_account_move_inherit" model="ir.ui.view">
             <field name="name">binaural.account.move.inherit</field>
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account_edi.view_move_form_inherit" />
@@ -22,7 +22,7 @@
                     </page>
                 </xpath>
             </field>
-        </record>    
+        </record>     -->
 
         <!-- Campos adicionales para la factura -->
         <record id="binaural_account_move_fields_inherit" model="ir.ui.view">
