@@ -50,6 +50,7 @@ class SaleOrder(models.Model):
         if not bool(all_products):
             raise UserError(
                 "Antes de generar una orden de produccion deben existir productos.")
+        return res
 
     @api.onchange("order_line")
     def _onchange_order_line(self):
