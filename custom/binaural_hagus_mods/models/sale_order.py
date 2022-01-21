@@ -44,9 +44,6 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        coil = 0
-        bushing = 0
-
         res = super().create(vals)
 
         all_products = self.env["product.product"].search([])
