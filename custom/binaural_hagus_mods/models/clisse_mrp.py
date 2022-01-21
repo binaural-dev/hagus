@@ -26,8 +26,6 @@ class ClisseMrp(models.Model):
                            default=lambda self: fields.Date.today())
     coil_qty = fields.Integer(string="Cantidad de Bobinas")
     cutter = fields.Many2one("hr.employee", string="Cortador")
-    coil = fields.Many2one("product.template", string="Bobina")
-    scrap = fields.Float(string="Retazo", digits=(14, 2))
     estimate_msi = fields.Float(string="MSI Estimados", digits=(
         14, 2), compute="_compute_estimate_msi")
     consumed_msi = fields.Float(string="MSI Consumidos", digits=(14, 2))
