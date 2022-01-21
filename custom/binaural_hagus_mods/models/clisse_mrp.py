@@ -76,7 +76,7 @@ class ClisseMrp(models.Model):
 
     def action_create_mrp_production(self):
         for clisse in self:
-            if clisse.sale_order_ids[0].state != "sale":
+            if bool(clisse.sale_order_ids) and clisse.sale_order_ids[0].state != "sale":
                 raise ValidationError(
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
