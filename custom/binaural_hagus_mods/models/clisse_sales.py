@@ -113,24 +113,24 @@ class ClisseSales(models.Model):
 
         return res
 
-    def write(self, vals):
-        res = super().write(vals)
-        bom_line_ids = []
-        self.product_template_ids.write({
-            "price": self.thousand_cost,
-            "description": self.description,
-            "categ_id": self.product_type.id,
-            "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
-        })
+    # def write(self, vals):
+        # res = super().write(vals)
+        # bom_line_ids = []
+        # self.product_template_ids.write({
+            # "price": self.thousand_cost,
+            # "description": self.description,
+            # "categ_id": self.product_type.id,
+            # "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
+        # })
 
-        for material in self.materials_lines_id:
-            if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
-                self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
-                    "bom_id": self.mrp_bom_id.id,
-                    "product_id": material.product_id.id,
-                    "product_qty": material.qty,
-                })
-        return res
+        # for material in self.materials_lines_id:
+            # if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
+                # self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
+                    # "bom_id": self.mrp_bom_id.id,
+                    # "product_id": material.product_id.id,
+                    # "product_qty": material.qty,
+                # })
+        # return res
 
     def action_create_sale_order(self):
         for clisse in self:
