@@ -133,19 +133,24 @@
 					<field name="negative_base"/>
 					<field name="rubber_cost"/>
 					<field name="art_cost"/>
+				    </group>
+				    <group>
+					<field name="total_cost"/>
 					<label for="percentage"/>
 					<div class="o_row">
 					    <field name="percentage"/>
 					    <b>%</b>
 					</div>
-				    </group>
-				    <group>
 					<label for="profit"/>
 					<div class="o_row">
 					    <field name="profit"/>
 					    <b>%</b>
 					</div>
-					<field name="thousand_cost"/>
+					<div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                            <label for="thousand_cost"/>
+                                    	</div>
+				    	<field name="thousand_cost" nolabel="1"
+					       class="oe_subtotal_footer_separator"/>
 				    </group>
 				</group>
 				<group string="Ordenes de venta">

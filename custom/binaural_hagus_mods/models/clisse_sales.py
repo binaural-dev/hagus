@@ -49,6 +49,8 @@ class ClisseSales(models.Model):
     product_template_ids = fields.One2many(
         "product.template", "clisse_id", string="Producto")
 
+    total_cost = fields.Float(string="Costo Total", digits=(
+        14, 2), compute="_compute_total_cost")
     thousand_cost = fields.Float(string="Precio por Millar", digits=(
         14, 2), compute="_compute_thousand_cost")
     sale_order_ids = fields.Many2many(
@@ -307,17 +309,24 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
-    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "percentage", "profit", "quantity")
+    @api.depends("total_cost", "percentage", "profit", "quantity")
     def _compute_thousand_cost(self):
         self.thousand_cost = 0
         for clisse in self:
             if clisse.quantity > 0:
-                total_cost = clisse.paper_cost + clisse.print_cost + \
-                    clisse.coiling_cost + clisse.packing_cost
-                total_price_without_profit = total_cost + \
-                    (total_cost * (clisse.percentage / 100))
+                total_price_without_profit = clisse.total_cost + \
+                    (clisse.total_cost * (clisse.percentage / 100))
                 clisse.thousand_cost = (total_price_without_profit + (
                     total_price_without_profit * (clisse.profit / 100))) / clisse.quantity
+
+    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost")
+    def _compute_total_cost(self):
+        self.total_cost = 0
+        for clisse in self:
+            clisse.total_cost = clisse.paper_cost + clisse.print_cost + \
+                clisse.coiling_cost + clisse.packing_cost
+            
+
 
     @api.constrains("product_template_ids")
     def _check_product_template_ids(self):
