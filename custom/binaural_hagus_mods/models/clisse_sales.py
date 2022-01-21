@@ -38,7 +38,7 @@ class ClisseSales(models.Model):
     packing_cost = fields.Float(string="Costo de Empaquetado", digits=(
         14, 2), compute="_compute_packing_cost")
 
-    percentage = fields.Float(string="Porcentaje a Aplicar", digits=(3, 2))
+    percentage = fields.Float(string="Porcentaje de Gasto", digits=(3, 2))
 
     product_type = fields.Many2one(
         "product.category", string="Tipo de Producto",
