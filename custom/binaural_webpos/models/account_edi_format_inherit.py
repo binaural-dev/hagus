@@ -42,16 +42,17 @@ class binaural_account_edi_format(models.Model):
         return journal.type == 'sale'
 
     #TODO: este metodo seguro no se sobreescriba en favor de usar el de payment
-    # def _post_invoice_edi(self, invoices, test_mode=False):
-    #     self.ensure_one()
-    #     # if self.code != 'facturx_pa':            
-    #     #     return super()._post_invoice_edi(invoices, test_mode=test_mode)
-    #     res = {}
-    #     for invoice in invoices:                   
-    #         if invoice.invoice_payments_widget != 'false': #solucion temporal porque se crea el edi document sin pagos, TODO: permitir llamar a la misma funcion con o sin pagos
-    #             xml_content, xml_file = XmlInterface().build_xml_to_print(invoice,'F') #hacer if con tipo de documento, por defecto envio factura
-    #             res[invoice] = {'attachment': XmlInterface().xml_print_to_file(xml_content,xml_file,invoice)}
-    #     return res
+    def _post_invoice_edi(self, invoices, test_mode=False):
+        self.ensure_one()
+        # if self.code != 'facturx_pa':            
+        #     return super()._post_invoice_edi(invoices, test_mode=test_mode)
+        res = {}
+        # for invoice in invoices:                   
+        #     if invoice.invoice_payments_widget != 'false': #solucion temporal porque se crea el edi document sin pagos, TODO: permitir llamar a la misma funcion con o sin pagos
+        #         xml_content, xml_file = XmlInterface().build_xml_to_print(invoice,'F') #hacer if con tipo de documento, por defecto envio factura
+        #         res[invoice] = {'attachment': XmlInterface().xml_print_to_file(xml_content,xml_file,invoice)}
+
+        return res
 
     # TODO: para facturacion electornica se debera usar este metodo y buscar los pagos de una factura para generar el XML
     # def _post_payment_edi(self, payments, test_mode=False):        
