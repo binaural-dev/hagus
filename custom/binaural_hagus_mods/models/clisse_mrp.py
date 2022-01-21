@@ -1,5 +1,6 @@
 import logging
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -77,11 +78,29 @@ class ClisseMrp(models.Model):
 
     def action_create_mrp_production(self):
         for clisse in self:
+            if clisse.sale_order_ids[0].state != "sale":
+                raise ValidationError(
+                    "No se puede generar una orden de producción " +
+                    "sino se ha aprobado la orden de venta.")
             mrp_production = self.env["mrp.production"].create({
-                "product_id": clisse.product_template_ids[0].id,
+                "product_id": clisse.product_template_ids[0].product_variant_id.id,
                 "product_qty": clisse.quantity,
                 "product_uom_id": 1,
+                "consumption": "strict",
             })
+            mrp_production.write({
+                "bom_id": clisse.mrp_bom_id.id,
+            })
+            for material in clisse.materials_lines_id:
+                mrp_production.move_raw_ids += self.env["stock.move"].create({
+                    "product_id": material.product_id.id,
+                    "name": material.description,
+                    "product_uom": 1,
+                    "company_id": self.env.company.id,
+                    "location_id": 1,
+                    "location_dest_id": 1,
+                    "product_uom_qty": 1,
+                })
         return {
             "type": "ir.actions.act_window",
             "name": "mrp.production.form",

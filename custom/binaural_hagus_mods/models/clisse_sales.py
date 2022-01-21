@@ -143,6 +143,10 @@ class ClisseSales(models.Model):
                     last_order_quantity == clisse.quantity:
                 raise UserError(
                     "La misma orden de venta no puede ser generada dos veces.")
+            if bool(clisse.sale_order_ids) and clisse.sale_order_ids[0].state != "sale":
+                raise ValidationError(
+                    "No se puede generar una orden de venta " +
+                    "si existe una orden anterior sin confirmar.")
             sale_order = self.env["sale.order"].create({
                 "partner_id": clisse.partner_id.id,
             })
@@ -327,7 +331,7 @@ class HagusClisseLines(models.Model):
     _rec_name = 'product_id'
     # ojo con product template
     product_id = fields.Many2one('product.product', string='Producto')
-    description = fields.Char(string='Descripción')
+    description = fields.Char(string='Descripción', related="product_id.name")
     qty = fields.Float(string='Cantidad', digits=(16, 2), default=1)
     cost = fields.Float(string='Costo', digits=(
         16, 2), related="product_id.standard_price", readonly=False, store_true=True)
