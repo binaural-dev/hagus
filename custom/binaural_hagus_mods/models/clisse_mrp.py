@@ -97,8 +97,6 @@ class ClisseMrp(models.Model):
                     "name": material.description,
                     "product_uom": 1,
                     "company_id": self.env.company.id,
-                    "location_id": 1,
-                    "location_dest_id": 1,
                     "product_uom_qty": 1,
                 })
         return {
