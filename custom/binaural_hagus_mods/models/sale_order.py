@@ -42,6 +42,18 @@ class SaleOrder(models.Model):
     product_is_not_sticker = fields.Boolean(
         related="product_id.category_is_not_sticker", default=True)
 
+    @api.model
+    def create(self, vals):
+        coil = 0
+        bushing = 0
+
+        res = super().create(vals)
+
+        all_products = self.env["product.product"].search([])
+        if not bool(all_products):
+            raise UserError(
+                "Antes de generar una orden de produccion deben existir productos.")
+
     @api.onchange("order_line")
     def _onchange_order_line(self):
         if not self.product_is_not_sticker:
@@ -50,7 +62,9 @@ class SaleOrder(models.Model):
 
     @api.depends("order_line")
     def _compute_product_id(self):
-        self.product_id = 1
+        all_products = self.env["product.product"].search([])
+        if bool(all_products):
+            self.product_id = all_products.mapped("id")[0]
         for order in self:
             product = order.order_line[0].product_id if bool(
                 order.order_line) else None
