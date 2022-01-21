@@ -98,6 +98,9 @@ class ClisseMrp(models.Model):
                     "product_uom": 1,
                     "company_id": self.env.company.id,
                     "product_uom_qty": 1,
+                    "location_id": 1,
+                    "location_dest_id": 1,
+                    "producre_method": "make_to_stock",
                 })
         return {
             "type": "ir.actions.act_window",
