@@ -72,6 +72,9 @@ class ClisseSales(models.Model):
             "price": res.thousand_cost,
             "categ_id": res.product_type.id,
             "description": res.description,
+            "sale_ok": True,
+            "purchase_ok": False,
+            "type": "product",
             "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
             "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
             "image_1920": res.image_design,
@@ -149,10 +152,6 @@ class ClisseSales(models.Model):
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
-            if bool(last_order_quantity) and \
-                    last_order_quantity == clisse.quantity:
-                raise UserError(
-                    "La misma orden de venta no puede ser generada dos veces.")
             if bool(clisse.sale_order_ids) and clisse.sale_order_ids[0].state != "sale":
                 raise ValidationError(
                     "No se puede generar una orden de venta " +

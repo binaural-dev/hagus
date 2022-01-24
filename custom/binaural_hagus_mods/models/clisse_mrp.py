@@ -83,6 +83,7 @@ class ClisseMrp(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
+
             mrp_production = self.env["mrp.production"].create({
                 "product_id": clisse.product_template_ids[0].product_variant_id.id,
                 "product_qty": clisse.quantity,
