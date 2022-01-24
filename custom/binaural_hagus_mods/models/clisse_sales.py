@@ -70,8 +70,13 @@ class ClisseSales(models.Model):
     def create(self, vals):
         coil = 0
         bushing = 0
+        product_uom = self.env["uom.uom"].search([("name", '=', "Millar")])
 
         res = super().create(vals)
+
+        if not bool(product_uom):
+            raise UserError(
+                "No existe la unidad de medida 'millar', debe crearla antes de poder crear un clisse.")
 
         # Creando un producto basado en la informacion del clisse.
         res.product_template_ids = self.env["product.template"].create({
@@ -79,6 +84,8 @@ class ClisseSales(models.Model):
             "price": res.thousand_price,
             "categ_id": res.product_type.id,
             "description": res.description,
+            "uom_id": product_uom.id,
+            "uom_po_id": product_uom.id,
             "sale_ok": True,
             "purchase_ok": False,
             "type": "product",
@@ -153,9 +160,6 @@ class ClisseSales(models.Model):
         for clisse in self:
             last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
                 clisse.sale_order_ids) else None
-            # if not bool(clisse.sale_order_ids):
-            # raise ValidationError(
-            # "Este clisse no tiene un producto asociado.")
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")

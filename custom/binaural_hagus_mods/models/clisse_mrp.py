@@ -85,10 +85,11 @@ class ClisseMrp(models.Model):
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
 
+            product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({
-                "product_id": clisse.product_template_ids[0].product_variant_id.id,
+                "product_id": product.id,
                 "product_qty": clisse.quantity,
-                "product_uom_id": 1,
+                "product_uom_id": product.uom_id.id,
                 "consumption": "strict",
             })
             mrp_production.write({
