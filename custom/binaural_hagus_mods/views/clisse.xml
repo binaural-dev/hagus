@@ -160,12 +160,13 @@
 			    <page name="clisse_mrp" string="Producción">
 				<group>
 				    <group name="troquel" string="TROQUEL">
-					<field name="cut_width"/>
+					<field name="paper_cut_inches"/>
+					<field name="paper_cut_centimeters"/>
 					<field name="troquel_line"/>
 					<field name="troquel_teeth"/>
 					<field name="troquel_cylinders"/>
 					<field name="troquel_repetition"/>
-					<field name="paper_cut_inches"/>
+					<field name="designed"/>
 				    </group>
 				    <group name="cut" string="CORTE">
 					<field name="cut_date"/>
