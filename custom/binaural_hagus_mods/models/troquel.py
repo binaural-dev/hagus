@@ -31,7 +31,8 @@ class HagusTroquel(models.Model):
 	length_millimeters_uom = fields.Many2one('uom.uom', string='Medida',
         domain="[('category_id', '=', 4)]")
 
-	paper_cut_centimeters = fields.Float(string='Corte de Papel(centimetros)',)
+	paper_cut_centimeters = fields.Float(string='Corte de Papel(centimetros)')
+	variable = fields.Boolean(string='Variable')
 	paper_cut_centimeters_uom = fields.Many2one(
         'uom.uom', string='Medida',
         domain="[('category_id', '=', 4)]",
