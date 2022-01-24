@@ -26,7 +26,8 @@
                     <field name="code"/>
                     <field name="description" />
                     <field name="date" />
-                    <field name="partner_id" />
+		    <field name="partner_id"
+			   context="{'partner_id': partner_id}"/>
                     <field name="troquel_id" />
                     <field name="width_inches" />
                     <field name="length_inches" />
