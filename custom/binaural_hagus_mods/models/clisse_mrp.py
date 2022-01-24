@@ -20,7 +20,8 @@ class ClisseMrp(models.Model):
         string="Corte de Papel (pulgadas)", related="troquel_id.paper_cut_inches")
     paper_cut_centimeters = fields.Float(string="Corte de papel(centimetros)", digtis=(
         14, 2), related="troquel_id.paper_cut_centimeters")
-    designed = fields.Char(string="Diseñado por", related="troquel_id.designed")
+    designed = fields.Char(string="Diseñado por",
+                           related="troquel_id.designed")
     mrp_production_ids = fields.Many2many(
         "mrp.production", string="Orden de Producción")
     cut_date = fields.Date(string="Fecha de Corte",
@@ -143,3 +144,16 @@ class ClisseMrp(models.Model):
                 teeth_per_inch = clisse.troquel_teeth / 8
                 clisse.digits_number = ((teeth_per_inch / clisse.troquel_repetition) *
                                         clisse.labels_per_roll) / 10
+
+    @api.onchange("mount_start_time", "start_pressman_1", "end_pressman_1", "start_pressman_2", "end_pressman_2")
+    def _onchange_time(self):
+        if self.mount_start_time < 0 or self.start_pressman_1 < 0 or \
+                self.end_pressman_1 < 0 or self.start_pressman_2 < 0 or \
+                self.end_pressman_2 < 0:
+            raise ValidationError("La hora no puede ser menor a 0.")
+
+        if self.mount_start_time > 24 or self.start_pressman_1 > 24 or \
+                self.end_pressman_1 > 24 or self.start_pressman_2 > 24 or \
+                self.end_pressman_2 > 24:
+            raise ValidationError(
+                "La hora no puede ser mayor a 24.")
