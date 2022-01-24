@@ -129,9 +129,11 @@
 					<field name="paper_cost"/>
 					<field name="print_cost"/>
 					<field name="coiling_cost"/>
-					<field name="rubber_base"/>
 					<field name="negative_base"/>
+					<field name="negative_cost"/>
+					<field name="rubber_base"/>
 					<field name="rubber_cost"/>
+					<field name="negative_plus_rubber_cost"/>
 					<field name="art_cost"/>
 				    </group>
 				    <group>
@@ -141,16 +143,15 @@
 					    <field name="percentage"/>
 					    <b>%</b>
 					</div>
+					<field name="expenses"/>
+					<field name="subtotal"/>
 					<label for="profit"/>
 					<div class="o_row">
 					    <field name="profit"/>
 					    <b>%</b>
 					</div>
-					<div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                            <label for="thousand_cost"/>
-                                    	</div>
-				    	<field name="thousand_cost" nolabel="1"
-					       class="oe_subtotal_footer_separator"/>
+					<field name="total_price"/>
+					<field name="thousand_price"/>
 				    </group>
 				</group>
 				<group string="Ordenes de venta">
