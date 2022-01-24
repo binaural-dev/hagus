@@ -126,15 +126,25 @@
 				</group>
 				<group>
 				    <group>
-					<field name="paper_cost"/>
-					<field name="print_cost"/>
-					<field name="coiling_cost"/>
-					<field name="negative_base"/>
-					<field name="negative_cost"/>
-					<field name="rubber_base"/>
-					<field name="rubber_cost"/>
-					<field name="negative_plus_rubber_cost"/>
-					<field name="art_cost"/>
+					<group colspan="4">
+					    <field name="paper_cost"/>
+					    <field name="print_cost"/>
+					    <field name="coiling_cost"/>
+					    <field name="has_rubber"/>
+					    <field name="has_art"/>
+					</group>
+					<group colspan="4"
+					       attrs="{'invisible': [('has_rubber', '=', False)]}">
+					    <field name="rubber_base"/>
+					    <field name="rubber_cost"/>
+					    <field name="negative_base"/>
+					    <field name="negative_cost"/>
+					    <field name="negative_plus_rubber_cost"/>
+					</group>
+					<group colspan="4"
+					       attrs="{'invisible': [('has_art', '=', False)]}">
+					    <field name="art_cost"/>
+				    	</group>
 				    </group>
 				    <group>
 					<field name="total_cost"/>
@@ -197,7 +207,7 @@
 					    <field name="start_pressman_1" 
 						   string="Inició"
 						   widget="float_time"/>
-					    <field name="end_pressman_2"
+					    <field name="end_pressman_1"
 						   string="Terminó"
 						   widget="float_time"/>
 					    <field name="produced_meters_pressman_1"

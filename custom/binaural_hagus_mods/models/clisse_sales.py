@@ -12,6 +12,16 @@ class ClisseSales(models.Model):
         string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1, required=True)
     decrease = fields.Float(string="Merma", digits=(14, 2))
 
+    product_type = fields.Many2one(
+        "product.category", string="Tipo de Producto",
+        domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]",
+        default=lambda self: self.env["product.category"].search(
+            [("name", '=', "Calcomanía")]),
+        required=True)
+    product_template_ids = fields.One2many(
+        "product.template", "clisse_id", string="Producto")
+
+    has_rubber = fields.Boolean(string="Tiene Caucho", default=True)
     rubber_base = fields.Float(
         string="Caucho base", digits=(14, 2), default=1.05)
     rubber_cost = fields.Float(string="Costo de Caucho", digits=(
@@ -33,21 +43,14 @@ class ClisseSales(models.Model):
     coiling_cost = fields.Float(string="Costo de Embobinado", digits=(
         14, 2), compute="_compute_coiling_cost")
 
-    profit = fields.Float(string="Ganancia", digits=(14, 2))
-
     packing_cost = fields.Float(string="Costo de Empaquetado", digits=(
         14, 2), compute="_compute_packing_cost")
+    has_art = fields.Boolean(string="Tiene Arte", default=False)
+    art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
+
+    profit = fields.Float(string="Ganancia", digits=(14, 2))
 
     percentage = fields.Float(string="Porcentaje de Gasto", digits=(3, 2))
-
-    product_type = fields.Many2one(
-        "product.category", string="Tipo de Producto",
-        domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]",
-        default=lambda self: self.env["product.category"].search(
-            [("name", '=', "Calcomanía")]),
-        required=True)
-    product_template_ids = fields.One2many(
-        "product.template", "clisse_id", string="Producto")
 
     total_cost = fields.Float(string="Costo Total", digits=(
         14, 2), compute="_compute_total_cost")
@@ -226,7 +229,7 @@ class ClisseSales(models.Model):
                     "Un clisse no puede tener más de un buje como material.")
 
     @api.onchange("quantity")
-    def onchange_quantity(self):
+    def _onchange_quantity(self):
         for clisse in self:
             if clisse.quantity <= 0:
                 raise ValidationError(
@@ -325,6 +328,10 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.total_cost = clisse.paper_cost + clisse.print_cost + \
                 clisse.coiling_cost + clisse.packing_cost
+            if clisse.has_rubber:
+                clisse.total_cost += clisse.negative_plus_rubber_cost
+            if clisse.has_art:
+                clisse.total_cost += clisse.art_cost
 
     @api.depends("total_cost", "percentage")
     def _compute_expenses(self):
