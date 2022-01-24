@@ -182,6 +182,9 @@
 				    </group>
 				</group>
 				<group name="press" string="PRENSA">
+				    <group colspan="8">
+					<field name="press_machine"/>
+				    </group>
 				    <group name="mount" string="Montaje">
 					<field name="mount_start_date"/>
 					<field name="mount_start_time" widget="float_time"/>
