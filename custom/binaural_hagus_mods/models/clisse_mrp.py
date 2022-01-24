@@ -96,9 +96,9 @@ class ClisseMrp(models.Model):
                 mrp_production.move_raw_ids += self.env["stock.move"].create({
                     "product_id": material.product_id.id,
                     "name": material.description,
-                    "product_uom": 1,
+                    "product_uom": material.product_id.uom_id.id,
                     "company_id": self.env.company.id,
-                    "product_uom_qty": 1,
+                    "product_uom_qty": material.qty,
                     "location_id": 1,
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
