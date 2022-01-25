@@ -14,5 +14,8 @@ class CrmLead(models.Model):
             "view_type": "form",
             "view_mode": "form",
             "target": "self",
-            "context": {"lead_id": self.id},
+            "context": {
+                "lead_id": self.id,
+                "default_partner_id": self.partner_id.id,
+            },
         }

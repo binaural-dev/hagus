@@ -8,7 +8,6 @@ class ClisseMrp(models.Model):
     """Clisse functionality related to mrp."""
     _inherit = "hagus.clisse"
 
-    cut_width = fields.Float(string="Ancho de Corte", digtis=(14, 2))
     troquel_line = fields.Integer(
         string="Linea Troquel", related="troquel_id.lines_width")
     troquel_teeth = fields.Integer(
@@ -18,8 +17,11 @@ class ClisseMrp(models.Model):
     troquel_repetition = fields.Integer(
         string="Repetición", related="troquel_id.repetition")
     paper_cut_inches = fields.Float(
-        string="Corte de Papel (pulgadas)", digits=(14, 2))
-    # Campo designed to ??
+        string="Corte de Papel (pulgadas)", related="troquel_id.paper_cut_inches")
+    paper_cut_centimeters = fields.Float(string="Corte de papel(centimetros)", digtis=(
+        14, 2), related="troquel_id.paper_cut_centimeters")
+    designed = fields.Char(string="Diseñado por",
+                           related="troquel_id.designed")
     mrp_production_ids = fields.Many2many(
         "mrp.production", string="Orden de Producción")
     cut_date = fields.Date(string="Fecha de Corte",
@@ -84,10 +86,11 @@ class ClisseMrp(models.Model):
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
 
+            product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({
-                "product_id": clisse.product_template_ids[0].product_variant_id.id,
+                "product_id": product.id,
                 "product_qty": clisse.quantity,
-                "product_uom_id": 1,
+                "product_uom_id": product.uom_id.id,
                 "consumption": "strict",
             })
             mrp_production.write({
@@ -125,13 +128,13 @@ class ClisseMrp(models.Model):
                 clisse.total_mts = (
                     teeth_per_inch / clisse.troquel_repetition) * 25.4 * clisse.quantity
 
-    @api.depends("cut_width", "total_mts")
+    @api.depends("paper_cut_inches", "total_mts")
     def _compute_estimate_msi(self):
         self.estimate_msi = 0
         for clisse in self:
-            if clisse.cut_width > 0 and clisse.total_mts > 0:
+            if clisse.paper_cut_inches > 0 and clisse.total_mts > 0:
                 lineal_feet = clisse.total_mts * 3.28125
-                clisse.estimate_msi = clisse.cut_width * lineal_feet * 0.012
+                clisse.estimate_msi = clisse.paper_cut_inches * lineal_feet * 0.012
 
     @api.depends("troquel_id", "troquel_teeth", "troquel_repetition", "labels_per_roll")
     def _compute_digits_number(self):
@@ -141,3 +144,16 @@ class ClisseMrp(models.Model):
                 teeth_per_inch = clisse.troquel_teeth / 8
                 clisse.digits_number = ((teeth_per_inch / clisse.troquel_repetition) *
                                         clisse.labels_per_roll) / 10
+
+    @api.onchange("mount_start_time", "start_pressman_1", "end_pressman_1", "start_pressman_2", "end_pressman_2")
+    def _onchange_time(self):
+        if self.mount_start_time < 0 or self.start_pressman_1 < 0 or \
+                self.end_pressman_1 < 0 or self.start_pressman_2 < 0 or \
+                self.end_pressman_2 < 0:
+            raise ValidationError("La hora no puede ser menor a 0.")
+
+        if self.mount_start_time > 24 or self.start_pressman_1 > 24 or \
+                self.end_pressman_1 > 24 or self.start_pressman_2 > 24 or \
+                self.end_pressman_2 > 24:
+            raise ValidationError(
+                "La hora no puede ser mayor a 24.")

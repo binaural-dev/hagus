@@ -12,7 +12,7 @@
     'company': 'Binaural',
     'maintainer': 'Binaural',
     'website': 'https://binauraldev.com/',
-    'depends': ['mrp','sale_management'],
+    'depends': ['mrp','sale_management','crm','purchase'],
     'data': [
         'security/ir.model.access.csv',
         'data/orientation.xml',

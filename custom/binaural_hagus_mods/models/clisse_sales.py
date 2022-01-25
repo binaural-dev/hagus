@@ -12,6 +12,16 @@ class ClisseSales(models.Model):
         string="Cantidad a Producir (Por Millar)", digits=(14, 2), default=1, required=True)
     decrease = fields.Float(string="Merma", digits=(14, 2))
 
+    product_type = fields.Many2one(
+        "product.category", string="Tipo de Producto",
+        domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]",
+        default=lambda self: self.env["product.category"].search(
+            [("name", '=', "Calcomanía")]),
+        required=True)
+    product_template_ids = fields.One2many(
+        "product.template", "clisse_id", string="Producto")
+
+    has_rubber = fields.Boolean(string="Tiene Caucho", default=True)
     rubber_base = fields.Float(
         string="Caucho base", digits=(14, 2), default=1.05)
     rubber_cost = fields.Float(string="Costo de Caucho", digits=(
@@ -33,45 +43,52 @@ class ClisseSales(models.Model):
     coiling_cost = fields.Float(string="Costo de Embobinado", digits=(
         14, 2), compute="_compute_coiling_cost")
 
-    profit = fields.Float(string="Ganancia", digits=(14, 2))
-
     packing_cost = fields.Float(string="Costo de Empaquetado", digits=(
         14, 2), compute="_compute_packing_cost")
+    has_art = fields.Boolean(string="Tiene Arte", default=False)
+    art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
+
+    profit = fields.Float(string="Ganancia", digits=(14, 2))
 
     percentage = fields.Float(string="Porcentaje de Gasto", digits=(3, 2))
 
-    product_type = fields.Many2one(
-        "product.category", string="Tipo de Producto",
-        domain="[('name', 'in', ('Calcomanía', 'Calcomania', 'Etiqueta'))]",
-        default=lambda self: self.env["product.category"].search(
-            [("name", '=', "Calcomanía")]),
-        required=True)
-    product_template_ids = fields.One2many(
-        "product.template", "clisse_id", string="Producto")
-
     total_cost = fields.Float(string="Costo Total", digits=(
         14, 2), compute="_compute_total_cost")
-    thousand_cost = fields.Float(string="Precio por Millar", digits=(
-        14, 2), compute="_compute_thousand_cost")
+    expenses = fields.Float(string="Gastos Generales", digits=(
+        14, 2), compute="_compute_expenses")
+    subtotal = fields.Float(string="Subtotal", digits=(
+        14, 2), compute="_compute_subtotal")
+    total_price = fields.Float(string="Precio Total", digits=(
+        14, 2), compute="_compute_total_price")
+    thousand_price = fields.Float(string="Precio por Millar", digits=(
+        14, 2), compute="_compute_thousand_price")
     sale_order_ids = fields.Many2many(
         "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
-    mrp_bom_id = fields.Many2one("mrp.bom", string="Lista de materiales del producto")
+    mrp_bom_id = fields.Many2one(
+        "mrp.bom", string="Lista de materiales del producto")
 
     @api.model
     def create(self, vals):
         coil = 0
         bushing = 0
+        product_uom = self.env["uom.uom"].search([("name", '=', "Millar")])
 
         res = super().create(vals)
+
+        if not bool(product_uom):
+            raise UserError(
+                "No existe la unidad de medida 'millar', debe crearla antes de poder crear un clisse.")
 
         # Creando un producto basado en la informacion del clisse.
         res.product_template_ids = self.env["product.template"].create({
             "name": res.description,
-            "price": res.thousand_cost,
+            "price": res.thousand_price,
             "categ_id": res.product_type.id,
             "description": res.description,
+            "uom_id": product_uom.id,
+            "uom_po_id": product_uom.id,
             "sale_ok": True,
             "purchase_ok": False,
             "type": "product",
@@ -85,7 +102,7 @@ class ClisseSales(models.Model):
             "product_tmpl_id": res.product_template_ids[0].id,
             "product_qty": res.quantity,
             "code": res.code,
-            })
+        })
 
         for material in res.materials_lines_id:
             # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
@@ -127,28 +144,25 @@ class ClisseSales(models.Model):
         })
         # bom_line_ids = []
         # self.product_template_ids.write({
-            # "price": self.thousand_cost,
-            # "description": self.description,
-            # "categ_id": self.product_type.id,
-            # "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
+        # "price": self.thousand_price,
+        # "description": self.description,
+        # "categ_id": self.product_type.id,
+        # "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
         # })
 
         # for material in self.materials_lines_id:
-            # if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
-                # self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
-                    # "bom_id": self.mrp_bom_id.id,
-                    # "product_id": material.product_id.id,
-                    # "product_qty": material.qty,
-                # })
-        # return res
+        # if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
+        # self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
+        # "bom_id": self.mrp_bom_id.id,
+        # "product_id": material.product_id.id,
+        # "product_qty": material.qty,
+        # })
+        return res
 
     def action_create_sale_order(self):
         for clisse in self:
             last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
                 clisse.sale_order_ids) else None
-            # if not bool(clisse.sale_order_ids):
-                # raise ValidationError(
-                    # "Este clisse no tiene un producto asociado.")
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
@@ -215,7 +229,7 @@ class ClisseSales(models.Model):
                     "Un clisse no puede tener más de un buje como material.")
 
     @api.onchange("quantity")
-    def onchange_quantity(self):
+    def _onchange_quantity(self):
         for clisse in self:
             if clisse.quantity <= 0:
                 raise ValidationError(
@@ -296,7 +310,7 @@ class ClisseSales(models.Model):
             qty = 0
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
-                   product.product_category_id.name.lower() == "buje":
+                        product.product_category_id.name.lower() == "buje":
                     cost = product.cost
                     qty = product.qty
                     break
@@ -308,24 +322,42 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
-    @api.depends("total_cost", "percentage", "profit", "quantity")
-    def _compute_thousand_cost(self):
-        self.thousand_cost = 0
-        for clisse in self:
-            if clisse.quantity > 0:
-                total_price_without_profit = clisse.total_cost + \
-                    (clisse.total_cost * (clisse.percentage / 100))
-                clisse.thousand_cost = (total_price_without_profit + (
-                    total_price_without_profit * (clisse.profit / 100))) / clisse.quantity
-
     @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost")
     def _compute_total_cost(self):
         self.total_cost = 0
         for clisse in self:
             clisse.total_cost = clisse.paper_cost + clisse.print_cost + \
                 clisse.coiling_cost + clisse.packing_cost
-            
+            if clisse.has_rubber:
+                clisse.total_cost += clisse.negative_plus_rubber_cost
+            if clisse.has_art:
+                clisse.total_cost += clisse.art_cost
 
+    @api.depends("total_cost", "percentage")
+    def _compute_expenses(self):
+        self.expenses = 0
+        for clisse in self:
+            clisse.expenses = clisse.total_cost * (clisse.percentage / 100)
+
+    @api.depends("total_cost", "expenses")
+    def _compute_subtotal(self):
+        self.subtotal = 0
+        for clisse in self:
+            if clisse.quantity > 0:
+                clisse.subtotal = clisse.total_cost + clisse.expenses
+
+    @api.depends("subtotal", "profit")
+    def _compute_total_price(self):
+        self.total_price = 0
+        for clisse in self:
+            clisse.total_price = clisse.subtotal + \
+                (clisse.subtotal * (clisse.profit / 100))
+
+    @api.depends("total_price")
+    def _compute_thousand_price(self):
+        self.thousand_price = 0
+        for clisse in self:
+            clisse.thousand_price = clisse.total_price / clisse.quantity
 
     @api.constrains("product_template_ids")
     def _check_product_template_ids(self):

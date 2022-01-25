@@ -18,6 +18,7 @@ class HagusTroquel(models.Model):
 	width_inches = fields.Float(string='Ancho(Pulgadas)')
 	width_inches_uom = fields.Many2one('uom.uom', string='Medida',
         domain="[('category_id', '=', 4)]")
+	variable = fields.Boolean(string='Variable')
 
 	width_millimeters = fields.Float(string='Ancho(Milimetros)')
 	width_millimeters_uom = fields.Many2one('uom.uom', string='Medida',
@@ -31,12 +32,16 @@ class HagusTroquel(models.Model):
 	length_millimeters_uom = fields.Many2one('uom.uom', string='Medida',
         domain="[('category_id', '=', 4)]")
 
-	paper_cut_centimeters = fields.Float(string='Corte de Papel(centimetros)')
-	variable = fields.Boolean(string='Variable')
+	paper_cut_centimeters = fields.Float(string='Ancho de Corte(centimetros)')
 	paper_cut_centimeters_uom = fields.Many2one(
         'uom.uom', string='Medida',
         domain="[('category_id', '=', 4)]",
         default=lambda self: self.env['uom.uom'].search([('name', '=', u'cm')]).id)
+	paper_cut_inches = fields.Float(string='Ancho de Corte(milimetros)')
+	paper_cut_inches_uom = fields.Many2one(
+        'uom.uom', string='Medida',
+        domain="[('category_id', '=', 4)]")
+
 
 	lines_width = fields.Integer(string='Lineas x ancho')
 	repetition = fields.Integer(string='Repetición', required=True)

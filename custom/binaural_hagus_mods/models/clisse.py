@@ -77,9 +77,6 @@ class HagusClisse(models.Model):
             domain="[('payment_type', '=', 'inbound')]")
 	payment_term = fields.Many2one("account.payment.term", string="Plazo de Pago")
 
-	art_cost = fields.Float(string="Costo de Arte", digits=(14, 2))
-	total_cost = fields.Float(string="Costo Total", digits=(14, 2))
-
 	@api.model
 	def create(self, vals):
 		# Set Code
