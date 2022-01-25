@@ -258,7 +258,7 @@ class ClisseSales(models.Model):
             total_colors = 0
             negative_base = clisse.negative_base
             for product in clisse.materials_lines_id:
-                if product.product_category_id.name.lower() == "tinta":
+                if bool(product.product_category_id) and product.product_category_id.name.lower() == "tinta":
                     if product.qty >= 1:
                         total_colors += product.qty
                     else:
@@ -386,3 +386,5 @@ class HagusClisseLines(models.Model):
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
+    product_uom_id = fields.Many2one(
+        string="Unidad", related="product_id.product_tmpl_id.uom_id")

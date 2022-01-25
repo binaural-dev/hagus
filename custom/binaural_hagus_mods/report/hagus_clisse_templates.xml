@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_hagus_clisse">
+        <t t-foreach="docs" t-as="clisse">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+			<div class="container">
+			    <div class="row col-12">
+			    	<div class="col-6">
+                            	    <h3>
+					<span t-field="clisse.code"/>
+                            	    </h3>
+			    	</div>
+				<div class="col-6" align="right">
+				    <div>
+					<span t-field="clisse.date"/>
+				    </div>
+                            	    <div>
+                            	    	<span t-field="clisse.partner_id"/>
+                            	    </div>
+			        </div>
+			    </div>
+			    <hr/>
+			    <div class="row col-12">
+			    	<div class="col-6">
+                        	    <h2>
+                            	    	<span t-field="clisse.description"/>
+                        	    </h2>
+			    	</div>
+			    	<div class="col-6">
+				    <img t-attf-src="data:image/*;base64,{{clisse.image_design}}"
+			     	         style="max-height: 80px;max-width: 145px;padding:2px;" align="right"/>
+			    	</div>
+			    </div>
+		    	</div>
+			<br/>
+			<div class="container">
+			    <div class="row col-12">
+				<div class="col-6">
+				    <div>
+					<strong>Troquel: </strong>
+					<span t-field="clisse.troquel_id.code"/>
+				    </div>
+				    <div>
+					<strong>Ancho (Pulgadas): </strong>
+					<span t-field="clisse.width_inches"/>
+				    </div>
+				    <div>
+					<strong>Largo (Pulgadas): </strong>
+					<span t-field="clisse.length_inches"/>
+				    </div>
+				    <div>
+					<strong>Lineas x ancho: </strong>
+					<span t-field="clisse.lines_width"/>
+				    </div>
+				    <div>
+					<strong>Corte de Papel (Pulgadas): </strong>
+					<span t-field="clisse.paper_cut_inches"/>
+				    </div>
+				    <div>
+					<strong>Linea Troquel: </strong>
+					<span t-field="clisse.troquel_line"/>
+				    </div>
+				    <div>
+					<strong>Cilindros: </strong>
+					<span t-field="clisse.troquel_cylinders"/>
+				    </div>
+				    <div>
+					<strong>Repetición: </strong>
+					<span t-field="clisse.troquel_repetition"/>
+				    </div>
+				    <div>
+					<strong>Dientes del Troquel: </strong>
+					<span t-field="clisse.troquel_teeth"/>
+				    </div>
+				    <div>
+					<strong>Nro de Dígitos: </strong>
+					<span t-field="clisse.digits_number"/>
+				    </div>
+				    <div>
+					<strong>Etiquetas por Rollo: </strong>
+					<span t-field="clisse.labels_per_roll"/>
+				    </div>
+				    <div>
+					<strong>Cantidad a Producir (Por Millar): </strong>
+					<span t-field="clisse.quantity"/>
+				    </div>
+				    <div>
+					<img t-attf-src="data:image/*;base64,{{clisse.orientation_image}}"
+			     	             style="max-height: 70px;max-width: 145px;padding:2px;" align="center"/>
+				    </div>
+				</div>
+				<div class="col-6">
+				    <div>
+					<strong>Tamaño: </strong>
+					<span t-field="clisse.size"/>
+				    </div>
+				    <div>
+					<strong>Fondo: </strong>
+					<span t-field="clisse.background"/>
+				    </div>
+				    <div>
+					<strong>Diseñado por: </strong>
+					<span t-field="clisse.designed"/>
+				    </div>
+				    <div>
+					<strong>Acabado: </strong>
+					<span t-field="clisse.finish_type_id.description"/>
+				    </div>
+				    <div>
+					<strong>Observaciones: </strong>
+					<span t-field="clisse.observations"/>
+				    </div>
+				    <div>
+					<strong>Descripción de la etiqueta: </strong>
+					<span t-field="clisse.description_label"/>
+				    </div>
+				    <div>
+					<strong>Vendedor: </strong>
+					<span t-field="clisse.seller_id.name"/>
+				    </div>
+				    <div>
+					<strong>Precio por Millar: </strong>
+					<span t-field="clisse.thousand_price"/>
+				    </div>
+				    <div>
+					<strong>Código de Barras: </strong>
+				    	<img t-attf-src="data:image/*;base64,{{clisse.image_barcode}}"
+			     	             style="max-height: 80px;max-width: 145px;padding:2px;" align="center"/>
+					
+				    </div>
+				    <div>
+					<strong>MSI Estimados: </strong>
+					<span t-field="clisse.estimate_msi"/>
+				    </div>
+				    <div>
+					<strong>Margen: </strong>
+					<span t-field="clisse.margin"/>
+				    </div>
+				    <div>
+					<strong>Total Metros: </strong>
+					<span t-field="clisse.total_mts"/>
+				    </div>
+				    <div>
+					<strong>Ajuste Metros: </strong>
+					<span t-field="clisse.mts_settings"/>
+				    </div>
+				    <div>
+					<strong>Tiro de Metros: </strong>
+					<span t-field="clisse.mts_print"/>
+				    </div>
+			    	</div>
+		            </div>
+			</div>
+			<br/>
+			<h3>Materiales</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+				    <th>Categoría</th>
+				    <th>Unidad</th>
+				    <th>Cantidad</th>
+				    <th>Costo</th>
+				</tr>
+                            </thead>
+                            <tbody>
+				<tr t-foreach="clisse.materials_lines_id" t-as="product">
+				    <td>
+					<span t-field="product.product_id.name"/>
+				    </td>
+				    <td>
+					<span t-field="product.product_category_id.name"/>
+				    </td>
+				    <td>
+					<span t-field="product.product_uom_id.name"/>
+				    </td>
+				    <td>
+					<span t-field="product.qty"/>
+				    </td>
+				    <td>
+					<span t-field="product.cost"/>
+				    </td>
+				</tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+

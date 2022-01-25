@@ -31,6 +31,8 @@
         'views/mrp_production.xml',
         'views/crm_lead.xml',
         'views/purchase.xml',
+        'report/hagus_clisse_templates.xml',
+        'report/hagus_clisse_views.xml',
     ],
     'installable': True,
     'auto_install': False,

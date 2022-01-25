@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="report_clisse" model="ir.actions.report">
+	<field name="name">Clisse</field>
+	<field name="model">hagus.clisse</field>
+	<field name="report_type">qweb-pdf</field>
+	<field name="report_name">binaural_hagus_mods.report_hagus_clisse</field>
+	<field name="report_file">binaural_hagus_mods.report_hagus_clisse</field>
+	<field name="binding_model_id" ref="model_hagus_clisse"/>
+	<field name="binding_type">report</field>
+    </record>
+</odoo>
