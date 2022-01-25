@@ -166,7 +166,8 @@ class ClisseSales(models.Model):
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
-            if bool(clisse.sale_order_ids) and clisse.sale_order_ids[0].state != "sale":
+            if bool(clisse.sale_order_ids) and clisse.sale_order_ids[0].state != "sale" \
+                    and clisse.sale_order_ids[0].state != "cancel":
                 raise ValidationError(
                     "No se puede generar una orden de venta " +
                     "si existe una orden anterior sin confirmar.")
@@ -183,6 +184,7 @@ class ClisseSales(models.Model):
                             "name": clisse.product_template_ids[0].name,
                             "product_id": clisse.product_template_ids[0].product_variant_id.id,
                             "product_uom_qty": clisse.quantity,
+                            "price_unit": clisse.thousand_price,
                             "customer_lead": 7,
                         }
                     ),
@@ -210,7 +212,7 @@ class ClisseSales(models.Model):
         coil = 0
         bushing = 0
         for material in self.materials_lines_id:
-            # Check if a clisse has more than one material with the "Bobina" category.
+            # Comprobar si un clisse tiene mas de un material con la categoria "Bobina"
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "bobina":
                 coil += 1
@@ -218,7 +220,7 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
 
-            # Check if a clisse has more than one material with the "Buje" category.
+            # Comprobar si un clisse tiene mas de un material con la categoria "Buje"
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
