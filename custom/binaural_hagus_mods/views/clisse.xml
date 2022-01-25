@@ -92,8 +92,10 @@
                                 <field name="observations" />
                                 <field name="text" />
                                 <field name="description_label" />
+				<field name="design_filename" invisible="1"/>
 				<field name="image_design"
 				       widget="image" options="{'size': [100,100]}"/>
+				<field name="barcode_filename" invisible="1"/>
 				<field name="image_barcode"
 				       widget="image" options="{'size': [100,100]}"/>
                             </group>

@@ -56,8 +56,10 @@ class HagusClisse(models.Model):
 	Ancho de corte (pulg) que realice la conversión de cm a pulgadas y viceversa
 	"""
 
-	image_design = fields.Image("Diseño")
-	image_barcode = fields.Image("Código de Barras")
+	image_design = fields.Binary("Diseño")
+	design_filename = fields.Char()
+	image_barcode = fields.Binary("Código de Barras")
+	barcode_filename = fields.Char()
 	description_label = fields.Text(string='Descripción de la etiqueta')
 
 	materials_lines_id = fields.One2many(
