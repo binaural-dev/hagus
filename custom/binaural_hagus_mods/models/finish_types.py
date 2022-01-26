@@ -12,7 +12,3 @@ class HagusFinishTypes(models.Model):
 	_rec_name = 'description'
 
 	description = fields.Char(string='Descripción')
-
-	
-	
-	

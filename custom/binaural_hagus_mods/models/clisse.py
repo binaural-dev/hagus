@@ -45,17 +45,6 @@ class HagusClisse(models.Model):
 	observations = fields.Text(string='Obervaciones')
 	text = fields.Text(string='Texto')
 
-	# duda si dejarlos imagen o binary
-	"""design = fields.Binary(string='Diseño')
-	design_filename = fields.Char(string='Diseño')
-
-	barcode = fields.Binary(string='Código de Barras')
-	barcode_filename = fields.Char(string='Código de Barras')"""
-
-	"""Ancho de corte (cm) que realice la conversión de cm a pulgadas y viceversa
-	Ancho de corte (pulg) que realice la conversión de cm a pulgadas y viceversa
-	"""
-
 	image_design = fields.Binary("Diseño")
 	design_filename = fields.Char()
 	image_barcode = fields.Binary("Código de Barras")
@@ -70,9 +59,6 @@ class HagusClisse(models.Model):
 		('open', 'Abierto'),
 		('cancel', 'Cancelado'),
 	], string='Estado')
-
-	seller_id = fields.Many2one(
-	    'res.partner', string='Vendedor', domain="[('active', '=', True)]")
 
 	payment_method_id = fields.Many2one(
             "account.payment.method", string="Tipo de Pago",
@@ -91,5 +77,3 @@ class HagusClisse(models.Model):
 			    'hagus.clisse', sequence_date=seq_date) or _('New')
 
 		return super().create(vals)
-
-
