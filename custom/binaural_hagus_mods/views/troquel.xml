@@ -72,9 +72,8 @@
                                 <div class="o_row">
                                     <field name="width_inches"/>
                                     <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
-				    <label for="variable"/>
-				    <field name="variable"/>
                                 </div>
+				<field name="variable"/>
                             </group>
                             <group>
 				<label for="width_millimeters"/>
@@ -99,6 +98,11 @@
 				<div class="o_row">
 				    <field name="paper_cut_centimeters"/>
 				    <field name="paper_cut_centimeters_uom"/>
+				</div>
+				<label for="paper_cut_inches"/>
+				<div class="o_row">
+				    <field name="paper_cut_inches"/>
+				    <field name="paper_cut_inches_uom"/>
 				</div>
 
                                 <field name="lines_width" />
