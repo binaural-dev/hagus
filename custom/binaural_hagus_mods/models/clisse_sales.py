@@ -175,11 +175,14 @@ class ClisseSales(models.Model):
             bush_exists = False
             ink_exists = False
             for material in clisse.materials_lines_id:
-                if material.product_category_id.name.lower() == "buje":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "buje":
                     bush_exists = True
-                if material.product_category_id.name.lower() == "bobina":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "bobina":
                     coil_exists = True
-                if material.product_category_id.name.lower() == "tinta":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "tinta":
                     ink_exists = True
             if not coil_exists:
                 raise UserError(
@@ -232,6 +235,7 @@ class ClisseSales(models.Model):
     def _onchange_materials_lines_id(self):
         coil = 0
         bushing = 0
+        labels_per_roll = self.labels_per_roll if self.labels_per_roll > 0 else 1
         for material in self.materials_lines_id:
             # Comprobar si un clisse tiene mas de un material con la categoria "Bobina"
             if bool(material.product_id.categ_id) and \
@@ -249,7 +253,7 @@ class ClisseSales(models.Model):
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
                 # Calcular la cantidad de Buje
-                material.qty = self.quantity * 1000 / self.labels_per_roll
+                material.qty = self.quantity * 1000 / labels_per_roll
                 material.cost = material.product_id.standard_price * material.qty
             if bushing > 1:
                 raise ValidationError(

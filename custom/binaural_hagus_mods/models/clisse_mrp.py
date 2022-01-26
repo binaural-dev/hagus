@@ -91,11 +91,14 @@ class ClisseMrp(models.Model):
             bush_exists = False
             ink_exists = False
             for material in clisse.materials_lines_id:
-                if material.product_category_id.name.lower() == "buje":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "buje":
                     bush_exists = True
-                if material.product_category_id.name.lower() == "bobina":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "bobina":
                     coil_exists = True
-                if material.product_category_id.name.lower() == "tinta":
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "tinta":
                     ink_exists = True
             if not coil_exists:
                 raise UserError(
