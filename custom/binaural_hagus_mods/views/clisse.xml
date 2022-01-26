@@ -191,6 +191,7 @@
 					<field name="consumed_msi"/>
 					<field name="margin"/>
 					<field name="total_mts"/>
+					<field name="total_ft"/>
 					<field name="mts_settings"/>
 					<field name="mts_print"/>
 				    </group>
@@ -248,6 +249,9 @@
 					<field name="t_roll"/>
 					<field name="coiling_problems"/>
 				    </group>
+				</group>
+				<group string="Ordenes de Producción">
+				    <field name="mrp_production_ids" nolabel="1"/>
 				</group>
 			    </page>
                         </notebook>

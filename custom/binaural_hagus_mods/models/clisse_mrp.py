@@ -1,6 +1,6 @@
 import logging
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -34,6 +34,8 @@ class ClisseMrp(models.Model):
     margin = fields.Float(string="Margen", digits=(14, 2))
     total_mts = fields.Float(string="Total Metros", digits=(
         14, 2), compute="_compute_total_mts")
+    total_ft = fields.Float(string="Total Pies Lineales", digits=(
+        14, 2), compute="_compute_total_ft")
     net_mts = fields.Float(string="Metros Netos", digits=(14, 2))
     mts_settings = fields.Float(string="Ajustes Metros", digits=(14, 2))
     mts_print = fields.Float(string="Tiro de metros", digits=(14, 2))
@@ -85,6 +87,31 @@ class ClisseMrp(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
+            coil_exists = False
+            bush_exists = False
+            ink_exists = False
+            for material in clisse.materials_lines_id:
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "buje":
+                    bush_exists = True
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "bobina":
+                    coil_exists = True
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "tinta":
+                    ink_exists = True
+            if not coil_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar un producto de tipo " +
+                    "\"Bobina\" en la lista de materiales.")
+            if not bush_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar un producto de tipo " +
+                    "\"Buje\" en la lista de materiales.")
+            if not ink_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar al menos " +
+                    "un producto de tipo \"Tinta\" en la lista de materiales.")
 
             product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({
@@ -107,6 +134,7 @@ class ClisseMrp(models.Model):
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
                 })
+            clisse.mrp_production_ids += mrp_production
         return {
             "type": "ir.actions.act_window",
             "name": "mrp.production.form",
@@ -121,20 +149,27 @@ class ClisseMrp(models.Model):
     def _compute_total_mts(self):
         self.total_mts = 0
         for clisse in self:
-            if bool(clisse.troquel_repetition) and clisse.troquel_repetition > 0 and \
-                    bool(clisse.troquel_teeth) and bool(clisse.troquel_repetition) and \
-                    bool(clisse.quantity):
-                teeth_per_inch = clisse.troquel_teeth / 8
-                clisse.total_mts = (
-                    teeth_per_inch / clisse.troquel_repetition) * 25.4 * clisse.quantity
+            repetition = clisse.troquel_repetition if clisse.troquel_repetition > 0 else 1
+            teeth = clisse.troquel_teeth if clisse.troquel_teeth > 0 else 1
+            quantity = clisse.quantity if clisse.quantity > 0 else 1
+            teeth_per_inch = teeth / 8
+            clisse.total_mts = (
+                teeth_per_inch / repetition) * 25.4 * quantity
 
-    @api.depends("paper_cut_inches", "total_mts")
+    @api.depends("total_mts")
+    def _compute_total_ft(self):
+        self.total_ft = 0
+        for clisse in self:
+            if bool(clisse.total_mts) and clisse.total_mts > 0:
+                clisse.total_ft = clisse.total_mts * 3.2808399
+
+    @api.depends("paper_cut_inches", "total_ft")
     def _compute_estimate_msi(self):
         self.estimate_msi = 0
         for clisse in self:
-            if clisse.paper_cut_inches > 0 and clisse.total_mts > 0:
-                lineal_feet = clisse.total_mts * 3.28125
-                clisse.estimate_msi = clisse.paper_cut_inches * lineal_feet * 0.012
+            paper_cut = clisse.paper_cut_inches if clisse.paper_cut_inches > 0 else 1
+            total_ft = clisse.total_ft if clisse.total_ft > 0 else 1
+            clisse.estimate_msi = paper_cut * total_ft * 0.012
 
     @api.depends("troquel_id", "troquel_teeth", "troquel_repetition", "labels_per_roll")
     def _compute_digits_number(self):

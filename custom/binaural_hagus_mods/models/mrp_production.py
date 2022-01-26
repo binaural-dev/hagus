@@ -1,4 +1,5 @@
 from odoo import fields, models, api
+from odoo.exceptions import UserError
 
 
 class MrpProduction(models.Model):
@@ -30,3 +31,12 @@ class MrpProduction(models.Model):
 
     product_is_not_sticker = fields.Boolean(related="product_id.category_is_not_sticker")
 
+class MrpBom(models.Model):
+    _inherit = "mrp.bom"
+
+    @api.model
+    def create(self, vals):
+        res = super().create(vals)
+        if bool(res.product_tmpl_id.clisse_id) and res.product_tmpl_id.bom_count > 1:
+            raise UserError(
+                "Este producto es un clisse y no puede tener mas de una lista de materiales.")

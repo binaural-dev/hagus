@@ -66,8 +66,6 @@ class ClisseSales(models.Model):
         "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
-    mrp_bom_id = fields.Many2one(
-        "mrp.bom", string="Lista de materiales del producto")
 
     @api.model
     def create(self, vals):
@@ -92,7 +90,8 @@ class ClisseSales(models.Model):
             "sale_ok": True,
             "purchase_ok": False,
             "type": "product",
-            "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
+            "standard_price": self.total_cost,
+            "list_price": self.thousand_price,
             "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
             "image_1920": res.image_design,
             "invoice_policy": "order",
@@ -129,7 +128,6 @@ class ClisseSales(models.Model):
                 "product_id": material.product_id.id,
                 "product_qty": material.qty,
             })
-            res.mrp_bom_id = mrp_bom
 
         lead_id = self.env.context.get("lead_id")
         if bool(lead_id):
@@ -143,20 +141,21 @@ class ClisseSales(models.Model):
             "image_1920": self.image_design,
         })
         # bom_line_ids = []
-        # self.product_template_ids.write({
-        # "price": self.thousand_price,
-        # "description": self.description,
-        # "categ_id": self.product_type.id,
-        # "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
-        # })
+        self.product_template_ids.write({
+            "price": self.thousand_price,
+            "description": self.description,
+            "categ_id": self.product_type.id,
+            "standard_price": self.total_cost,
+            "list_price": self.thousand_price,
+        })
 
-        # for material in self.materials_lines_id:
-        # if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
-        # self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
-        # "bom_id": self.mrp_bom_id.id,
-        # "product_id": material.product_id.id,
-        # "product_qty": material.qty,
-        # })
+        for material in self.materials_lines_id:
+            if material.product_id not in self.product_template_ids.bom_ids.bom_line_ids.mapped("product_id"):
+                self.product_template_ids.bom_ids.bom_line_ids += self.env["mrp.bom.line"].create({
+                    "bom_id": self.product_template_ids.bom_ids.id,
+                    "product_id": material.product_id.id,
+                    "product_qty": material.qty,
+                })
         return res
 
     def action_create_sale_order(self):
@@ -171,6 +170,32 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de venta " +
                     "si existe una orden anterior sin confirmar.")
+            coil_exists = False
+            bush_exists = False
+            ink_exists = False
+            for material in clisse.materials_lines_id:
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "buje":
+                    bush_exists = True
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "bobina":
+                    coil_exists = True
+                if bool(material.product_category_id) and\
+                        material.product_category_id.name.lower() == "tinta":
+                    ink_exists = True
+            if not coil_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar un producto de tipo " +
+                    "\"Bobina\" en la lista de materiales.")
+            if not bush_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar un producto de tipo " +
+                    "\"Buje\" en la lista de materiales.")
+            if not ink_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar al menos " +
+                    "un producto de tipo \"Tinta\" en la lista de materiales.")
+
             sale_order = self.env["sale.order"].create({
                 "partner_id": clisse.partner_id.id,
             })
@@ -205,17 +230,19 @@ class ClisseSales(models.Model):
             "target": "self",
         }
 
-    @api.onchange("materials_lines_id")
+    @api.onchange("materials_lines_id", "total_ft", "quantity")
     def _onchange_materials_lines_id(self):
-        rubber = 0
-        negative = 0
         coil = 0
         bushing = 0
+        labels_per_roll = self.labels_per_roll if self.labels_per_roll > 0 else 1
         for material in self.materials_lines_id:
             # Comprobar si un clisse tiene mas de un material con la categoria "Bobina"
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "bobina":
                 coil += 1
+                # Calcular la cantidad y el costo de Bobina
+                material.qty = self.total_ft
+                material.cost = material.product_id.standard_price * material.qty
             if coil > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
@@ -224,8 +251,9 @@ class ClisseSales(models.Model):
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
-                # Calculate the bushing quantity
-                material.qty = self.quantity
+                # Calcular la cantidad de Buje
+                material.qty = self.quantity * 1000 / labels_per_roll
+                material.cost = material.product_id.standard_price * material.qty
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
@@ -279,20 +307,23 @@ class ClisseSales(models.Model):
     def _compute_paper_cost(self):
         self.paper_cost = 0
         for clisse in self:
-            material_cost = 0
-            width = clisse.width_inches
+            decrease = clisse.decrease if clisse.decrease > 0 else 1
+            width = clisse.width_inches if clisse.width_inches > 0 else 1
+            length = clisse.length_inches if clisse.length_inches > 0 else 1
+            material_cost = 1
             for material in clisse.materials_lines_id:
                 if bool(material.product_category_id) and \
                    material.product_category_id.name.lower() == "bobina":
-                    material_cost = material.cost
+                    material_cost = material.product_id.standard_price
                     break
-            clisse.paper_cost = (width * clisse.length_inches * material_cost * clisse.quantity) + \
-                                (clisse.decrease * width / 1000 * material_cost)
+            clisse.paper_cost = (width * length * material_cost * clisse.quantity) + \
+                                (decrease * width / 1000 * material_cost)
 
     @api.depends("length_inches", "quantity", "materials_lines_id", "handm_cost")
     def _compute_print_cost(self):
         self.print_cost = 0
         for clisse in self:
+            length = clisse.length_inches if clisse.length_inches > 0 else 1
             total_colors = 0
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
@@ -301,20 +332,19 @@ class ClisseSales(models.Model):
                         total_colors += product.qty
                     else:
                         total_colors += 1
-            clisse.print_cost = ((clisse.length_inches * 25.4 * clisse.quantity / 13.33) + (
+            clisse.print_cost = ((length * 25.4 * clisse.quantity / 13.33) + (
                 total_colors * 10)) * clisse.handm_cost + (total_colors * 2.4)
 
     @api.depends("materials_lines_id", "quantity")
     def _compute_coiling_cost(self):
         self.coiling_cost = 0
         for clisse in self:
-            cost = 0
-            qty = 0
+            cost = 1
+            qty = clisse.quantity if clisse.quantity > 0 else 1
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
                         product.product_category_id.name.lower() == "buje":
-                    cost = product.cost
-                    qty = product.qty
+                    cost = product.product_id.standard_price
                     break
             clisse.coiling_cost = (cost * qty) + (qty * .1089)
 
@@ -383,8 +413,7 @@ class HagusClisseLines(models.Model):
     product_id = fields.Many2one('product.product', string='Producto')
     description = fields.Char(string='Descripción', related="product_id.name")
     qty = fields.Float(string='Cantidad', digits=(16, 2), default=1)
-    cost = fields.Float(string='Costo', digits=(
-        16, 2), related="product_id.standard_price", readonly=False, store_true=True)
+    cost = fields.Float(string='Costo', digits=(16, 2))
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
