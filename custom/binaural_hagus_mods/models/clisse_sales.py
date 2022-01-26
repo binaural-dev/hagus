@@ -66,8 +66,6 @@ class ClisseSales(models.Model):
         "sale.order", string="Ordenes de Venta", readonly=True)
 
     crm_lead_id = fields.Many2one("crm.lead", string="Lead Asociado")
-    mrp_bom_id = fields.Many2one(
-        "mrp.bom", string="Lista de materiales del producto")
 
     @api.model
     def create(self, vals):
@@ -92,7 +90,8 @@ class ClisseSales(models.Model):
             "sale_ok": True,
             "purchase_ok": False,
             "type": "product",
-            "standard_price": res.paper_cost + res.print_cost + res.coiling_cost + res.negative_plus_rubber_cost + res.art_cost,
+            "standard_price": self.total_cost,
+            "list_price": self.thousand_price,
             "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
             "image_1920": res.image_design,
             "invoice_policy": "order",
@@ -129,7 +128,6 @@ class ClisseSales(models.Model):
                 "product_id": material.product_id.id,
                 "product_qty": material.qty,
             })
-            res.mrp_bom_id = mrp_bom
 
         lead_id = self.env.context.get("lead_id")
         if bool(lead_id):
@@ -143,20 +141,21 @@ class ClisseSales(models.Model):
             "image_1920": self.image_design,
         })
         # bom_line_ids = []
-        # self.product_template_ids.write({
-        # "price": self.thousand_price,
-        # "description": self.description,
-        # "categ_id": self.product_type.id,
-        # "standard_price": self.paper_cost + self.print_cost + self.coiling_cost + self.negative_plus_rubber_cost + self.art_cost,
-        # })
+        self.product_template_ids.write({
+            "price": self.thousand_price,
+            "description": self.description,
+            "categ_id": self.product_type.id,
+            "standard_price": self.total_cost,
+            "list_price": self.thousand_price,
+        })
 
-        # for material in self.materials_lines_id:
-        # if material.product_id not in self.mrp_bom_id.bom_line_ids.mapped("product_id"):
-        # self.mrp_bom_id.bom_line_ids += self.env["mrp.bom.line"].create({
-        # "bom_id": self.mrp_bom_id.id,
-        # "product_id": material.product_id.id,
-        # "product_qty": material.qty,
-        # })
+        for material in self.materials_lines_id:
+            if material.product_id not in self.product_template_ids.bom_ids.bom_line_ids.mapped("product_id"):
+                self.product_template_ids.bom_ids.bom_line_ids += self.env["mrp.bom.line"].create({
+                    "bom_id": self.product_template_ids.bom_ids.id,
+                    "product_id": material.product_id.id,
+                    "product_qty": material.qty,
+                })
         return res
 
     def action_create_sale_order(self):
