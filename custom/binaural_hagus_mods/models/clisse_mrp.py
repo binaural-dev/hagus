@@ -107,6 +107,7 @@ class ClisseMrp(models.Model):
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
                 })
+            clisse.mrp_production_ids += mrp_production
         return {
             "type": "ir.actions.act_window",
             "name": "mrp.production.form",
