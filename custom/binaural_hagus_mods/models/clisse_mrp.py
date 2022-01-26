@@ -1,6 +1,6 @@
 import logging
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
@@ -87,6 +87,28 @@ class ClisseMrp(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
+            coil_exists = False
+            bush_exists = False
+            ink_exists = False
+            for material in clisse.materials_lines_id:
+                if material.product_category_id.name.lower() == "buje":
+                    bush_exists = True
+                if material.product_category_id.name.lower() == "bobina":
+                    coil_exists = True
+                if material.product_category_id.name.lower() == "tinta":
+                    ink_exists = True
+            if not coil_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar un producto de tipo " +
+                    "\"Bobina\" en la lista de materiales.")
+            if not bush_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar un producto de tipo " +
+                    "\"Buje\" en la lista de materiales.")
+            if not ink_exists:
+                raise UserError(
+                    "Antes de generar una orden de producción debe agregar al menos " +
+                    "un producto de tipo \"Tinta\" en la lista de materiales.")
 
             product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({

@@ -171,6 +171,29 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de venta " +
                     "si existe una orden anterior sin confirmar.")
+            coil_exists = False
+            bush_exists = False
+            ink_exists = False
+            for material in clisse.materials_lines_id:
+                if material.product_category_id.name.lower() == "buje":
+                    bush_exists = True
+                if material.product_category_id.name.lower() == "bobina":
+                    coil_exists = True
+                if material.product_category_id.name.lower() == "tinta":
+                    ink_exists = True
+            if not coil_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar un producto de tipo " +
+                    "\"Bobina\" en la lista de materiales.")
+            if not bush_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar un producto de tipo " +
+                    "\"Buje\" en la lista de materiales.")
+            if not ink_exists:
+                raise UserError(
+                    "Antes de generar una orden de venta debe agregar al menos " +
+                    "un producto de tipo \"Tinta\" en la lista de materiales.")
+
             sale_order = self.env["sale.order"].create({
                 "partner_id": clisse.partner_id.id,
             })
