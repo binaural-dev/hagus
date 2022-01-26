@@ -34,6 +34,8 @@ class ClisseMrp(models.Model):
     margin = fields.Float(string="Margen", digits=(14, 2))
     total_mts = fields.Float(string="Total Metros", digits=(
         14, 2), compute="_compute_total_mts")
+    total_ft = fields.Float(string="Total Pies Lineales", digits=(
+        14, 2), compute="_compute_total_ft")
     net_mts = fields.Float(string="Metros Netos", digits=(14, 2))
     mts_settings = fields.Float(string="Ajustes Metros", digits=(14, 2))
     mts_print = fields.Float(string="Tiro de metros", digits=(14, 2))
@@ -122,20 +124,27 @@ class ClisseMrp(models.Model):
     def _compute_total_mts(self):
         self.total_mts = 0
         for clisse in self:
-            if bool(clisse.troquel_repetition) and clisse.troquel_repetition > 0 and \
-                    bool(clisse.troquel_teeth) and bool(clisse.troquel_repetition) and \
-                    bool(clisse.quantity):
-                teeth_per_inch = clisse.troquel_teeth / 8
-                clisse.total_mts = (
-                    teeth_per_inch / clisse.troquel_repetition) * 25.4 * clisse.quantity
+            repetition = clisse.troquel_repetition if clisse.troquel_repetition > 0 else 1
+            teeth = clisse.troquel_teeth if clisse.troquel_teeth > 0 else 1
+            quantity = clisse.quantity if clisse.quantity > 0 else 1
+            teeth_per_inch = teeth / 8
+            clisse.total_mts = (
+                teeth_per_inch / repetition) * 25.4 * quantity
 
-    @api.depends("paper_cut_inches", "total_mts")
+    @api.depends("total_mts")
+    def _compute_total_ft(self):
+        self.total_ft = 0
+        for clisse in self:
+            if bool(clisse.total_mts) and clisse.total_mts > 0:
+                clisse.total_ft = clisse.total_mts * 3.2808399
+
+    @api.depends("paper_cut_inches", "total_ft")
     def _compute_estimate_msi(self):
         self.estimate_msi = 0
         for clisse in self:
-            if clisse.paper_cut_inches > 0 and clisse.total_mts > 0:
-                lineal_feet = clisse.total_mts * 3.28125
-                clisse.estimate_msi = clisse.paper_cut_inches * lineal_feet * 0.012
+            paper_cut = clisse.paper_cut_inches if clisse.paper_cut_inches > 0 else 1
+            total_ft = clisse.total_ft if clisse.total_ft > 0 else 1
+            clisse.estimate_msi = paper_cut * total_ft * 0.012
 
     @api.depends("troquel_id", "troquel_teeth", "troquel_repetition", "labels_per_roll")
     def _compute_digits_number(self):

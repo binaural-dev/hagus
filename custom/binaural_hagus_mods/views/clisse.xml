@@ -191,6 +191,7 @@
 					<field name="consumed_msi"/>
 					<field name="margin"/>
 					<field name="total_mts"/>
+					<field name="total_ft"/>
 					<field name="mts_settings"/>
 					<field name="mts_print"/>
 				    </group>
