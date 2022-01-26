@@ -205,10 +205,8 @@ class ClisseSales(models.Model):
             "target": "self",
         }
 
-    @api.onchange("materials_lines_id")
+    @api.onchange("materials_lines_id", "total_ft", "quantity")
     def _onchange_materials_lines_id(self):
-        rubber = 0
-        negative = 0
         coil = 0
         bushing = 0
         for material in self.materials_lines_id:
@@ -216,6 +214,9 @@ class ClisseSales(models.Model):
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "bobina":
                 coil += 1
+                # Calcular la cantidad y el costo de Bobina
+                material.qty = self.total_ft
+                material.cost = material.product_id.standard_price * material.qty
             if coil > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de una bobina como material.")
@@ -224,8 +225,9 @@ class ClisseSales(models.Model):
             if bool(material.product_id.categ_id) and \
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
-                # Calculate the bushing quantity
-                material.qty = self.quantity
+                # Calcular la cantidad de Buje
+                material.qty = self.quantity * 1000 / self.labels_per_roll
+                material.cost = material.product_id.standard_price * material.qty
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
@@ -279,20 +281,23 @@ class ClisseSales(models.Model):
     def _compute_paper_cost(self):
         self.paper_cost = 0
         for clisse in self:
-            material_cost = 0
-            width = clisse.width_inches
+            decrease = clisse.decrease if clisse.decrease > 0 else 1
+            width = clisse.width_inches if clisse.width_inches > 0 else 1
+            length = clisse.length_inches if clisse.length_inches > 0 else 1
+            material_cost = 1
             for material in clisse.materials_lines_id:
                 if bool(material.product_category_id) and \
                    material.product_category_id.name.lower() == "bobina":
-                    material_cost = material.cost
+                    material_cost = material.product_id.standard_price
                     break
-            clisse.paper_cost = (width * clisse.length_inches * material_cost * clisse.quantity) + \
-                                (clisse.decrease * width / 1000 * material_cost)
+            clisse.paper_cost = (width * length * material_cost * clisse.quantity) + \
+                                (decrease * width / 1000 * material_cost)
 
     @api.depends("length_inches", "quantity", "materials_lines_id", "handm_cost")
     def _compute_print_cost(self):
         self.print_cost = 0
         for clisse in self:
+            length = clisse.length_inches if clisse.length_inches > 0 else 1
             total_colors = 0
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
@@ -301,20 +306,19 @@ class ClisseSales(models.Model):
                         total_colors += product.qty
                     else:
                         total_colors += 1
-            clisse.print_cost = ((clisse.length_inches * 25.4 * clisse.quantity / 13.33) + (
+            clisse.print_cost = ((length * 25.4 * clisse.quantity / 13.33) + (
                 total_colors * 10)) * clisse.handm_cost + (total_colors * 2.4)
 
     @api.depends("materials_lines_id", "quantity")
     def _compute_coiling_cost(self):
         self.coiling_cost = 0
         for clisse in self:
-            cost = 0
-            qty = 0
+            cost = 1
+            qty = clisse.quantity if clisse.quantity > 0 else 1
             for product in clisse.materials_lines_id:
                 if bool(product.product_category_id) and \
                         product.product_category_id.name.lower() == "buje":
-                    cost = product.cost
-                    qty = product.qty
+                    cost = product.product_id.standard_price
                     break
             clisse.coiling_cost = (cost * qty) + (qty * .1089)
 
@@ -383,8 +387,7 @@ class HagusClisseLines(models.Model):
     product_id = fields.Many2one('product.product', string='Producto')
     description = fields.Char(string='Descripción', related="product_id.name")
     qty = fields.Float(string='Cantidad', digits=(16, 2), default=1)
-    cost = fields.Float(string='Costo', digits=(
-        16, 2), related="product_id.standard_price", readonly=False, store_true=True)
+    cost = fields.Float(string='Costo', digits=(16, 2))
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
         string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
