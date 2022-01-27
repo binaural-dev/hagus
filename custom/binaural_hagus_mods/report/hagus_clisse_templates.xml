@@ -59,6 +59,10 @@
 					<span t-field="clisse.paper_cut_inches"/>
 				    </div>
 				    <div>
+					<strong>Corte de Papel (Centimetros): </strong>
+					<span t-field="clisse.paper_cut_centimeters"/>
+				    </div>
+				    <div>
 					<strong>Linea Troquel: </strong>
 					<span t-field="clisse.troquel_line"/>
 				    </div>
