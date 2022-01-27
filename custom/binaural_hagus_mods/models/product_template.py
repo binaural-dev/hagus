@@ -9,7 +9,7 @@ class ProductTemplate(models.Model):
     category_is_not_sticker = fields.Boolean(
         string="La categoria es Calcomanía o Etiqueta",
         compute="_compute_category_is_not_sticker")
-    msi = fields.Float(string="Medida MSI", related="product_variant_id.msi", readonly=False, store_true=True)
+    msi = fields.Float(string="Medida MSI", related="product_variant_id.msi", readonly=False, store=True)
 
     @api.depends("categ_id.name")
     def _compute_category_is_not_sticker(self):
