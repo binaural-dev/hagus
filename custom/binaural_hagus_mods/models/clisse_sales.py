@@ -82,6 +82,8 @@ class ClisseSales(models.Model):
                 "No existe la unidad de medida 'millar', debe crearla antes de poder crear un clisse.")
 
         # Creando un producto basado en la informacion del clisse.
+        route = self.env["stock.location.route"].search(
+            [("name", '=', "Fabricar")]).id
         res.product_template_ids = self.env["product.template"].create({
             "name": res.description,
             "price": res.thousand_price,
@@ -94,7 +96,7 @@ class ClisseSales(models.Model):
             "type": "product",
             "standard_price": self.total_cost,
             "list_price": self.thousand_price,
-            "route_ids": [self.env["stock.location.route"].search([("name", '=', "Fabricar")]).id],
+            "route_ids": [route] if bool(route) else [1],
             "image_1920": res.image_design,
             "invoice_policy": "order",
         })
@@ -142,7 +144,6 @@ class ClisseSales(models.Model):
         self.product_template_ids[0].write({
             "image_1920": self.image_design,
         })
-        # bom_line_ids = []
         self.product_template_ids.write({
             "price": self.thousand_price,
             "description": self.description,
@@ -153,11 +154,12 @@ class ClisseSales(models.Model):
 
         for material in self.materials_lines_id:
             if material.product_id not in self.product_template_ids.bom_ids.bom_line_ids.mapped("product_id"):
-                self.product_template_ids.bom_ids.bom_line_ids += self.env["mrp.bom.line"].create({
-                    "bom_id": self.product_template_ids.bom_ids.id,
+                bom_line = self.env["mrp.bom.line"].create({
+                    "bom_id": self.product_template_ids[0].bom_ids[0].id,
                     "product_id": material.product_id.id,
                     "product_qty": material.qty,
                 })
+                self.product_template_ids.bom_ids += bom_line
         return res
 
     def action_create_sale_order(self):

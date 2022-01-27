@@ -8,13 +8,16 @@
 		<notebook position="inside">
 		    <field name="product_is_not_sticker" invisible="1"/>
 		    <page name="product_clisse" string="Clisse"
-			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
-			<group>
+			  attrs="{'invisible':
+				     ['|',
+					 ('product_is_not_sticker', '=', True),
+					 ('order_line', '=', [])]}">
+			<field name="more_than_one_clisse" invisible="1"/>
+			<group attrs="{'invisible': [('more_than_one_clisse', '=', True)]}">
 			    <group>
 				<field name="clisse_code"/>
 				<field name="clisse_date"/>
 				<field name="clisse_partner"/>
-				<field name="clisse_troquel"/>
 				<field name="clisse_width_inches"/>
 				<field name="clisse_length_inches"/>
 				<field name="clisse_lines_width"/>
@@ -41,6 +44,11 @@
 				       widget="image" options="{'size': [100,100]}"/>
 			    </group>
 		    	</group>
+
+			<group string="Lista de Clisse"
+			       attrs="{'invisible': [('more_than_one_clisse', '=', False)]}">
+			    <field name="clisse_ids" nolabel="1" readonly="1"/>
+			</group>
 	    	    </page>
 	    	</notebook>
 	    </field>
