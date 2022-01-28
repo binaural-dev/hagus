@@ -17,4 +17,3 @@ class HagusOrientation(models.Model):
 
     files = fields.Binary(string="Imágen de Referencia")
     filename = fields.Char()
-

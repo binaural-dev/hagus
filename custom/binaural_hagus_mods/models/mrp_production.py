@@ -40,3 +40,4 @@ class MrpBom(models.Model):
         if bool(res.product_tmpl_id.clisse_id) and res.product_tmpl_id.bom_count > 1:
             raise UserError(
                 "Este producto es un clisse y no puede tener mas de una lista de materiales.")
+        return res

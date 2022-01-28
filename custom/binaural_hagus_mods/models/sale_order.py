@@ -6,7 +6,8 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     product_id = fields.Many2one(
-        "product.product", compute="_compute_product_id")
+        "product.product", compute="_compute_product_id", store=True)
+    clisse_ids = fields.Many2many("hagus.clisse")
     clisse_code = fields.Char(related="product_id.clisse_id.code")
     clisse_date = fields.Date(related="product_id.clisse_id.date")
     clisse_partner = fields.Char(
@@ -40,7 +41,9 @@ class SaleOrder(models.Model):
     clisse_state = fields.Selection(related="product_id.clisse_id.state")
 
     product_is_not_sticker = fields.Boolean(
-        related="product_id.category_is_not_sticker", default=True)
+        related="product_id.product_tmpl_id.category_is_not_sticker")
+
+    more_than_one_clisse = fields.Boolean(compute="_compute_more_than_one_clisse")
 
     @api.model
     def create(self, vals):
@@ -49,22 +52,46 @@ class SaleOrder(models.Model):
         all_products = self.env["product.product"].search([])
         if not bool(all_products):
             raise UserError(
-                "Antes de generar una orden de produccion deben existir productos.")
-        return res
+                "Antes de generar una orden de venta deben existir productos.")
+        for product in res.order_line.mapped("product_id"):
+            if not product.product_tmpl_id.category_is_not_sticker:
+                res.clisse_ids += product.product_tmpl_id.clisse_id
 
+        return res
+    
+    def write(self, vals):
+        res = super().write(vals)
+        for clisse in self.clisse_ids:
+            if self.id not in clisse.mapped("sale_order_ids.id"):
+                clisse.sale_order_ids += self.env["sale.order"].search([("id", '=', self.id)])
+        return res
+    
     @api.onchange("order_line")
-    def _onchange_order_line(self):
-        if not self.product_is_not_sticker:
-            raise UserError(
-                "No se pueden agregar mas productos a la orden de venta de un clisse.")
+    def _onchange_sale_order(self):
+        for clisse in self.clisse_ids:
+            self.write({"clisse_ids": [(3, clisse.id)]})
+
+        for product in self.order_line.mapped("product_id"):
+            clisse_id = product.product_tmpl_id.clisse_id
+            if clisse_id not in self.clisse_ids:
+                self.clisse_ids += clisse_id
 
     @api.depends("order_line")
     def _compute_product_id(self):
-        all_products = self.env["product.product"].search([])
-        if bool(all_products):
-            self.product_id = all_products.mapped("id")[0]
+        if len(self.order_line) > 0:
+            self.product_id = self.order_line[0].product_id.id
+        else:
+            self.product_id = None
         for order in self:
-            product = order.order_line[0].product_id if bool(
-                order.order_line) else None
-            if product:
-                order.product_id = product.id
+            for line in order.order_line:
+                if not line.product_id.product_tmpl_id.category_is_not_sticker:
+                    order.product_id = line.product_id.id
+                    return
+
+    @api.depends("order_line", "clisse_ids")
+    def _compute_more_than_one_clisse(self):
+        for order in self:
+            if len(order.clisse_ids) > 1:
+                order.more_than_one_clisse = True
+            else:
+                order.more_than_one_clisse = False
