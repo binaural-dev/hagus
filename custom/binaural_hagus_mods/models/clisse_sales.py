@@ -21,7 +21,7 @@ class ClisseSales(models.Model):
     product_template_ids = fields.One2many(
         "product.template", "clisse_id", string="Producto")
     seller_id = fields.Many2one(
-        'hr.employee', string='Vendedor', domain="[('active', '=', True)]")
+        'res.partner', string='Vendedor', domain="[('active', '=', True)]")
 
     has_rubber = fields.Boolean(string="Tiene Caucho", default=True)
     rubber_base = fields.Float(
