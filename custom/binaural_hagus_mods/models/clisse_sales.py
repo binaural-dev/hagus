@@ -153,12 +153,15 @@ class ClisseSales(models.Model):
             "list_price": self.thousand_price,
         })
         # Actualizando la lista de materiales del producto.
-        self.product_template_ids.bom_ids.write({
-            "bom_line_ids": [(5)]
-        })
+        bom_id = self.env["mrp.bom"].search([("id", '=', self.product_template_ids.bom_ids.id)])
+
+        for line in self.product_template_ids.bom_ids.bom_line_ids:
+            self.product_template_ids.bom_ids.write({
+                "bom_line_ids": [(5, line.id)],
+            })
         for material in self.materials_lines_id:
             bom_line = self.env["mrp.bom.line"].create({
-                "bom_id": self.product_template_ids[0].bom_ids[0].id,
+                "bom_id": bom_id.id,
                 "product_id": material.product_id.id,
                 "product_qty": material.qty,
                 "product_uom_id": material.product_id.uom_id.id,
@@ -362,7 +365,7 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
-    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost")
+    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "negative_plus_rubber_cost", "art_cost")
     def _compute_total_cost(self):
         self.total_cost = 0
         for clisse in self:
