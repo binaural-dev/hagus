@@ -14,7 +14,14 @@
 		</div>
 
 		<field name="categ_id" position="after">
-		    <field name="msi"/>
+		    <field name="category_name" invisible="1"/>
+		    <field name="cut_width_inches"
+			   attrs="{
+			       'invisible': [('category_name', 'not in', ('bobina', 'Bobina'))]}"/>
+		    <field name="msi"
+			   attrs="{
+			       'invisible': [('category_name', 'not in', ('bobina', 'Bobina'))]}"/>
+		    <field name="qty_available"/>
 		</field>
 	    </field>
 	</record>

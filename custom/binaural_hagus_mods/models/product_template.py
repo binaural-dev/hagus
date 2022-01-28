@@ -9,7 +9,12 @@ class ProductTemplate(models.Model):
     category_is_not_sticker = fields.Boolean(
         string="La categoria es Calcomanía o Etiqueta",
         compute="_compute_category_is_not_sticker")
-    msi = fields.Float(string="Medida MSI", related="product_variant_id.msi", readonly=False, store=True)
+    cut_width_inches = fields.Float(
+        "Ancho de Corte (Pulgadas)", digits=(14, 2), default=1)
+    msi = fields.Float(string="Medida MSI", digits=(
+        14, 4), compute="_compute_msi")
+    category_name = fields.Char(
+        string="Nombre de la categoria", related="categ_id.name")
 
     @api.depends("categ_id.name")
     def _compute_category_is_not_sticker(self):
@@ -21,6 +26,13 @@ class ProductTemplate(models.Model):
                     return
             product.category_is_not_sticker = True
 
+    @api.depends("qty_available", "cut_width_inches")
+    def _compute_msi(self):
+        for product in self:
+            total_ft = product.qty_available
+            product.msi = product.cut_width_inches * total_ft * 0.012
+
+
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
@@ -31,8 +43,3 @@ class ProductCategory(models.Model):
                 "No se puede crear la misma categoria dos veces.")
         res = super().create(vals)
         return res
-
-class ProductProduct(models.Model):
-    _inherit = "product.product"
-
-    msi = fields.Float(string="Medida MSI", digits=(14,6))
