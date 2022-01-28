@@ -121,7 +121,7 @@ class ClisseMrp(models.Model):
                 "consumption": "strict",
             })
             mrp_production.write({
-                "bom_id": clisse.mrp_bom_id.id,
+                "bom_id": clisse.product_template_ids.bom_ids.id,
             })
             for material in clisse.materials_lines_id:
                 mrp_production.move_raw_ids += self.env["stock.move"].create({
