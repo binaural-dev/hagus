@@ -53,14 +53,16 @@ class SaleOrder(models.Model):
         if not bool(all_products):
             raise UserError(
                 "Antes de generar una orden de venta deben existir productos.")
+        # Agregando cada uno de los clisse de la orden de venta a la lista de clisse.
         for product in res.order_line.mapped("product_id"):
-            if not product.product_tmpl_id.category_is_not_sticker:
+            if not product.category_is_not_sticker:
                 res.clisse_ids += product.product_tmpl_id.clisse_id
-
         return res
     
     def write(self, vals):
         res = super().write(vals)
+        # Agregando la orden de venta a la lista de ordenes de venta de cada uno de los
+        # clisse cuyo producto forma parte de la misma.
         for clisse in self.clisse_ids:
             if self.id not in clisse.mapped("sale_order_ids.id"):
                 clisse.sale_order_ids += self.env["sale.order"].search([("id", '=', self.id)])

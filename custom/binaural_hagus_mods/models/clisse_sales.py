@@ -102,11 +102,56 @@ class ClisseSales(models.Model):
         })
         # Creando la lista de materiales del producto.
         mrp_bom = self.env["mrp.bom"].create({
-            "product_tmpl_id": res.product_template_ids[0].id,
+            "product_tmpl_id": res.product_template_ids.id,
             "product_qty": res.quantity,
             "code": res.code,
         })
 
+        mrp_bom.write({
+            "operation_ids": [
+                (
+                    0,
+                    4,
+                    {
+                        "name": "Cortar bobina",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+                (
+                    0,
+                    4,
+                    {
+                        "name": f"Impresión {res.product_template_ids.name}",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+                (
+                    0,
+                    4,
+                    {
+                        "name": f"Embobinado {res.product_template_ids.name}",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+                (
+                    0,
+                    4,
+                    {
+                        "name": f"Calidad",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+            ]
+        })
+        
         for material in res.materials_lines_id:
             # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
             if bool(material.product_category_id) and \
@@ -153,12 +198,15 @@ class ClisseSales(models.Model):
             "list_price": self.thousand_price,
         })
         # Actualizando la lista de materiales del producto.
-        self.product_template_ids.bom_ids.write({
-            "bom_line_ids": [(5)]
-        })
+        bom_id = self.env["mrp.bom"].search([("id", '=', self.product_template_ids.bom_ids.id)])
+
+        for line in self.product_template_ids.bom_ids.bom_line_ids:
+            self.product_template_ids.bom_ids.write({
+                "bom_line_ids": [(5, line.id)],
+            })
         for material in self.materials_lines_id:
             bom_line = self.env["mrp.bom.line"].create({
-                "bom_id": self.product_template_ids[0].bom_ids[0].id,
+                "bom_id": bom_id.id,
                 "product_id": material.product_id.id,
                 "product_qty": material.qty,
                 "product_uom_id": material.product_id.uom_id.id,
@@ -362,7 +410,7 @@ class ClisseSales(models.Model):
         for clisse in self:
             clisse.packing_cost = clisse.quantity * .1
 
-    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost")
+    @api.depends("paper_cost", "print_cost", "coiling_cost", "packing_cost", "negative_plus_rubber_cost", "art_cost")
     def _compute_total_cost(self):
         self.total_cost = 0
         for clisse in self:

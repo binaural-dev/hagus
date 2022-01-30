@@ -10,91 +10,92 @@ _logger = logging.getLogger(__name__)
 class HagusClisseTestCase(SavepointCase):
 
     @classmethod
-    def setUpClass(cls):
-        super(HagusClisseTestCase, cls).setUpClass()
+    def setUpClass(self):
+        super(HagusClisseTestCase, self).setUpClass()
 
-        cls.products = [
-            cls.env["product.product"].create({
+        self.products = [
+            self.env["product.product"].create({
                 "name": "Tinta Negra",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Tinta")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Tinta")]).id,
             }),
-            cls.env["product.product"].create({
+            self.env["product.product"].create({
                 "name": "Tinta Azul",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Tinta")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Tinta")]).id,
             }),
-            cls.env["product.product"].create({
+            self.env["product.product"].create({
                 "name": "Bushing Test",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Buje")]).id,
                 "price": .085,
                 "standard_price": .085,
             }),
-            cls.env["product.product"].create({
+            self.env["product.product"].create({
                 "name": "Coil Test",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Bobina")]).id,
                 "price": .37,
                 "standard_price": .37,
             }),
-            cls.env["product.product"].create({
+            self.env["product.product"].create({
                 "name": "Coil Test 2",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Bobina")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Bobina")]).id,
                 "price": 1,
                 "standard_price": 1,
             }),
-            cls.env["product.product"].create({
+            self.env["product.product"].create({
                 "name": "Bushing Test 2",
-                "categ_id": cls.env["product.category"].search([("name", '=', "Buje")]).id,
+                "categ_id": self.env["product.category"].search([("name", '=', "Buje")]).id,
                 "price": 1,
                 "standard_price": 1,
             }),
         ]
 
-        cls.troquels = [
-            cls.env["hagus.troquel"].create({
+        self.troquels = [
+            self.env["hagus.troquel"].create({
                 "code": "troqtest1",
                 "width_inches": 10,
-                "length_inches": 10
+                "length_inches": 10,
+                "teeth": 12,
+                "repetition": 3,
             }),
         ]
 
-        cls.clisse = cls.env["hagus.clisse"].create({
+        self.clisse = self.env["hagus.clisse"].create({
             "description": "cli012345",
-            "troquel_id": cls.troquels[0].id,
+            "troquel_id": self.troquels[0].id,
             "labels_per_roll": 10,
             "quantity": 15,
             "decrease": 2952.75,
             "handm_cost": .2312,
-            "thousand_cost": 500,
+            "thousand_price": 500,
+            "has_rubber": True,
+            "percentage": 25,
+            "profit": 100,
             "materials_lines_id": [
                 (
                     0,
                     4,
                     {
-                        "product_id": cls.products[0].id,
-                        "cost": 1.5,
+                        "product_id": self.products[0].id,
                     }
                 ),
                 (
                     0,
                     4,
                     {
-                        "product_id": cls.products[1].id,
-                        "cost": 2,
+                        "product_id": self.products[1].id,
                     }
                 ),
                 (
                     0,
                     4,
                     {
-                        "product_id": cls.products[2].id,
-                        "cost": .085,
+                        "product_id": self.products[2].id,
                     }
                 ),
                 (
                     0,
                     4,
                     {
-                        "product_id": cls.products[3].id,
-                        "cost": .37,
+                        "product_id": self.products[3].id,
                     }
                 ),
             ]
@@ -222,12 +223,27 @@ class HagusClisseTestCase(SavepointCase):
         """Probar que el resultado del costo de impresion se calcula correctamente."""
         clisse = self.clisse
         self.assertEqual(float_compare(
-            clisse.print_cost, 75.51, precision_digits=2), 0)
+            clisse.print_cost, 75.14, precision_digits=2), 0)
 
     def test_coiling_cost(self):
         """Probar que el resultado del costo de embobinado se calcula correctamente."""
         clisse = self.clisse
         self.assertEqual(float_compare(clisse.coiling_cost, 2.91, precision_digits=0), 0)
+
+    def test_packing_cost(self):
+        """Probar que el resultado del costo de empaquetado se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.packing_cost, 1.5, precision_digits=0), 0)
+
+    def test_total_cost(self):
+        """Probar que el resultado del costo total se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.total_cost, 875.55, precision_digits=2), 0)
+
+    def test_expenses(self):
+        """Probar que el resultado de los gastps generales se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.expenses, 218.89, precision_digits=2), 0)
 
     def test_clisse_product_creation(self):
         """
@@ -274,7 +290,7 @@ class HagusClisseTestCase(SavepointCase):
     def test_same_sale_order_creation_twice(self):
         """
         Probar que cuando se intentan crear dos ordenes de venta seguidas con la misma cantidad a producir
-        se muestra el mensaje de error correspondiente.
+        y sin haber confirmado la primera se muestra el mensaje de error correspondiente.
         """
         with self.assertRaises(UserError):
             self.clisse.write({"partner_id": 1, "quantity": 350})

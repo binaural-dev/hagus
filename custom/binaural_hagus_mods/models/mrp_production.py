@@ -31,6 +31,13 @@ class MrpProduction(models.Model):
 
     product_is_not_sticker = fields.Boolean(related="product_id.category_is_not_sticker")
 
+    def write(self, vals):
+        res = super().write(vals)
+        # Agregando la orden de produccion a la lista de ordenes de produccion
+        # del clisse cuyo producto forma parte de la misma.
+        self.product_id.product_tmpl_id.clisse_id.mrp_production_ids += self.env["mrp.production"].search([("id", '=', self.id)])
+        return res
+
 class MrpBom(models.Model):
     _inherit = "mrp.bom"
 
@@ -41,3 +48,11 @@ class MrpBom(models.Model):
             raise UserError(
                 "Este producto es un clisse y no puede tener mas de una lista de materiales.")
         return res
+
+class MrpBomLine(models.Model):
+    _inherit = "mrp.bom.line"
+
+    bom_id = fields.Many2one(
+        'mrp.bom', 'Parent BoM',
+        index=True, ondelete='cascade', required=False)
+

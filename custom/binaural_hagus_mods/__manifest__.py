@@ -15,8 +15,9 @@
     'depends': [
         'mrp',
         'sale_management',
-        'crm','purchase',
-        'hr'
+        'crm',
+        'purchase',
+        'hr',
     ],
     'data': [
         'security/ir.model.access.csv',
