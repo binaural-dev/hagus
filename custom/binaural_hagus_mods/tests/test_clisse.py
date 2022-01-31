@@ -241,9 +241,59 @@ class HagusClisseTestCase(SavepointCase):
         self.assertEqual(float_compare(clisse.total_cost, 875.55, precision_digits=2), 0)
 
     def test_expenses(self):
-        """Probar que el resultado de los gastps generales se calcula correctamente."""
+        """Probar que el resultado de los gastos generales se calcula correctamente."""
         clisse = self.clisse
         self.assertEqual(float_compare(clisse.expenses, 218.89, precision_digits=2), 0)
+
+    def test_subtotal(self):
+        """Probar que el resultado del subtotal se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.subtotal, 1094.44, precision_digits=2), 0)
+
+    def test_total_price(self):
+        """Probar que el resultado del precio total se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.total_price, 2188.88, precision_digits=2), 0)
+
+    def test_thousand_price(self):
+        """Probar que el resultado del precio por millar se calcula correctamente."""
+        clisse = self.clisse
+        self.assertEqual(float_compare(clisse.thousand_price, 145.93, precision_digits=2), 0)
+
+    def test_check_product_template_id(self):
+        """Probar que el clisse no puede tener mas de un producto asociado"""
+        clisse = self.clisse
+        with self.assertRaises(UserError):
+            clisse.write({
+                "product_template_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": clisse.description,
+                            "price": clisse.thousand_price,
+                            "categ_id": clisse.product_type.id,
+                            "description": clisse.description,
+                            "sale_ok": True,
+                            "purchase_ok": False,
+                            "type": "product",
+                            "standard_price": clisse.total_cost,
+                            "list_price": clisse.thousand_price,
+                            "image_1920": clisse.image_design,
+                            "invoice_policy": "order",
+
+                        }
+                    )
+                ]
+            })
+
+    def test_check_quantity(self):
+        """Probar que la cantidad del clisse no puede ser un numero menor o igual a cero."""
+        clisse = self.clisse
+        with self.assertRaises(ValidationError):
+            clisse.write({"quantity": 0})
+        with self.assertRaises(ValidationError):
+            clisse.write({"quantity": -5})
 
     def test_clisse_product_creation(self):
         """
