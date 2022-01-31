@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class HagusClisse(models.Model):
 	_name = 'hagus.clisse'
+	_description = 'Clisse'
 	_inherit = ['mail.thread', 'mail.activity.mixin']
 	_rec_name = 'code'
 

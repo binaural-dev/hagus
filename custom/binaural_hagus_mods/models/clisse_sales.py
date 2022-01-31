@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ClisseSales(models.Model):
-    """Clisse functionality related to Sales."""
+    """Funcionalidad del Clisse relacionada al modulo Ventas."""
     _inherit = "hagus.clisse"
 
     quantity = fields.Float(
@@ -196,6 +196,11 @@ class ClisseSales(models.Model):
         return res
 
     def write(self, vals):
+        # Obteniendo el valor anterior de los campos que estan siendo cambiados.
+        previous_values = {}
+        for k, v in vals.items():
+            previous_values[k] = self.__getitem__(k)
+
         res = super().write(vals)
         # Actualizando el producto.
         self.product_template_ids[0].write({
@@ -223,6 +228,44 @@ class ClisseSales(models.Model):
                 "product_uom_id": material.product_id.uom_id.id,
             })
             self.product_template_ids.bom_ids.bom_line_ids += bom_line
+
+        # Publicando un mensaje notificando cada uno de los cambios realizados.
+        if len(vals) > 0:
+            # Terminando la funcion en caso de que se este actualizando la lista de ordenes de produccion
+            # ya que los mensajes de notificacion de esta se mandan desde la funcion que las genera.
+            if "mrp_production_ids" in vals.keys():
+                return res
+
+            message = "<h5>Clisse Modificado</h5>"
+            message += "<ul>"
+            for k, v in previous_values.items():
+                message += "<li>"
+                if k == "image_design":
+                    message += "Imágen de diseño cambiada"
+                elif k == "product_template_ids":
+                    message += f"Producto \"{self.description}\" creado"
+                elif k == "image_barcode":
+                    message += "Imágen del código de barras cambiada"
+                elif k == "materials_lines_id":
+                    message += "Lista de materiales cambiada"
+                elif k == "sale_order_ids":
+                    message += "Orden de venta añadida"
+                else:
+                    message += f"{self._fields[k].string}: "
+                    if k == "partner_id" or k == "product_type"\
+                            or k == "pressman_1" or k == "pressman_2":
+                        message += f"{previous_values[k].name} &#8594; {self.__getitem__(k).name}"
+                    elif k == "troquel_id":
+                        message += f"{previous_values[k].code} &#8594; {self.__getitem__(k).code}"
+                    elif k == "orientation_id":
+                        message += f"{previous_values[k].abbreviation} &#8594; {self.__getitem__(k).abbreviation}"
+                    elif k == "finish_type_id":
+                        message += f"{previous_values[k].description} &#8594; {self.__getitem__(k).description}"
+                    else:
+                        message += f"{previous_values[k]} &#8594; {self.__getitem__(k)}"
+                message += "</li>"
+            message += "</ul>"
+            self.message_post(body=message)
         return res
 
     def action_create_sale_order(self):
