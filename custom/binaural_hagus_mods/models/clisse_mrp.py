@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ClisseMrp(models.Model):
-    """Clisse functionality related to mrp."""
+    """Funcionalidad del Clisse relacionada al modulo mrp."""
     _inherit = "hagus.clisse"
 
     troquel_line = fields.Integer(
@@ -134,7 +134,10 @@ class ClisseMrp(models.Model):
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
                 })
+            # Agregando la orden de producción a la lista de ordenes de producción
+            # del clisse y enviando la notificacion de que fue añadida.
             clisse.mrp_production_ids += mrp_production
+            self.message_post(body="<h5>Clisse Modificado.</h5><ul><li>Orden de Producción añadida</li></ul>")
         return {
             "type": "ir.actions.act_window",
             "name": "mrp.production.form",

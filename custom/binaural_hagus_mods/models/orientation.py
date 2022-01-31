@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class HagusOrientation(models.Model):
     _name = 'hagus.orientation'
+    _description = 'Orientacion'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'abbreviation'
 

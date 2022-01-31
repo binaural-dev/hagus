@@ -17,40 +17,24 @@ class HagusTroquel(models.Model):
     cylinders = fields.Integer(string='Cilindros')
 
     width_inches = fields.Float(string='Ancho(Pulgadas)')
-    width_inches_uom = fields.Many2one('uom.uom', string='Medida',
-                                       domain="[('category_id', '=', 4)]")
     variable = fields.Boolean(string='Variable')
 
     width_millimeters = fields.Float(string='Ancho(Milimetros)', store=True,
                                      compute="_compute_width_millimeters",
                                      inverse="_inverse_width_millimeters")
-    width_millimeters_uom = fields.Many2one('uom.uom', string='Medida',
-                                            domain="[('category_id', '=', 4)]")
 
     length_inches = fields.Float(string='Largo(Pulgadas)')
-    length_inches_uom = fields.Many2one('uom.uom', string='Medida',
-                                        domain="[('category_id', '=', 4)]")
 
     length_millimeters = fields.Float(string='Largo(Milimetros)', store=True,
                                       compute="_compute_length_millimeters",
                                       inverse="_inverse_length_millimeters")
-    length_millimeters_uom = fields.Many2one('uom.uom', string='Medida',
-                                             domain="[('category_id', '=', 4)]")
 
     paper_cut_centimeters = fields.Float(
         string='Ancho de Corte(centimetros)', store=True,
         compute="_compute_paper_cut_centimeters",
         inverse="_inverse_paper_cut_centimeters")
-    paper_cut_centimeters_uom = fields.Many2one(
-        'uom.uom', string='Medida',
-        domain="[('category_id', '=', 4)]",
-        default=lambda self: self.env['uom.uom'].search(
-            [('name', '=', u'cm')]).id)
     paper_cut_inches = fields.Float(
         string='Ancho de Corte(pulgadas)', required=True, default=1)
-    paper_cut_inches_uom = fields.Many2one(
-        'uom.uom', string='Medida',
-        domain="[('category_id', '=', 4)]")
 
     lines_width = fields.Integer(string='Lineas x ancho')
     repetition = fields.Integer(string='Repetición', required=True, default=1)

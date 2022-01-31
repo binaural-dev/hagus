@@ -66,43 +66,15 @@
                             <group>
                                 <field name="teeth"/>
                                 <field name="cylinders"/>
-                                <label for="width_inches" />
-                                <div class="o_row">
-                                    <field name="width_inches"/>
-                                    <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
-                                </div>
+                                <field name="width_inches"/>
 				<field name="variable"/>
                             </group>
                             <group>
-				<label for="width_millimeters"/>
-				<div class="o_row">
-                                    <field name="width_millimeters" />
-				    <span><field name="width_millimeters_uom" options="{'no_create': True}"/></span>
-				</div>
-
-				<label for="length_inches"/>
-				<div class="o_row">
-                                    <field name="length_inches" />
-                                    <field name="length_inches_uom" />
-				</div>
-
-				<label for="length_millimeters"/>
-				<div class="o_row">
-                                    <field name="length_millimeters" />
-                                    <field name="length_millimeters_uom" />
-				</div>
-
-				<label for="paper_cut_centimeters"/>
-				<div class="o_row">
-				    <field name="paper_cut_centimeters"/>
-				    <field name="paper_cut_centimeters_uom"/>
-				</div>
-				<label for="paper_cut_inches"/>
-				<div class="o_row">
-				    <field name="paper_cut_inches"/>
-				    <field name="paper_cut_inches_uom"/>
-				</div>
-
+                                <field name="width_millimeters" />
+                                <field name="length_inches" />
+				<field name="length_millimeters" />
+				<field name="paper_cut_centimeters"/>
+				<field name="paper_cut_inches"/>
                                 <field name="lines_width" />
                                 <field name="repetition" />
                                 <field name="designed" />
