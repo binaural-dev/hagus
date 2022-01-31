@@ -134,6 +134,16 @@ class ClisseSales(models.Model):
                     0,
                     4,
                     {
+                        "name": f"Validación Impresión",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+                (
+                    0,
+                    4,
+                    {
                         "name": f"Embobinado {res.product_template_ids.name}",
                         "bom_id": mrp_bom.id,
                         "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
@@ -144,7 +154,7 @@ class ClisseSales(models.Model):
                     0,
                     4,
                     {
-                        "name": f"Calidad",
+                        "name": f"Validación Corte",
                         "bom_id": mrp_bom.id,
                         "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
                         "time_mode": "manual",
