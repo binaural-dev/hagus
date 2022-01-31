@@ -18,8 +18,8 @@ class ClisseMrp(models.Model):
         string="Repetición", related="troquel_id.repetition")
     paper_cut_inches = fields.Float(
         string="Corte de Papel (pulgadas)", related="troquel_id.paper_cut_inches")
-    paper_cut_centimeters = fields.Float(string="Corte de papel(centimetros)", digtis=(
-        14, 2), related="troquel_id.paper_cut_centimeters")
+    paper_cut_centimeters = fields.Float(
+            string="Corte de papel(centimetros)", related="troquel_id.paper_cut_centimeters")
     designed = fields.Char(string="Diseñado por",
                            related="troquel_id.designed")
     mrp_production_ids = fields.Many2many(
