@@ -216,11 +216,19 @@ class ClisseSales(models.Model):
         # Actualizando la lista de materiales del producto.
         bom_id = self.env["mrp.bom"].search([("id", '=', self.product_template_ids.bom_ids.id)])
 
+        # Borrando todas las lineas de materiales existentes previamente en la lista
+        # de materiales del producto asociado al clisse.
         for line in self.product_template_ids.bom_ids.bom_line_ids:
             self.product_template_ids.bom_ids.write({
                 "bom_line_ids": [(5, line.id)],
             })
+        # Volviendo a poblar la lista de materiales del producto asociado al clisse.
         for material in self.materials_lines_id:
+            # Verificando que la linea tiene un producto asociado.
+            if not bool(material.product_id):
+                material.unlink()
+                continue
+            # Creando la linea de materiales del producto.
             bom_line = self.env["mrp.bom.line"].create({
                 "bom_id": bom_id.id,
                 "product_id": material.product_id.id,
