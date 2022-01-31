@@ -26,12 +26,8 @@ class HagusClisse(models.Model):
 	    'hagus.troquel', string='Troquel', domain="[('active', '=',True)]", required=True)
 	width_inches = fields.Float(
 	    string='Ancho(Pulgadas)', related="troquel_id.width_inches")
-	width_inches_uom = fields.Many2one(
-	    'uom.uom', string='Medida', related="troquel_id.width_inches_uom")
 	length_inches = fields.Float(
 	    string='Largo(Pulgadas)', related="troquel_id.length_inches")
-	length_inches_uom = fields.Many2one(
-	    'uom.uom', string='Medida', related="troquel_id.length_inches_uom")
 	labels_per_roll = fields.Float(string='Etiquetas por Rollo', digits=(10, 2), required=True)
 
 	size = fields.Char(string='Tamaño')

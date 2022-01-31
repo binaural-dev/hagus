@@ -63,17 +63,8 @@
                                 <field name="date"/>
                                 <field name="partner_id" />
                                 <field name="troquel_id" />
-                                
-                                <label for="width_inches" />
-                                <div class="o_row" name="width" >
-                                    <field name="width_inches"/>
-                                    <span><field name="width_inches_uom" options="{'no_create': True}"/></span>
-                                </div>
-                                <label for="length_inches" />
-                                <div class="o_row" name="length" >
-                                    <field name="length_inches"/>
-                                    <span><field name="length_inches_uom" options="{'no_create': True}"/></span>
-                                </div>
+                                <field name="width_inches"/>
+                                <field name="length_inches"/>
                                 <field name="size" />
                                 <field name="background" />
                                 <field name="labels_per_roll" />
