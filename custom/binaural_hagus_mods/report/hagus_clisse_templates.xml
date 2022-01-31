@@ -51,10 +51,6 @@
 					<span t-field="clisse.length_inches"/>
 				    </div>
 				    <div>
-					<strong>Lineas x ancho: </strong>
-					<span t-field="clisse.lines_width"/>
-				    </div>
-				    <div>
 					<strong>Corte de Papel (Pulgadas): </strong>
 					<span t-field="clisse.paper_cut_inches"/>
 				    </div>

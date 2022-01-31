@@ -31,8 +31,6 @@ class HagusClisse(models.Model):
 	    string='Largo(Pulgadas)', related="troquel_id.length_inches")
 	length_inches_uom = fields.Many2one(
 	    'uom.uom', string='Medida', related="troquel_id.length_inches_uom")
-	lines_width = fields.Integer(
-	    string='Lineas x ancho', related="troquel_id.lines_width")
 	labels_per_roll = fields.Float(string='Etiquetas por Rollo', digits=(10, 2), required=True)
 
 	size = fields.Char(string='Tamaño')

@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
     clisse_length_inches = fields.Float(
         related="product_id.clisse_id.length_inches")
     clisse_lines_width = fields.Integer(
-        related="product_id.clisse_id.lines_width")
+        related="product_id.clisse_id.troquel_line")
     clisse_labels_per_roll = fields.Float(
         related="product_id.clisse_id.labels_per_roll")
     clisse_size = fields.Char(related="product_id.clisse_id.size")
