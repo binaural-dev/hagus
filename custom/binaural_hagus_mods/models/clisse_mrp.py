@@ -9,7 +9,7 @@ class ClisseMrp(models.Model):
     _inherit = "hagus.clisse"
 
     troquel_line = fields.Integer(
-        string="Linea Troquel", related="troquel_id.lines_width")
+        string="Linea Troquel", related="troquel_id.lines_width", readonly=False, store=True)
     troquel_teeth = fields.Integer(
         string="Dientes del Troquel", related="troquel_id.teeth")
     troquel_cylinders = fields.Integer(

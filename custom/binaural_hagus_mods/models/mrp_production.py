@@ -13,7 +13,7 @@ class MrpProduction(models.Model):
             string="Troquel", related="product_id.clisse_id.troquel_id.code")
     clisse_width_inches = fields.Float(related="product_id.clisse_id.width_inches")
     clisse_length_inches = fields.Float(related="product_id.clisse_id.length_inches")
-    clisse_lines_width = fields.Integer(related="product_id.clisse_id.lines_width")
+    clisse_lines_width = fields.Integer(related="product_id.clisse_id.troquel_line")
     clisse_labels_per_roll = fields.Float(related="product_id.clisse_id.labels_per_roll")
     clisse_size = fields.Char(related="product_id.clisse_id.size")
     clisse_background = fields.Char(related="product_id.clisse_id.background")

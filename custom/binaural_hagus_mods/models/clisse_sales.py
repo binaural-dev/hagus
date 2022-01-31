@@ -1,4 +1,5 @@
 import logging
+import math
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
@@ -133,6 +134,16 @@ class ClisseSales(models.Model):
                     0,
                     4,
                     {
+                        "name": f"Validación Impresión",
+                        "bom_id": mrp_bom.id,
+                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        "time_mode": "manual",
+                    }
+                ),
+                (
+                    0,
+                    4,
+                    {
                         "name": f"Embobinado {res.product_template_ids.name}",
                         "bom_id": mrp_bom.id,
                         "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
@@ -143,7 +154,7 @@ class ClisseSales(models.Model):
                     0,
                     4,
                     {
-                        "name": f"Calidad",
+                        "name": f"Validación Corte",
                         "bom_id": mrp_bom.id,
                         "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
                         "time_mode": "manual",
@@ -287,7 +298,7 @@ class ClisseSales(models.Model):
             "target": "self",
         }
 
-    @api.onchange("materials_lines_id", "total_ft", "quantity")
+    @api.onchange("materials_lines_id", "total_ft", "quantity", "labels_per_roll")
     def _onchange_materials_lines_id(self):
         coil = 0
         bushing = 0
@@ -309,7 +320,7 @@ class ClisseSales(models.Model):
                material.product_category_id.name.lower() == "buje":
                 bushing += 1
                 # Calcular la cantidad de Buje
-                material.qty = self.quantity * 1000 / labels_per_roll
+                material.qty = math.ceil(self.quantity * 1000 / labels_per_roll)
                 material.cost = material.product_id.standard_price * material.qty
             if bushing > 1:
                 raise ValidationError(
@@ -473,6 +484,6 @@ class HagusClisseLines(models.Model):
     cost = fields.Float(string='Costo', digits=(16, 2))
     clisse_id = fields.Many2one('hagus.clisse', string='Clisse asociado')
     product_category_id = fields.Many2one(
-        string="Categoría", related="product_id.categ_id", readonly=False, store_true=True)
+        string="Categoría", related="product_id.categ_id", readonly=False, store=True)
     product_uom_id = fields.Many2one(
         string="Unidad", related="product_id.product_tmpl_id.uom_id")

@@ -31,7 +31,6 @@
                     <field name="troquel_id" />
                     <field name="width_inches" />
                     <field name="length_inches" />
-                    <field name="lines_width" />
                     <field name="orientation_id" />
                 </tree>
             </field>
@@ -75,7 +74,6 @@
                                     <field name="length_inches"/>
                                     <span><field name="length_inches_uom" options="{'no_create': True}"/></span>
                                 </div>
-                                <field name="lines_width" />
                                 <field name="size" />
                                 <field name="background" />
                                 <field name="labels_per_roll" />

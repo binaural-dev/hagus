@@ -27,23 +27,21 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="code"/>
-                    <field name="teeth" />
-                    <field name="cylinders" />
-                    <field name="width_inches" />
-                    <field name="width_inches_uom" />
-                    <field name="width_millimeters" />
-                    <field name="width_millimeters_uom" />
-                    <field name="length_inches" />
-                    <field name="length_inches_uom" />
-                    <field name="length_millimeters" />
-                    <field name="length_millimeters_uom" />
-                    <field name="lines_width" />
-                    <field name="repetition" />
-                    <field name="designed" />
-                    <field name="length_at_100" />
-                    <field name="reduction" />
-                    <field name="final_size" />
-                    <field name="active" />
+                    <field name="teeth"/>
+                    <field name="cylinders"/>
+                    <field name="width_inches"/>
+                    <field name="width_millimeters"/>
+                    <field name="length_inches"/>
+                    <field name="length_millimeters"/>
+		    <field name="paper_cut_centimeters"/>
+		    <field name="paper_cut_inches"/>
+                    <field name="lines_width"/>
+                    <field name="repetition"/>
+                    <field name="designed"/>
+                    <field name="length_at_100"/>
+                    <field name="reduction"/>
+                    <field name="final_size"/>
+                    <field name="active"/>
                 </tree>
             </field>
         </record>
