@@ -13,6 +13,10 @@
 	            <group expand="1" string="Agrupar por">
 	                <filter name="partner_id" context="{'group_by':'partner_id'}"/>
 	            </group>
+		    <separator/>
+		    <filter string="Inactivos"
+			    name="inactive"
+			    domain="[('active', '=', False)]"/>
 	        </search>
 	    </field>
 	</record>
@@ -59,6 +63,7 @@
                         </div>
                         <group>
                             <group>
+				<field name="active"/>
                                 <field name="description"/>
                                 <field name="date"/>
                                 <field name="partner_id" />
