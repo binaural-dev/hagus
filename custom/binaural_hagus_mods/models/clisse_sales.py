@@ -278,6 +278,9 @@ class ClisseSales(models.Model):
 
     def action_create_sale_order(self):
         for clisse in self:
+            if not clisse.active:
+                raise UserError(
+                    "Este Clisse está inactivo.")
             last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
                 clisse.sale_order_ids) else None
             if not bool(clisse.partner_id):
@@ -383,6 +386,17 @@ class ClisseSales(models.Model):
             if clisse.quantity <= 0:
                 raise ValidationError(
                     "La cantidad a producir debe ser un numero positivo mayor a cero.")
+
+    @api.onchange("active")
+    def _onchange_active(self):
+        for clisse in self:
+            if not clisse.active:
+                clisse.state = "inactive"
+                return
+            if len(clisse.mrp_production_ids):
+                clisse.state = "production"
+            else:
+                clisse.state = "draft"
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):
