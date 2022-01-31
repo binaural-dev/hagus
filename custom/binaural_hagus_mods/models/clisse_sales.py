@@ -272,9 +272,10 @@ class ClisseSales(models.Model):
                 ]
             })
 
-            clisse.sale_order_ids += sale_order
             if bool(clisse.crm_lead_id):
-                clisse.crm_lead_id.order_ids += sale_order
+                sale_order.write({"opportunity_id": clisse.crm_lead_id.id})
+
+            clisse.sale_order_ids += sale_order
 
         return {
             "type": "ir.actions.act_window",
