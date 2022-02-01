@@ -458,6 +458,7 @@ class HagusClisseTestCase(SavepointCase):
         """
         Probar que cuando se ejecuta la accion "action_create_mrp_production" se genera correctamente una orden
         de produccion con los datos del producto asociado al clisse y se agrega al campo mrp_production_ids del clisse.
+        Ademas, el estado del clisse debe pasar a "en produccion".
         """
         clisse = self.clisse
         clisse.write({
@@ -474,3 +475,4 @@ class HagusClisseTestCase(SavepointCase):
         mrp_production = clisse.action_create_mrp_production()
         self.assertEqual(self.env["mrp.production"].search([("id", '=', mrp_production["res_id"])]),
                          self.clisse.mrp_production_ids)
+        self.assertEqual(clisse.state, "production")
