@@ -2,5 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 hagus_troquel,troquel,model_hagus_troquel,,1,1,1,1
 hagus_finish_types,Acabado,model_hagus_finish_types,,1,1,1,1
 hagus_orientation,Orientacion,model_hagus_orientation,,1,1,1,1
-hagus_clisse,Clisse,model_hagus_clisse,,1,1,1,1
+hagus_clisse,Clisse,model_hagus_clisse,,1,1,1,0
 hagus_clisse_line,Linea Clisse,model_hagus_clisse_line,,1,1,1,1

@@ -18,8 +18,8 @@ class ClisseMrp(models.Model):
         string="Repetición", related="troquel_id.repetition")
     paper_cut_inches = fields.Float(
         string="Corte de Papel (pulgadas)", related="troquel_id.paper_cut_inches")
-    paper_cut_centimeters = fields.Float(string="Corte de papel(centimetros)", digtis=(
-        14, 2), related="troquel_id.paper_cut_centimeters")
+    paper_cut_centimeters = fields.Float(
+            string="Corte de papel(centimetros)", related="troquel_id.paper_cut_centimeters")
     designed = fields.Char(string="Diseñado por",
                            related="troquel_id.designed")
     mrp_production_ids = fields.Many2many(
@@ -80,6 +80,9 @@ class ClisseMrp(models.Model):
 
     def action_create_mrp_production(self):
         for clisse in self:
+            if not clisse.active:
+                raise UserError(
+                    "Este Clisse está inactivo.")
             if not bool(clisse.sale_order_ids):
                 raise ValidationError(
                     "No puede generar una orden de producción si no existe antes una orden de venta.")
@@ -134,10 +137,14 @@ class ClisseMrp(models.Model):
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
                 })
+
             # Agregando la orden de producción a la lista de ordenes de producción
             # del clisse y enviando la notificacion de que fue añadida.
             clisse.mrp_production_ids += mrp_production
             self.message_post(body="<h5>Clisse Modificado.</h5><ul><li>Orden de Producción añadida</li></ul>")
+
+            self.state = "production"
+
         return {
             "type": "ir.actions.act_window",
             "name": "mrp.production.form",
