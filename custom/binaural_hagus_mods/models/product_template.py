@@ -10,7 +10,7 @@ class ProductTemplate(models.Model):
         string="La categoria es Calcomanía o Etiqueta",
         compute="_compute_category_is_not_sticker")
     cut_width_inches = fields.Float(
-        "Ancho de Corte (Pulgadas)", digits=(14, 2), default=1)
+        "Ancho de Bobina (Pulgadas)", digits=(14, 2), default=1)
     msi = fields.Float(string="Medida MSI", digits=(
         14, 4), compute="_compute_msi")
     category_name = fields.Char(
