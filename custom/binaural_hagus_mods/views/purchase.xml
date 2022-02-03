@@ -5,8 +5,12 @@
 	    <field name="model">purchase.order</field>
 	    <field name="inherit_id" ref="purchase.purchase_order_form"/>
 	    <field name="arch" type="xml">
-		    <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="after">
-		    <field name="msi"/>
+		<xpath expr="//field[@name='order_line']/tree//field[@name='product_uom']" position="after">
+		    <field name="product_category_name" invisible="1"/>
+		    <field name="coil_cut_width_inches"
+			   attrs="{'invisible': [('product_category_name', 'not in', ('Bobina', 'bobina'))]}"/>
+		    <field name="msi"
+			   attrs="{'invisible': [('product_category_name', 'not in', ('Bobina', 'bobina'))]}"/>
 	        </xpath>
 	    </field>
 	</record>
