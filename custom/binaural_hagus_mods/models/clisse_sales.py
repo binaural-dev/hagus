@@ -86,7 +86,8 @@ class ClisseSales(models.Model):
         route = self.env["stock.location.route"].search(
             [("name", '=', "Fabricar")]).id
         res.product_template_ids = self.env["product.template"].create({
-            "name": res.description,
+            "name": f"{res.code}: {res.description}",
+            "default_code": res.code,
             "price": res.thousand_price,
             "categ_id": res.product_type.id,
             "description": res.description,
@@ -99,7 +100,7 @@ class ClisseSales(models.Model):
             "list_price": self.thousand_price,
             "route_ids": [route] if bool(route) else [1],
             "image_1920": res.image_design,
-            "invoice_policy": "order",
+            "invoice_policy": "delivery",
         })
         # Creando la lista de materiales del producto.
         mrp_bom = self.env["mrp.bom"].create({
