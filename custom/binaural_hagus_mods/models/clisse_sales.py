@@ -109,60 +109,60 @@ class ClisseSales(models.Model):
             "code": res.code,
         })
 
-        mrp_bom.write({
-            "operation_ids": [
-                (
-                    0,
-                    4,
-                    {
-                        "name": "Cortar bobina",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Impresión {res.product_template_ids.name}",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Validación Impresión",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Embobinado {res.product_template_ids.name}",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Validación Corte",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-            ]
-        })
+        # mrp_bom.write({
+            # "operation_ids": [
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": "Cortar bobina",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Impresión {res.product_template_ids.name}",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Validación Impresión",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Embobinado {res.product_template_ids.name}",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Validación Corte",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+            # ]
+        # })
         
         for material in res.materials_lines_id:
             # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
