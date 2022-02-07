@@ -49,9 +49,9 @@
                     <header>
 			<field name="product_template_ids" invisible="1"/>
 			<field name="state" widget="statusbar"/>
-			<button name="action_create_sale_order" string="Generar orden de venta"
+			<button name="action_create_sale_order" string="Nuevo Presupuesto"
 				type="object"/>
-			<button name="action_create_mrp_production" string="Generar orden de Producción"
+			<button name="action_create_mrp_production" string="Nueva orden de Producción"
 				type="object"/>
                     </header>
                     <sheet>
