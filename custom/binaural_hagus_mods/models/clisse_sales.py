@@ -388,17 +388,6 @@ class ClisseSales(models.Model):
                 raise ValidationError(
                     "La cantidad a producir debe ser un numero positivo mayor a cero.")
 
-    @api.onchange("active")
-    def _onchange_active(self):
-        for clisse in self:
-            if not clisse.active:
-                clisse.state = "inactive"
-                return
-            if len(clisse.mrp_production_ids):
-                clisse.state = "production"
-            else:
-                clisse.state = "draft"
-
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):
         self.rubber_cost = 0
