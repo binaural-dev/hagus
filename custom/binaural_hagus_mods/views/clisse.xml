@@ -188,6 +188,7 @@
 					<field name="total_ft"/>
 					<field name="mts_settings"/>
 					<field name="mts_print"/>
+					<field name="coil_id"/>
 				    </group>
 				</group>
 				<group name="press" string="PRENSA">
@@ -268,7 +269,7 @@
 
         <!-- Top menu item sales -->
         <menuitem name="Clisse" id="binaural_hagus_mods.menu_clisse_sales"
-                  action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="00"/>
+                  action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="2"/>
 
 	<!-- Top menu item mrp -->
 	<menuitem id="binaural_hagus_mods.menu_clisse_mrp" name="Clisse"
