@@ -19,7 +19,7 @@ class ClisseMrp(models.Model):
     paper_cut_inches = fields.Float(
         string="Corte de Papel (pulgadas)", related="troquel_id.paper_cut_inches")
     paper_cut_centimeters = fields.Float(
-            string="Corte de papel(centimetros)", related="troquel_id.paper_cut_centimeters")
+        string="Corte de papel(centimetros)", related="troquel_id.paper_cut_centimeters")
     designed = fields.Char(string="Diseñado por",
                            related="troquel_id.designed")
     mrp_production_ids = fields.Many2many(
@@ -39,6 +39,8 @@ class ClisseMrp(models.Model):
     net_mts = fields.Float(string="Metros Netos", digits=(14, 2))
     mts_settings = fields.Float(string="Ajustes Metros", digits=(14, 2))
     mts_print = fields.Float(string="Tiro de metros", digits=(14, 2))
+    coil_id = fields.Many2one(
+        "product.product", string="Bobina a utilizar")
     press_machine = fields.Char(string="Maquina Prensa")
     mount_start_date = fields.Date(string="Fecha de Inicio",
                                    default=lambda self: fields.Date.today())
@@ -221,3 +223,11 @@ class ClisseMrp(models.Model):
                 self.end_pressman_2 > 24:
             raise ValidationError(
                 "La hora no puede ser mayor a 24.")
+
+    @api.constrains("coil_id")
+    def _check_coil_id(self):
+        for clisse in self:
+            if bool(clisse.coil_id) and \
+                    clisse.coil_id.categ_id not in self.env["product.category"].search([("name", "in", ("Bobina", "bobina"))]):
+                raise ValidationError(
+                    "El campo \"Bobina a utilizar\" debe ser un producto de tipo bobina.")

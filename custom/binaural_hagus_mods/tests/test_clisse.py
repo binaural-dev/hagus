@@ -476,3 +476,16 @@ class HagusClisseTestCase(SavepointCase):
         self.assertEqual(self.env["mrp.production"].search([("id", '=', mrp_production["res_id"])]),
                          self.clisse.mrp_production_ids)
         self.assertEqual(clisse.state, "production")
+
+    def test_coil_id(self):
+        """
+        Probar que el campo coil_id del modelo Clisse
+        solo pueda aceptar productos cuya categoria es bobina.
+        """
+        clisse = self.clisse
+        # Agregando un producto invalido
+        with self.assertRaises(ValidationError):
+            clisse.write({"coil_id": self.products[0].id})
+        # Agregando un producto valido
+        clisse.write({"coil_id": self.products[3].id})
+        self.assertEqual(self.products[3], clisse.coil_id)
