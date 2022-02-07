@@ -53,9 +53,8 @@ class HagusClisse(models.Model):
 
     state = fields.Selection([
         ('draft', 'Borrador'),
-        ('production', 'En Producción'),
-        ('inactive', 'Inactivo'),
-    ], string='Estado', default="draft")
+        ('production', 'En Producción')],
+        'Estado', default="draft")
 
     payment_method_id = fields.Many2one(
         "account.payment.method", string="Tipo de Pago",

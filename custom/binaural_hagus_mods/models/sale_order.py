@@ -67,6 +67,16 @@ class SaleOrder(models.Model):
             if self.id not in clisse.mapped("sale_order_ids.id"):
                 clisse.sale_order_ids += self.env["sale.order"].search([("id", '=', self.id)])
         return res
+
+    def action_create_clisse(self):
+        return {
+            "type": "ir.actions.act_window",
+            "name": "hagus.clisse.form",
+            "res_model": "hagus.clisse",
+            "view_type": "form",
+            "view_mode": "form",
+            "target": "self",
+        }
     
     @api.onchange("order_line")
     def _onchange_sale_order(self):

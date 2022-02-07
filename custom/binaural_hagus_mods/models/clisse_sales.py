@@ -86,7 +86,8 @@ class ClisseSales(models.Model):
         route = self.env["stock.location.route"].search(
             [("name", '=', "Fabricar")]).id
         res.product_template_ids = self.env["product.template"].create({
-            "name": res.description,
+            "name": f"{res.code}: {res.description}",
+            "default_code": res.code,
             "price": res.thousand_price,
             "categ_id": res.product_type.id,
             "description": res.description,
@@ -99,7 +100,7 @@ class ClisseSales(models.Model):
             "list_price": self.thousand_price,
             "route_ids": [route] if bool(route) else [1],
             "image_1920": res.image_design,
-            "invoice_policy": "order",
+            "invoice_policy": "delivery",
         })
         # Creando la lista de materiales del producto.
         mrp_bom = self.env["mrp.bom"].create({
@@ -108,60 +109,60 @@ class ClisseSales(models.Model):
             "code": res.code,
         })
 
-        mrp_bom.write({
-            "operation_ids": [
-                (
-                    0,
-                    4,
-                    {
-                        "name": "Cortar bobina",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Impresión {res.product_template_ids.name}",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Validación Impresión",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Embobinado {res.product_template_ids.name}",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-                (
-                    0,
-                    4,
-                    {
-                        "name": f"Validación Corte",
-                        "bom_id": mrp_bom.id,
-                        "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        "time_mode": "manual",
-                    }
-                ),
-            ]
-        })
+        # mrp_bom.write({
+            # "operation_ids": [
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": "Cortar bobina",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Impresión {res.product_template_ids.name}",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Validación Impresión",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Embobinado {res.product_template_ids.name}",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+                # (
+                    # 0,
+                    # 4,
+                    # {
+                        # "name": f"Validación Corte",
+                        # "bom_id": mrp_bom.id,
+                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
+                        # "time_mode": "manual",
+                    # }
+                # ),
+            # ]
+        # })
         
         for material in res.materials_lines_id:
             # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
@@ -386,17 +387,6 @@ class ClisseSales(models.Model):
             if clisse.quantity <= 0:
                 raise ValidationError(
                     "La cantidad a producir debe ser un numero positivo mayor a cero.")
-
-    @api.onchange("active")
-    def _onchange_active(self):
-        for clisse in self:
-            if not clisse.active:
-                clisse.state = "inactive"
-                return
-            if len(clisse.mrp_production_ids):
-                clisse.state = "production"
-            else:
-                clisse.state = "draft"
 
     @api.depends("width_inches", "length_inches", "materials_lines_id")
     def _compute_rubber_cost(self):

@@ -5,6 +5,9 @@
 	    <field name="model">sale.order</field>
 	    <field name="inherit_id" ref="sale.view_order_form"/>
 	    <field name="arch" type="xml">
+		<header position="inside">
+		    <button name="action_create_clisse" string="Nuevo Clisse" type="object"/>
+		</header>
 		<notebook position="inside">
 		    <field name="product_is_not_sticker" invisible="1"/>
 		    <page name="product_clisse" string="Clisse"

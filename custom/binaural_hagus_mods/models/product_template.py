@@ -32,6 +32,11 @@ class ProductTemplate(models.Model):
             total_ft = product.qty_available
             product.msi = product.cut_width_inches * total_ft * 0.012
 
+    def _inverse_msi(self):
+        for product in self:
+            product.qty_available = (product.msi /
+                                     product.cut_width_inches * 0.012)
+
 
 class ProductCategory(models.Model):
     _inherit = "product.category"

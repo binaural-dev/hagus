@@ -90,6 +90,7 @@ class ClisseMrp(models.Model):
                 raise ValidationError(
                     "No se puede generar una orden de producción " +
                     "sino se ha aprobado la orden de venta.")
+
             coil_exists = False
             bush_exists = False
             ink_exists = False
@@ -116,6 +117,7 @@ class ClisseMrp(models.Model):
                     "Antes de generar una orden de producción debe agregar al menos " +
                     "un producto de tipo \"Tinta\" en la lista de materiales.")
 
+            # Creando la orden de produccion.
             product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({
                 "product_id": product.id,
@@ -123,6 +125,7 @@ class ClisseMrp(models.Model):
                 "product_uom_id": product.uom_id.id,
                 "consumption": "strict",
             })
+            # Agregando la lista de materiales.
             mrp_production.write({
                 "bom_id": clisse.product_template_ids.bom_ids.id,
             })
@@ -137,11 +140,27 @@ class ClisseMrp(models.Model):
                     "location_dest_id": 1,
                     "procure_method": "make_to_stock",
                 })
+            # Agregando las ordenes de trabajo.
+            # for operation in mrp_production.product_id.bom_ids.operation_ids:
+                # mrp_production.workorder_ids = [
+                    # (
+                        # 0,
+                        # 4,
+                        # {
+                            # "name": operation.name,
+                            # "consumption": "flexible",
+                            # "product_uom_id": mrp_production.product_uom_id.id,
+                            # "production_id": mrp_production.id,
+                            # "workcenter_id": operation.workcenter_id.id,
+                        # }
+                    # ),
+                # ]
 
             # Agregando la orden de producción a la lista de ordenes de producción
             # del clisse y enviando la notificacion de que fue añadida.
             clisse.mrp_production_ids += mrp_production
-            self.message_post(body="<h5>Clisse Modificado.</h5><ul><li>Orden de Producción añadida</li></ul>")
+            self.message_post(
+                body="<h5>Clisse Modificado.</h5><ul><li>Orden de Producción añadida</li></ul>")
 
             self.state = "production"
 

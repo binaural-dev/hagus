@@ -49,9 +49,9 @@
                     <header>
 			<field name="product_template_ids" invisible="1"/>
 			<field name="state" widget="statusbar"/>
-			<button name="action_create_sale_order" string="Generar orden de venta"
+			<button name="action_create_sale_order" string="Nuevo Presupuesto"
 				type="object"/>
-			<button name="action_create_mrp_production" string="Generar orden de Producción"
+			<button name="action_create_mrp_production" string="Nueva orden de Producción"
 				type="object"/>
                     </header>
                     <sheet>
@@ -63,7 +63,7 @@
                         </div>
                         <group>
                             <group>
-				<field name="active"/>
+				<field name="active" invisible="1"/>
                                 <field name="description"/>
                                 <field name="date"/>
                                 <field name="partner_id" />
@@ -188,6 +188,7 @@
 					<field name="total_ft"/>
 					<field name="mts_settings"/>
 					<field name="mts_print"/>
+					<field name="coil_id"/>
 				    </group>
 				</group>
 				<group name="press" string="PRENSA">
@@ -268,7 +269,7 @@
 
         <!-- Top menu item sales -->
         <menuitem name="Clisse" id="binaural_hagus_mods.menu_clisse_sales"
-                  action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="00"/>
+                  action="hagus_clisse_action" parent="sale.sale_menu_root" sequence="2"/>
 
 	<!-- Top menu item mrp -->
 	<menuitem id="binaural_hagus_mods.menu_clisse_mrp" name="Clisse"
