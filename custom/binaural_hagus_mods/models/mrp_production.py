@@ -16,7 +16,7 @@ class MrpProduction(models.Model):
     clisse_length_inches = fields.Float(
         related="product_id.clisse_id.length_inches", store=True)
     clisse_lines_width = fields.Integer(
-        related="product_id.clisse_id.troquel_line", store=True)
+        related="product_id.clisse_id.troquel_line", store=True, readonly=False)
     clisse_labels_per_roll = fields.Float(
         related="product_id.clisse_id.labels_per_roll", store=True)
     clisse_size = fields.Char(related="product_id.clisse_id.size", store=True)
@@ -108,12 +108,12 @@ class MrpProduction(models.Model):
     troquel_repetition = fields.Integer(
         related="product_id.clisse_id.troquel_repetition", store=True)
     designed = fields.Char(related="product_id.clisse_id.designed", store=True)
-    cut_date = fields.Date(related="product_id.clisse_id.cut_date", store=True)
+    cut_date = fields.Date(related="product_id.clisse_id.cut_date", store=True, readonly=False)
     coil_qty = fields.Integer(
-        related="product_id.clisse_id.coil_qty", store=True)
-    cutter = fields.Many2one(related="product_id.clisse_id.cutter", store=True)
+        related="product_id.clisse_id.coil_qty", store=True, readonly=False)
+    cutter = fields.Many2one(related="product_id.clisse_id.cutter", store=True, readonly=False)
     estimate_msi = fields.Float(
-        related="product_id.clisse_id.estimate_msi", store=True)
+        related="product_id.clisse_id.estimate_msi", store=True, readonly=False)
     consumed_msi = fields.Float(
         related="product_id.clisse_id.consumed_msi", store=True, readonly=False)
     margin = fields.Float(
@@ -121,57 +121,57 @@ class MrpProduction(models.Model):
     total_mts = fields.Float(related="product_id.clisse_id.total_mts")
     total_ft = fields.Float(related="product_id.clisse_id.total_ft")
     mts_settings = fields.Float(
-        related="product_id.clisse_id.mts_settings", store=True)
+        related="product_id.clisse_id.mts_settings", store=True, readonly=False)
     mts_print = fields.Float(
-        related="product_id.clisse_id.mts_print", store=True)
+        related="product_id.clisse_id.mts_print", store=True, readonly=False)
     coil_id = fields.Many2one(
-        related="product_id.clisse_id.coil_id", store=True)
+        related="product_id.clisse_id.coil_id", store=True, readonly=False)
     press_machine = fields.Char(
-        related="product_id.clisse_id.press_machine", store=True)
+        related="product_id.clisse_id.press_machine", store=True, readonly=False)
     mount_start_date = fields.Date(
-        related="product_id.clisse_id.mount_start_date", store=True)
+        related="product_id.clisse_id.mount_start_date", store=True, readonly=False)
     mount_start_time = fields.Float(
-        related="product_id.clisse_id.mount_start_time", store=True)
+        related="product_id.clisse_id.mount_start_time", store=True, readonly=False)
     mount_end_date = fields.Date(
-        related="product_id.clisse_id.mount_end_date", store=True)
+        related="product_id.clisse_id.mount_end_date", store=True, readonly=False)
     pressman_1 = fields.Many2one(
-        related="product_id.clisse_id.pressman_1", store=True)
+        related="product_id.clisse_id.pressman_1", store=True, readonly=False)
     turn_pressman_1 = fields.Char(
-        related="product_id.clisse_id.turn_pressman_1", store=True)
+        related="product_id.clisse_id.turn_pressman_1", store=True, readonly=False)
     start_pressman_1 = fields.Float(
-        related="product_id.clisse_id.start_pressman_1", store=True)
+        related="product_id.clisse_id.start_pressman_1", store=True, readonly=False)
     end_pressman_1 = fields.Float(
-        related="product_id.clisse_id.end_pressman_1", store=True)
+        related="product_id.clisse_id.end_pressman_1", store=True, readonly=False)
     produced_meters_pressman_1 = fields.Float(
-        related="product_id.clisse_id.produced_meters_pressman_1", store=True)
+        related="product_id.clisse_id.produced_meters_pressman_1", store=True, readonly=False)
     pressman_2 = fields.Many2one(
-        related="product_id.clisse_id.pressman_2", store=True)
+        related="product_id.clisse_id.pressman_2", store=True, readonly=False)
     turn_pressman_2 = fields.Char(
-        related="product_id.clisse_id.turn_pressman_2", store=True)
+        related="product_id.clisse_id.turn_pressman_2", store=True, readonly=False)
     start_pressman_2 = fields.Float(
-        related="product_id.clisse_id.start_pressman_2", store=True)
+        related="product_id.clisse_id.start_pressman_2", store=True, readonly=False)
     end_pressman_2 = fields.Float(
-        related="product_id.clisse_id.end_pressman_2", store=True)
+        related="product_id.clisse_id.end_pressman_2", store=True, readonly=False)
     produced_meters_pressman_2 = fields.Float(
-        related="product_id.clisse_id.produced_meters_pressman_2", store=True)
+        related="product_id.clisse_id.produced_meters_pressman_2", store=True, readonly=False)
     digits_number = fields.Float(
         related="product_id.clisse_id.digits_number", store=True)
     coiling_start_date = fields.Date(
-        related="product_id.clisse_id.coiling_start_date", store=True)
+        related="product_id.clisse_id.coiling_start_date", store=True, readonly=False)
     coiling_start_time = fields.Float(
-        related="product_id.clisse_id.coiling_start_time", store=True)
+        related="product_id.clisse_id.coiling_start_time", store=True, readonly=False)
     coiling_end_date = fields.Date(
-        related="product_id.clisse_id.coiling_end_date", store=True)
+        related="product_id.clisse_id.coiling_end_date", store=True, readonly=False)
     delivered_msi = fields.Float(
         related="product_id.clisse_id.delivered_msi", store=True, readonly=False)
     msi_to_return = fields.Float(
         related="product_id.clisse_id.msi_to_return", store=True, readonly=False)
-    coiler = fields.Many2one(related="product_id.clisse_id.coiler", store=True)
+    coiler = fields.Many2one(related="product_id.clisse_id.coiler", store=True, readonly=False)
     turn_coiler = fields.Char(
-        related="product_id.clisse_id.turn_coiler", store=True)
-    t_roll = fields.Char(related="product_id.clisse_id.t_roll", store=True)
+        related="product_id.clisse_id.turn_coiler", store=True, readonly=False)
+    t_roll = fields.Char(related="product_id.clisse_id.t_roll", store=True, readonly=False)
     coiling_problems = fields.Text(
-        related="product_id.clisse_id.coiling_problems", store=True)
+        related="product_id.clisse_id.coiling_problems", store=True, readonly=False)
 
     coil_cost = fields.Float(string="Costo de Bobina", digits=(
         14, 2), compute="_compute_coil_cost")
@@ -305,12 +305,28 @@ class MrpProduction(models.Model):
     def _compute_coil_cost(self):
         self.coil_cost = 0
         for order in self:
+            if order.product_is_not_sticker:
+                continue
             for line in order.move_raw_ids:
                 if line.product_id.categ_id.name.lower() == "bobina":
                     coil_standard_price = line.product_id.standard_price
                     coil_qty = line.product_uom_qty
                     break
             order.coil_cost = coil_standard_price * coil_qty
+
+
+class StockMove(models.Model):
+    _inherit = "stock.move"
+
+    lot_id = fields.Many2one(
+        "stock.production.lot", string="Lote", readonly=True, compute="_compute_lot_id")
+
+    @api.depends("lot_id")
+    def _compute_lot_id(self):
+        self.lot_id = False
+        for move in self:
+            if bool(move.move_line_ids):
+                move.lot_id = move.move_line_ids[0].lot_id
 
 
 class MrpBom(models.Model):

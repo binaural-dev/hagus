@@ -26,7 +26,7 @@ class ClisseMrp(models.Model):
         "mrp.production", string="Orden de Producción")
     cut_date = fields.Date(string="Fecha de Corte",
                            default=lambda self: fields.Date.today())
-    coil_qty = fields.Integer(string="Cantidad de Bobinas")
+    coil_qty = fields.Integer(string="Cantidad de Bobinas", default=1)
     cutter = fields.Many2one("hr.employee", string="Cortador")
     estimate_msi = fields.Float(string="MSI Estimados", digits=(
         14, 2), compute="_compute_estimate_msi")
@@ -41,7 +41,7 @@ class ClisseMrp(models.Model):
     mts_print = fields.Float(string="Tiro de metros", digits=(14, 2))
     coil_id = fields.Many2one(
         "product.product", string="Bobina a utilizar")
-    press_machine = fields.Char(string="Maquina Prensa")
+    press_machine = fields.Char(string="Máquina Prensa")
     mount_start_date = fields.Date(string="Fecha de Inicio",
                                    default=lambda self: fields.Date.today())
     mount_start_time = fields.Float(
