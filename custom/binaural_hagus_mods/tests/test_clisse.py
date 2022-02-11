@@ -196,12 +196,6 @@ class HagusClisseTestCase(SavepointCase):
                 with f.materials_lines_id.new() as line:
                     line.product_id = self.products[5]
 
-    def test_clisse_state(self):
-        """Probar que cuando el campo active es igual a False, el estado del clisse pasa a inactivo"""
-        with Form(self.clisse) as f:
-            f.active = False
-            self.assertEqual(f.state, "inactive")
-
     def test_rubber_cost(self):
         """Probar que el resultado del costo del Caucho se calcula correctamente."""
         clisse = self.clisse
