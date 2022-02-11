@@ -38,6 +38,7 @@
         'views/purchase.xml',
         'report/hagus_clisse_templates.xml',
         'report/hagus_clisse_views.xml',
+        'report/hagus_clisse_mrp_order_templates.xml',
     ],
     "images": ["static/description/main_screenshot.png"],
     'installable': True,

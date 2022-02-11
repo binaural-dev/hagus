@@ -1,0 +1,228 @@
+<odoo>
+    <data>
+	<template id="hagus_clisse_inherit_report_mrporder" inherit_id="mrp.report_mrporder">
+	    <xpath expr="//table[@t-if='o.move_raw_ids']//thead/tr/th" position="after">
+		<th>Lote</th>
+	    </xpath>
+
+	    <xpath expr="//tr[@t-as='raw_line']/td" position="after">
+		<td>
+		    <span t-field="raw_line.move_line_ids.lot_id"/>
+		</td>
+	    </xpath>
+
+	    <xpath expr="//table[@t-if='o.move_raw_ids']" position="after">
+		<t t-if="not o.product_is_not_sticker">
+		    <h5>Troquel</h5>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-3">
+                            <strong>Corte de Papel (pulgadas):</strong><br/>
+                            <span t-field="o.paper_cut_inches"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Corte de Papel (centimetros):</strong><br/>
+                            <span t-field="o.paper_cut_centimeters"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Linea Troquel:</strong><br/>
+                            <span t-field="o.troquel_line"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Dientes del Troquel:</strong><br/>
+                            <span t-field="o.troquel_teeth"/>
+                        </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-3">
+                            <strong>Cilindros:</strong><br/>
+                            <span t-field="o.troquel_cylinders"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Repetición:</strong><br/>
+                            <span t-field="o.troquel_repetition"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Diseñado por:</strong><br/>
+                            <span t-field="o.designed"/>
+                        </div>
+                    </div>
+
+		    <h5>Corte</h5>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>Costo de Bobina:</strong><br/>
+                            <span t-field="o.coil_cost"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Fecha de Corte:</strong><br/>
+                            <span t-field="o.cut_date"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Cantidad de Bobinas:</strong><br/>
+                            <span t-field="o.coil_qty"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Cortador:</strong><br/>
+                            <span t-field="o.cutter"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>MSI Estimados:</strong><br/>
+                            <span t-field="o.estimate_msi"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>MSI Consumidos:</strong><br/>
+                            <span t-field="o.consumed_msi"/>
+                        </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>Margen:</strong><br/>
+                            <span t-field="o.margin"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Bobina a Utilizar:</strong><br/>
+                            <span t-field="o.coil_id"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Total Metros:</strong><br/>
+                            <span t-field="o.total_mts"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Total Pies Lineales:</strong><br/>
+                            <span t-field="o.total_ft"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Ajustes Metros:</strong><br/>
+                            <span t-field="o.mts_settings"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Tiro de Metros:</strong><br/>
+                            <span t-field="o.mts_print"/>
+                        </div>
+                    </div>
+
+
+		    <h5>Prensa</h5>
+
+		    <h6>Montaje</h6>
+		    <div class="row mt32 mb32">
+                        <div class="col-3">
+                            <strong>Máquina:</strong><br/>
+                            <span t-field="o.press_machine"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Fecha de Inicio del Montaje:</strong><br/>
+                            <span t-field="o.mount_start_date"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Hora de Inicio del Montaje:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.mount_start_time), o.mount_start_time % 1 * 60)" />
+                        </div>
+                        <div class="col-3">
+                            <strong>Fecha de Terminación del Montaje:</strong><br/>
+                            <span t-field="o.mount_end_date"/>
+                        </div>
+                    </div>
+
+		    <h6>Tiraje</h6>
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>Prensista 1:</strong><br/>
+                            <span t-field="o.pressman_1"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Turno:</strong><br/>
+                            <span t-field="o.turn_pressman_1"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Inició:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.start_pressman_1), o.start_pressman_1 % 1 * 60)" />
+                        </div>
+                        <div class="col-2">
+                            <strong>Terminó:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.end_pressman_1), o.end_pressman_1 % 1 * 60)" />
+                        </div>
+			<div class="col-2">
+			    <strong>Metros Producidos:</strong><br/>
+			    <span t-field="o.produced_meters_pressman_1"/>
+			</div>
+                    </div>
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>Prensista 2:</strong><br/>
+                            <span t-field="o.pressman_2"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Turno:</strong><br/>
+                            <span t-field="o.turn_pressman_2"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Inició:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.start_pressman_2), o.start_pressman_2 % 1 * 60)" />
+                        </div>
+                        <div class="col-2">
+                            <strong>Terminó:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.end_pressman_2), o.end_pressman_2 % 1 * 60)" />
+                        </div>
+			<div class="col-2">
+			    <strong>Metros Producidos:</strong><br/>
+			    <span t-field="o.produced_meters_pressman_2"/>
+			</div>
+                    </div>
+
+		    <h5>Embobinado</h5>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>Nro de dígitos:</strong><br/>
+                            <span t-field="o.digits_number"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Fecha de Inicio:</strong><br/>
+                            <span t-field="o.coiling_start_date"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Hora de Inicio:</strong><br/>
+			    <t t-esc="'%02d:%02d' % (int(o.coiling_start_time), o.coiling_start_time % 1 * 60)" />
+                        </div>
+                        <div class="col-2">
+                            <strong>Fecha de Terminación:</strong><br/>
+                            <span t-field="o.coiling_end_date"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>MSI Entregados:</strong><br/>
+                            <span t-field="o.delivered_msi"/>
+                        </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-2">
+                            <strong>MSI Por Devolver:</strong><br/>
+                            <span t-field="o.msi_to_return"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Embobinado Por:</strong><br/>
+			    <span t-field="o.coiler"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Turno:</strong><br/>
+                            <span t-field="o.turn_coiler"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Rollo T:</strong><br/>
+                            <span t-field="o.t_roll"/>
+                        </div>
+                        <div class="col-2">
+                            <strong>Problemas de Embobinado:</strong><br/>
+                            <span t-field="o.coiling_problems"/>
+                        </div>
+                    </div>
+		</t>
+	    </xpath>
+	</template>
+    </data>
+</odoo>
