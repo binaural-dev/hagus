@@ -292,7 +292,7 @@ class MrpProduction(models.Model):
             if order.has_rubber:
                 order.total_cost += order.negative_plus_rubber_cost
             if order.has_art:
-                order.total_cost += clisse.art_cost
+                order.total_cost += order.art_cost
 
     @api.depends("total_cost", "percentage")
     def _compute_expenses(self):
@@ -307,6 +307,8 @@ class MrpProduction(models.Model):
         for order in self:
             if order.product_is_not_sticker:
                 continue
+            coil_standard_price = 0
+            coil_qty = 0
             for line in order.move_raw_ids:
                 if line.product_id.categ_id.name.lower() == "bobina":
                     coil_standard_price = line.product_id.standard_price
