@@ -107,6 +107,7 @@ class ClisseSales(models.Model):
             "product_tmpl_id": res.product_template_ids.id,
             "product_qty": res.quantity,
             "code": res.code,
+            "product_uom_id": product_uom.id,
         })
 
         # mrp_bom.write({
@@ -216,6 +217,7 @@ class ClisseSales(models.Model):
         })
         # Actualizando la lista de materiales del producto.
         bom_id = self.env["mrp.bom"].search([("id", '=', self.product_template_ids.bom_ids.id)])
+        bom_id.write({"product_qty": self.quantity})
 
         # Borrando todas las lineas de materiales existentes previamente en la lista
         # de materiales del producto asociado al clisse.
