@@ -1,6 +1,7 @@
 import logging
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tests.common import Form
 _logger = logging.getLogger(__name__)
 
 
@@ -123,25 +124,14 @@ class ClisseMrp(models.Model):
             product = clisse.product_template_ids[0].product_variant_id
             mrp_production = self.env["mrp.production"].create({
                 "product_id": product.id,
-                "product_qty": clisse.quantity,
                 "product_uom_id": product.uom_id.id,
+                "product_qty": clisse.quantity,
                 "consumption": "strict",
             })
-            # Agregando la lista de materiales.
-            mrp_production.write({
-                "bom_id": clisse.product_template_ids.bom_ids.id,
-            })
-            for material in clisse.materials_lines_id:
-                mrp_production.move_raw_ids += self.env["stock.move"].create({
-                    "product_id": material.product_id.id,
-                    "name": material.description,
-                    "product_uom": material.product_id.uom_id.id,
-                    "company_id": self.env.company.id,
-                    "product_uom_qty": material.qty,
-                    "location_id": 1,
-                    "location_dest_id": 1,
-                    "procure_method": "make_to_stock",
-                })
+            with Form(mrp_production) as mrp_form:
+                mrp_form.bom_id = clisse.product_template_ids.bom_ids
+                mrp_form.save()
+
             # Agregando las ordenes de trabajo.
             # for operation in mrp_production.product_id.bom_ids.operation_ids:
                 # mrp_production.workorder_ids = [
