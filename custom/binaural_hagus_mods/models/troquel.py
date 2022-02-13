@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class HagusTroquel(models.Model):
     _name = 'hagus.troquel'
+    _description = 'Troquel'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'code'
 

@@ -15,7 +15,6 @@ class HagusClisse(models.Model):
 
     code = fields.Char(
         string='Código', copy=False, readonly=True,
-        # states={'draft': [('readonly', False)]},
         index=True, default=lambda self: _('New'))  # usar secuencia
     active = fields.Boolean(string='Activo',default=True)
     description = fields.Char(string='Descripción', required=True)

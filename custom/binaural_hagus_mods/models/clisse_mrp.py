@@ -130,22 +130,6 @@ class ClisseMrp(models.Model):
                 mrp_form.bom_id = clisse.product_template_ids.bom_ids
                 mrp_form.save()
 
-            # Agregando las ordenes de trabajo.
-            # for operation in mrp_production.product_id.bom_ids.operation_ids:
-                # mrp_production.workorder_ids = [
-                    # (
-                        # 0,
-                        # 4,
-                        # {
-                            # "name": operation.name,
-                            # "consumption": "flexible",
-                            # "product_uom_id": mrp_production.product_uom_id.id,
-                            # "production_id": mrp_production.id,
-                            # "workcenter_id": operation.workcenter_id.id,
-                        # }
-                    # ),
-                # ]
-
             # Agregando la orden de producción a la lista de ordenes de producción
             # del clisse y enviando la notificacion de que fue añadida.
             clisse.mrp_production_ids += mrp_production

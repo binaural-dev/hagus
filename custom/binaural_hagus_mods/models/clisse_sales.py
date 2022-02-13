@@ -110,60 +110,6 @@ class ClisseSales(models.Model):
             "product_uom_id": product_uom.id,
         })
 
-        # mrp_bom.write({
-            # "operation_ids": [
-                # (
-                    # 0,
-                    # 4,
-                    # {
-                        # "name": "Cortar bobina",
-                        # "bom_id": mrp_bom.id,
-                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Corte")]).id,
-                        # "time_mode": "manual",
-                    # }
-                # ),
-                # (
-                    # 0,
-                    # 4,
-                    # {
-                        # "name": f"Impresión {res.product_template_ids.name}",
-                        # "bom_id": mrp_bom.id,
-                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Prensa 1")]).id,
-                        # "time_mode": "manual",
-                    # }
-                # ),
-                # (
-                    # 0,
-                    # 4,
-                    # {
-                        # "name": f"Validación Impresión",
-                        # "bom_id": mrp_bom.id,
-                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        # "time_mode": "manual",
-                    # }
-                # ),
-                # (
-                    # 0,
-                    # 4,
-                    # {
-                        # "name": f"Embobinado {res.product_template_ids.name}",
-                        # "bom_id": mrp_bom.id,
-                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Embobinado")]).id,
-                        # "time_mode": "manual",
-                    # }
-                # ),
-                # (
-                    # 0,
-                    # 4,
-                    # {
-                        # "name": f"Validación Corte",
-                        # "bom_id": mrp_bom.id,
-                        # "workcenter_id": self.env["mrp.workcenter"].search([("name", '=', "Control de Calidad")]).id,
-                        # "time_mode": "manual",
-                    # }
-                # ),
-            # ]
-        # })
         
         for material in res.materials_lines_id:
             # Comprobar que un clisse no pueda tener mas de un material con la categoria "Bobina".
@@ -533,6 +479,7 @@ class ClisseSales(models.Model):
 
 class HagusClisseLines(models.Model):
     _name = 'hagus.clisse.line'
+    _description = 'Linea de Materiales del Clisse'
     _rec_name = 'product_id'
     # ojo con product template
     product_id = fields.Many2one('product.product', string='Producto')
