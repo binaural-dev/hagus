@@ -188,7 +188,6 @@
 					<field name="total_ft"/>
 					<field name="mts_settings"/>
 					<field name="mts_print"/>
-					<field name="coil_id"/>
 				    </group>
 				</group>
 				<group name="press" string="PRENSA">

@@ -124,8 +124,6 @@ class MrpProduction(models.Model):
         related="product_id.clisse_id.mts_settings", store=True, readonly=False)
     mts_print = fields.Float(
         related="product_id.clisse_id.mts_print", store=True, readonly=False)
-    coil_id = fields.Many2one(
-        related="product_id.clisse_id.coil_id", store=True, readonly=False)
     press_machine = fields.Char(
         related="product_id.clisse_id.press_machine", store=True, readonly=False)
     mount_start_date = fields.Date(

@@ -40,8 +40,6 @@ class ClisseMrp(models.Model):
     net_mts = fields.Float(string="Metros Netos", digits=(14, 2))
     mts_settings = fields.Float(string="Ajustes Metros", digits=(14, 2))
     mts_print = fields.Float(string="Tiro de metros", digits=(14, 2))
-    coil_id = fields.Many2one(
-        "product.product", string="Bobina a utilizar")
     press_machine = fields.Char(string="Máquina Prensa")
     mount_start_date = fields.Date(string="Fecha de Inicio",
                                    default=lambda self: fields.Date.today())
