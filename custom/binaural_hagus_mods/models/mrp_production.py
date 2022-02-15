@@ -1,5 +1,6 @@
 from odoo import fields, models, api
 from odoo.exceptions import UserError
+from odoo.tests.common import Form
 
 
 class MrpProduction(models.Model):
@@ -180,6 +181,9 @@ class MrpProduction(models.Model):
         # del clisse cuyo producto forma parte de la misma.
         self.product_id.clisse_id.mrp_production_ids += self.env["mrp.production"].search([
                                                                                           ("id", '=', self.id)])
+        if bool(self.product_id.clisse_id):
+            with Form(self.product_id.clisse_id) as clisse:
+                clisse.quantity = self.product_qty
         return res
 
     # Metodos del Tab de Venta
