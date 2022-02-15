@@ -7,7 +7,7 @@
 
 	    <xpath expr="//tr[@t-as='raw_line']/td" position="after">
 		<td>
-		    <span t-field="raw_line.move_line_ids.lot_id"/>
+		    <span t-field="raw_line.lot_id"/>
 		</td>
 	    </xpath>
 
@@ -82,10 +82,6 @@
                         <div class="col-2">
                             <strong>Margen:</strong><br/>
                             <span t-field="o.margin"/>
-                        </div>
-                        <div class="col-2">
-                            <strong>Bobina a Utilizar:</strong><br/>
-                            <span t-field="o.coil_id"/>
                         </div>
                         <div class="col-2">
                             <strong>Total Metros:</strong><br/>
