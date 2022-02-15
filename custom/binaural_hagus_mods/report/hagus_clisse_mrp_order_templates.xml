@@ -13,9 +13,63 @@
 
 	    <xpath expr="//table[@t-if='o.move_raw_ids']" position="after">
 		<t t-if="not o.product_is_not_sticker">
+		    <h5>General</h5>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-4">
+                            <strong>Ancho(Pulgadas):</strong><br/>
+                            <span t-field="o.clisse_width_inches"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Largo(Pulgadas):</strong><br/>
+                            <span t-field="o.clisse_length_inches"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Tamaño:</strong><br/>
+                            <span t-field="o.clisse_size"/>
+                        </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-4">
+                            <strong>Etiquetas por Rollo:</strong><br/>
+                            <span t-field="o.clisse_labels_per_roll"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Acabado:</strong><br/>
+                            <span t-field="o.clisse_finish_type"/>
+                        </div>
+                        <div class="col-4">
+                            <strong>Fondo:</strong><br/>
+                            <span t-field="o.clisse_background"/>
+                        </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
+                        <div class="col-4">
+                            <strong>Descripción de la etiqueta:</strong><br/>
+                            <span t-field="o.clisse_description_label"/>
+                        </div>
+			<div class="col-4">
+			    <strong>Orientación:</strong><br/>
+		            <span t-field="o.clisse_orientation"/>
+		    	    <img t-attf-src="data:image/*;base64,{{o.product_id.clisse_id.orientation_image}}"
+			 	 style="max-height: 70px;max-width: 145px;padding:2px;" align="center"/>
+			</div>
+			<div class="col-4">
+                            <strong>Diseño:</strong><br/>
+			    <img t-attf-src="data:image/*;base64,{{o.product_id.clisse_id.image_design}}"
+				 style="max-height: 80px;max-width: 145px;padding:2px;" align="center"/>
+                        </div>
+                    </div>
+
 		    <h5>Troquel</h5>
 
 		    <div class="row mt32 mb32">
+                        <div class="col-3">
+                            <strong>Código:</strong><br/>
+                            <span t-field="o.clisse_troquel"/>
+                        </div>
                         <div class="col-3">
                             <strong>Corte de Papel (pulgadas):</strong><br/>
                             <span t-field="o.paper_cut_inches"/>
@@ -28,13 +82,13 @@
                             <strong>Linea Troquel:</strong><br/>
                             <span t-field="o.troquel_line"/>
                         </div>
+                    </div>
+
+		    <div class="row mt32 mb32">
                         <div class="col-3">
                             <strong>Dientes del Troquel:</strong><br/>
                             <span t-field="o.troquel_teeth"/>
                         </div>
-                    </div>
-
-		    <div class="row mt32 mb32">
                         <div class="col-3">
                             <strong>Cilindros:</strong><br/>
                             <span t-field="o.troquel_cylinders"/>
@@ -101,6 +155,7 @@
                         </div>
                     </div>
 
+		    <p style="page-break-after:always;">   </p>
 
 		    <h5>Prensa</h5>
 
@@ -215,6 +270,17 @@
                         <div class="col-2">
                             <strong>Problemas de Embobinado:</strong><br/>
                             <span t-field="o.coiling_problems"/>
+                        </div>
+                    </div>
+		    <hr/>
+		    <div class="row mt32 mb32">
+                        <div class="col-6">
+                            <strong>Observaciones:</strong><br/>
+                            <span t-field="o.clisse_observations"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Texto:</strong><br/>
+			    <span t-field="o.clisse_text"/>
                         </div>
                     </div>
 		</t>
