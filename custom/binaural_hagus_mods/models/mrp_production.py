@@ -174,6 +174,7 @@ class MrpProduction(models.Model):
 
     coil_cost = fields.Float(string="Costo de Bobina", digits=(
         14, 2), compute="_compute_coil_cost")
+    coil_lots = fields.Char(string="Lotes de Bobina", compute="_compute_coil_lots")
 
     def write(self, vals):
         res = super().write(vals)
@@ -317,6 +318,19 @@ class MrpProduction(models.Model):
                     coil_qty = line.product_uom_qty
                     break
             order.coil_cost = coil_standard_price * coil_qty
+
+            def _compute_coil_lots(self):
+                self.coil_lots = ""
+                for order in self:
+                    for move in order.move_raw_ids:
+                        if move.product_id.categ_id.name.lower() == "bobina":
+                            lots = ''
+                            for i, line in move.move_line_ids:
+                                if i < len(move.move_line_ids):
+                                    lots += f"{line.lot_id}, "
+                                else:
+                                    lots += f"{line.lot_id}"
+                            order.coil_lots = lots
 
 
 class StockMove(models.Model):
