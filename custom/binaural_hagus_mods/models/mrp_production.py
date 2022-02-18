@@ -327,9 +327,9 @@ class MrpProduction(models.Model):
                             lots = ''
                             for i, line in move.move_line_ids:
                                 if i < len(move.move_line_ids):
-                                    lots += f"{line.lot_id}, "
+                                    lots += f"{line.lot_id.name}, "
                                 else:
-                                    lots += f"{line.lot_id}"
+                                    lots += f"{line.lot_id.name}"
                             order.coil_lots = lots
 
 
