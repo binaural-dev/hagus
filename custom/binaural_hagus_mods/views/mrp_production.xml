@@ -5,8 +5,12 @@
 	    <field name="model">mrp.production</field>
 	    <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
 	    <field name="arch" type="xml">
-		<notebook position="inside">
+		<field name="user_id" position="after">
 		    <field name="product_is_not_sticker" invisible="1"/>
+		    <field name="coil_lots"
+			   attrs="{'invisible': [('product_is_not_sticker', '=', True)]}"/>
+	        </field>
+		<notebook position="inside">
 		    <page name="product_clisse" string="Clisse"
 			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
 			<group>
@@ -181,9 +185,9 @@
 			</page>
 	    	</notebook>
 
-		<xpath expr="//field[@name='move_raw_ids']/tree//field[@name='product_id']" position="after">
-		    <field name="lot_id"/>
-		</xpath>
+		<!-- <xpath expr="//field[@name='move_raw_ids']/tree//field[@name='product_id']" position="after"> -->
+		<!--     <field name="lot_id"/> -->
+		<!-- </xpath> -->
 	    </field>
 	</record>
     </data>

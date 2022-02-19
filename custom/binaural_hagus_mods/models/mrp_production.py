@@ -304,7 +304,7 @@ class MrpProduction(models.Model):
             order.expenses = order.total_cost * (order.percentage / 100)
 
     # Metodos del tab de Producción
-    @api.depends("coil_cost")
+    @api.depends("move_raw_ids")
     def _compute_coil_cost(self):
         self.coil_cost = 0
         for order in self:
@@ -319,18 +319,19 @@ class MrpProduction(models.Model):
                     break
             order.coil_cost = coil_standard_price * coil_qty
 
-            def _compute_coil_lots(self):
-                self.coil_lots = ""
-                for order in self:
-                    for move in order.move_raw_ids:
-                        if move.product_id.categ_id.name.lower() == "bobina":
-                            lots = ''
-                            for i, line in move.move_line_ids:
-                                if i < len(move.move_line_ids):
-                                    lots += f"{line.lot_id.name}, "
-                                else:
-                                    lots += f"{line.lot_id.name}"
-                            order.coil_lots = lots
+    @api.depends("move_raw_ids")
+    def _compute_coil_lots(self):
+        self.coil_lots = ''
+        for order in self:
+            if order.product_is_not_sticker:
+                continue
+            for move in order.move_raw_ids:
+                if move.product_id.categ_id.name.lower() == "bobina":
+                    lots = ''
+                    for line in move.move_line_ids:
+                        lots += f"{line.lot_id.name}, "
+                    lots = lots[:-2:]
+                    order.coil_lots = lots
 
 
 class StockMove(models.Model):
