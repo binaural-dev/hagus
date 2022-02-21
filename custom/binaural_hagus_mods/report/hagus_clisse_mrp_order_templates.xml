@@ -1,14 +1,15 @@
 <odoo>
     <data>
 	<template id="hagus_clisse_inherit_report_mrporder" inherit_id="mrp.report_mrporder">
-	    <xpath expr="//table[@t-if='o.move_raw_ids']//thead/tr/th" position="after">
-		<th>Lote</th>
-	    </xpath>
 
-	    <xpath expr="//tr[@t-as='raw_line']/td" position="after">
-		<td>
-		    <span t-field="raw_line.lot_id"/>
-		</td>
+	    <xpath expr="//div[@t-if='o.workorder_ids']" position="before">
+		<div id="lots-row" class="row mt32 mb32"
+		     t-if="not o.product_is_not_sticker">
+		    <div class="col-3">
+			<strong>Lotes de Bobina</strong>
+			<span t-field="o.coil_lots"/>
+		    </div>
+		</div>
 	    </xpath>
 
 	    <xpath expr="//table[@t-if='o.move_raw_ids']" position="after">
