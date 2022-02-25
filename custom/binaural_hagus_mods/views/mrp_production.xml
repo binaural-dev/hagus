@@ -1,0 +1,194 @@
+<odoo>
+    <data>
+	<record id="mrp_production_hagus_form_view" model="ir.ui.view">
+	    <field name="name">mrp.production.view.form.inherit.hagus</field>
+	    <field name="model">mrp.production</field>
+	    <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+	    <field name="arch" type="xml">
+		<field name="user_id" position="after">
+		    <field name="product_is_not_sticker" invisible="1"/>
+		    <field name="coil_lots"
+			   attrs="{'invisible': [('product_is_not_sticker', '=', True)]}"/>
+	        </field>
+		<notebook position="inside">
+		    <page name="product_clisse" string="Clisse"
+			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
+			<group>
+			    <group>
+				<field name="clisse_code"/>
+				<field name="clisse_date"/>
+				<field name="clisse_partner"/>
+				<field name="clisse_troquel"/>
+				<field name="clisse_width_inches"/>
+				<field name="clisse_length_inches"/>
+				<field name="clisse_lines_width"/>
+				<field name="clisse_size"/>
+				<field name="clisse_background"/>
+				<field name="clisse_labels_per_roll"/>
+			    </group>
+			    <group>
+				<label for="clisse_orientation"/>
+			        <div class="o_row" style="margin-bottom: 2rem;">
+				    <field name="clisse_orientation"
+				           style="margin-right: 1rem;"/>
+				    <field name="clisse_orientation_image"
+				           widget="image" options="{'size': [100,50]}"/>
+			        </div>
+			    	<field name="clisse_finish_type"/>
+			    	<field name="clisse_observations"/>
+		            	<field name="clisse_text"/>
+			    	<field name="clisse_description_label"/>
+			    	<field name="clisse_state"/>
+				<field name="clisse_desing"
+				       widget="image" options="{'size': [100,100]}"/>
+				<field name="clisse_barcode"
+				       widget="image" options="{'size': [100,100]}"/>
+			    </group>
+		    	</group>
+	    	    </page>
+		    <page name="clisse_sale_order" string="Venta"
+			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
+			<group>
+			    <group>
+				<field name="quantity"/>
+				<field name="decrease"/>
+				<field name="handm_cost"/>
+			    </group>
+			    <group>
+				<field name="seller_id"/>
+				<field name="payment_method_id"/>
+				<field name="product_type"/>
+				<field name="payment_term"/>
+			    </group>
+			</group>
+			<group>
+			    <group>
+				<group colspan="4">
+				    <field name="paper_cost"/>
+				    <field name="print_cost"/>
+				    <field name="coiling_cost"/>
+				    <field name="has_rubber"/>
+				    <field name="has_art"/>
+				</group>
+				<group colspan="4"
+				       attrs="{'invisible': [('has_rubber', '=', False)]}">
+				    <field name="rubber_base"/>
+				    <field name="rubber_cost"/>
+				    <field name="negative_base"/>
+				    <field name="negative_cost"/>
+				    <field name="negative_plus_rubber_cost"/>
+				</group>
+				<group colspan="4"
+				       attrs="{'invisible': [('has_art', '=', False)]}">
+				    <field name="art_cost"/>
+				</group>
+			    </group>
+			    <group>
+				<field name="total_cost"/>
+				<label for="percentage"/>
+				<div class="o_row">
+				    <field name="percentage"/>
+				    <b>%</b>
+				</div>
+				<field name="expenses"/>
+				<field name="subtotal"/>
+				<label for="profit"/>
+				<div class="o_row">
+				    <field name="profit"/>
+				    <b>%</b>
+				</div>
+				<field name="total_price"/>
+				<field name="thousand_price"/>
+			    </group>
+			</group>
+		    </page>
+		    <page name="clisse_mrp" string="Producción"
+			  attrs="{'invisible': [('product_is_not_sticker', '=', True)]}">
+			<group>
+			    <group name="troquel" string="TROQUEL">
+				<field name="paper_cut_inches"/>
+				<field name="paper_cut_centimeters"/>
+				<field name="troquel_line"/>
+				<field name="troquel_teeth"/>
+				<field name="troquel_cylinders"/>
+				<field name="troquel_repetition"/>
+				<field name="designed"/>
+			    </group>
+			    <group name="cut" string="CORTE">
+				<field name="coil_cost"/>
+				<field name="cut_date"/>
+				<field name="coil_qty"/>
+				<field name="cutter"/>
+				<field name="estimate_msi"/>
+				<field name="consumed_msi"/>
+				<field name="margin"/>
+				<field name="total_mts"/>
+				<field name="total_ft"/>
+				<field name="mts_settings"/>
+				<field name="mts_print"/>
+			    </group>
+			</group>
+			<group name="press" string="PRENSA">
+			    <group colspan="8">
+				<field name="press_machine"/>
+			    </group>
+			    <group name="mount" string="Montaje">
+				<field name="mount_start_date"/>
+				<field name="mount_start_time" widget="float_time"/>
+				<field name="mount_end_date"/>
+			    </group>
+			    <group name="printing" string="Tiraje">
+				<group name="pressman_1">
+				    <field name="pressman_1"/>
+				    <field name="turn_pressman_1" string="Turno"/>
+				    <field name="start_pressman_1" 
+					   string="Inició"
+					   widget="float_time"/>
+				    <field name="end_pressman_1"
+					   string="Terminó"
+					   widget="float_time"/>
+				    <field name="produced_meters_pressman_1"
+					   string="Metros Producidos"/>
+				</group>
+				    <group name="pressman_2">
+					<field name="pressman_2"/>
+					<field name="turn_pressman_2" string="Turno"/>
+					<field name="start_pressman_2" 
+					       string="Inició"
+					       widget="float_time"/>
+					<field name="end_pressman_2"
+					       string="Terminó"
+					       widget="float_time"/>
+					<field name="produced_meters_pressman_2"
+					       string="Metros Producidos"/>
+				    </group>
+				</group>
+			    </group>
+			   <group name="coiling" string="EMBOBINADO">
+				<group>
+				    <field name="digits_number"/>
+				    <field name="coiling_start_date"/>
+				    <field name="coiling_start_time"
+					   widget="float_time"/>
+				    <field name="coiling_end_date"/>
+				    <field name="delivered_msi"/>
+				    <field name="msi_to_return"/>
+				</group>
+				<group>
+				    <field name="coiler"/>
+				    <field name="turn_coiler"
+					   string="Turno"/>
+				    <field name="t_roll"/>
+				    <field name="coiling_problems"/>
+				</group>
+			    </group>
+			</page>
+	    	</notebook>
+
+		<!-- <xpath expr="//field[@name='move_raw_ids']/tree//field[@name='product_id']" position="after"> -->
+		<!--     <field name="lot_id"/> -->
+		<!-- </xpath> -->
+	    </field>
+	</record>
+    </data>
+</odoo>

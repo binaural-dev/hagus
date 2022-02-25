@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+	<!-- search view definition -->
+	<record id="hagus_troquel_view_search" model="ir.ui.view">
+	    <field name="name">hagus.troquel.view</field>
+	    <field name="model">hagus.troquel</field>
+	    <field name="arch" type="xml">
+		<search string="Troquel">
+		    <field name="code"/>
+		    <field name="teeth"/>
+		    <field name="width_inches"/>
+		    <field name="length_inches"/>
+		    <separator/>
+		    <filter string="Inactivos"
+			    name="inactive"
+			    domain="[('active', '=', False)]"/>
+		</search>
+	    </field>
+	</record>
+
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="hagus_troquel_list">
+            <field name="name">Listado Troqueles</field>
+            <field name="model">hagus.troquel</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="code"/>
+                    <field name="teeth"/>
+                    <field name="cylinders"/>
+                    <field name="width_inches"/>
+                    <field name="width_millimeters"/>
+                    <field name="length_inches"/>
+                    <field name="length_millimeters"/>
+		    <field name="paper_cut_centimeters"/>
+		    <field name="paper_cut_inches"/>
+                    <field name="lines_width"/>
+                    <field name="repetition"/>
+                    <field name="designed"/>
+                    <field name="length_at_100"/>
+                    <field name="reduction"/>
+                    <field name="final_size"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+       
+        <!-- form -->
+        <record id="hagus_troquel_form" model="ir.ui.view">
+            <field name="name">Formulario Troquel</field>
+            <field name="model">hagus.troquel</field>
+            <field name="arch" type="xml">
+                <form string="Troquel">
+                    <header>
+                       
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="code"/>
+                            <h1>
+                                <field name="code"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="teeth"/>
+                                <field name="cylinders"/>
+                                <field name="width_inches"/>
+				<field name="variable"/>
+                            </group>
+                            <group>
+                                <field name="width_millimeters" />
+                                <field name="length_inches" />
+				<field name="length_millimeters" />
+				<field name="paper_cut_centimeters"/>
+				<field name="paper_cut_inches"/>
+                                <field name="lines_width" />
+                                <field name="repetition" />
+                                <field name="designed" />
+                                <field name="length_at_100" />
+                                <field name="reduction" />
+                                <field name="final_size" />
+
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="hagus_troquel_action">
+            <field name="name">Troqueles</field>
+            <field name="res_model">hagus.troquel</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Top menu item -->
+        <menuitem name="Troqueles" id="binaural_hagus_mods.menu_troquel"
+                  action="hagus_troquel_action" parent="mrp.menu_mrp_configuration"/>
+
+    </data>
+</odoo>

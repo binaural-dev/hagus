@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+
+		<record id="orientation_1" model="hagus.orientation">
+			<field name="abbreviation">1</field>
+			<field name="description">1</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_01.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_2" model="hagus.orientation">
+			<field name="abbreviation">2</field>
+			<field name="description">2</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_02.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_3" model="hagus.orientation">
+			<field name="abbreviation">3</field>
+			<field name="description">3</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_03.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_4" model="hagus.orientation">
+			<field name="abbreviation">4</field>
+			<field name="description">4</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_04.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_5" model="hagus.orientation">
+			<field name="abbreviation">5</field>
+			<field name="description">5</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_05.png"
+			       name="files" type="base64"/>
+		</record>
+		
+		<record id="orientation_6" model="hagus.orientation">
+			<field name="abbreviation">6</field>
+			<field name="description">6</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_06.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_7" model="hagus.orientation">
+			<field name="abbreviation">7</field>
+			<field name="description">7</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_07.png"
+			       name="files" type="base64"/>
+		</record>
+
+		<record id="orientation_8" model="hagus.orientation">
+			<field name="abbreviation">8</field>
+			<field name="description">8</field>
+			<field file="binaural_hagus_mods/data/static/src/binary/orientation_08.png"
+			       name="files" type="base64"/>
+		</record>
+
+	</data>
+</odoo>
