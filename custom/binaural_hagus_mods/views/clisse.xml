@@ -8,6 +8,8 @@
 	    <field name="model">hagus.clisse</field>
 	    <field name="arch" type="xml">
 	        <search string="clisse">
+	            <field name="description"/>
+	            <field name="code"/>
 	            <field name="partner_id"/>
 	            <separator/>
 	            <group expand="1" string="Agrupar por">
