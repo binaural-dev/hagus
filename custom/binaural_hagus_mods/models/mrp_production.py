@@ -176,6 +176,8 @@ class MrpProduction(models.Model):
         14, 2), compute="_compute_coil_cost")
     coil_lots = fields.Char(string="Lotes de Bobina", compute="_compute_coil_lots")
 
+    move_line_ids = fields.One2many("stock.move.line", compute="_compute_move_line_ids")
+
     def write(self, vals):
         res = super().write(vals)
         # Agregando la orden de produccion a la lista de ordenes de produccion
@@ -332,6 +334,13 @@ class MrpProduction(models.Model):
                         lots += f"{line.lot_id.name}, "
                     lots = lots[:-2:]
                     order.coil_lots = lots
+
+    @api.depends("move_raw_ids")
+    def _compute_move_line_ids(self):
+        self.move_line_ids = []
+        for order in self:
+            for move in order.move_raw_ids:
+                order.move_line_ids += move.move_line_ids
 
 
 class StockMove(models.Model):
