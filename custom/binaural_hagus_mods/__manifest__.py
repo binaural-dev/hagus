@@ -36,6 +36,7 @@
         'views/mrp_production.xml',
         'views/crm_lead.xml',
         'views/purchase.xml',
+        'views/stock_move_line.xml',
         'report/hagus_clisse_templates.xml',
         'report/hagus_clisse_views.xml',
         'report/hagus_clisse_mrp_order_templates.xml',
