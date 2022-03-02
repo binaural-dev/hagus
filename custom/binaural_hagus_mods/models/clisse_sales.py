@@ -171,26 +171,18 @@ class ClisseSales(models.Model):
         bom_id = self.env["mrp.bom"].search([("id", '=', self.product_template_ids.bom_ids.id)])
         bom_id.write({"product_qty": self.quantity})
 
-        # Borrando todas las lineas de materiales existentes previamente en la lista
-        # de materiales del producto asociado al clisse.
-        for line in self.product_template_ids.bom_ids.bom_line_ids:
-            self.product_template_ids.bom_ids.write({
-                "bom_line_ids": [(5, line.id)],
-            })
-        # Volviendo a poblar la lista de materiales del producto asociado al clisse.
         for material in self.materials_lines_id:
             # Verificando que la linea tiene un producto asociado.
             if not bool(material.product_id):
                 material.unlink()
                 continue
-            # Creando la linea de materiales del producto.
-            bom_line = self.env["mrp.bom.line"].create({
-                "bom_id": bom_id.id,
-                "product_id": material.product_id.id,
-                "product_qty": material.qty,
-                "product_uom_id": material.product_id.uom_id.id,
-            })
-            self.product_template_ids.bom_ids.bom_line_ids += bom_line
+            # Actualizando cada linea de material de la lista.
+            for bom_line in self.product_template_ids.bom_ids.bom_line_ids:
+                if bom_line.product_id == material.product_id:
+                    bom_line.write({
+                        "product_qty": material.qty,
+                        "product_uom_id": material.product_id.uom_id.id,
+                    })
 
         # Publicando un mensaje notificando cada uno de los cambios realizados.
         if len(vals) > 0:
@@ -201,7 +193,7 @@ class ClisseSales(models.Model):
 
             message = "<h5>Clisse Modificado</h5>"
             message += "<ul>"
-            for k, v in previous_values.items():
+            for k, _ in previous_values.items():
                 message += "<li>"
                 if k == "image_design":
                     message += "Imágen de diseño cambiada"
