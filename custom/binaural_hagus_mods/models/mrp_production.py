@@ -114,13 +114,13 @@ class MrpProduction(models.Model):
         related="product_id.clisse_id.coil_qty", store=True, readonly=False)
     cutter = fields.Many2one(related="product_id.clisse_id.cutter", store=True, readonly=False)
     estimate_msi = fields.Float(
-        related="product_id.clisse_id.estimate_msi", store=True, readonly=False)
+        compute="_compute_estimate_msi", store=True, readonly=False)
     consumed_msi = fields.Float(
         related="product_id.clisse_id.consumed_msi", store=True, readonly=False)
     margin = fields.Float(
         related="product_id.clisse_id.margin", store=True, readonly=False)
-    total_mts = fields.Float(related="product_id.clisse_id.total_mts")
-    total_ft = fields.Float(related="product_id.clisse_id.total_ft")
+    total_mts = fields.Float(compute="_compute_total_mts", store=True)
+    total_ft = fields.Float(compute="_compute_total_ft", store=True)
     mts_settings = fields.Float(
         related="product_id.clisse_id.mts_settings", store=True, readonly=False)
     mts_print = fields.Float(
@@ -306,6 +306,33 @@ class MrpProduction(models.Model):
             order.expenses = order.total_cost * (order.percentage / 100)
 
     # Metodos del tab de Producción
+    @api.depends("product_id", "product_qty")
+    def _compute_total_mts(self):
+        self.total_mts = 0
+        for order in self:
+            clisse = order.product_id.clisse_id
+            repetition = clisse.troquel_repetition if clisse.troquel_repetition > 0 else 1
+            teeth = clisse.troquel_teeth if clisse.troquel_teeth > 0 else 1
+            quantity = order.product_qty if order.product_qty > 0 else 1
+            teeth_per_inch = teeth / 8
+            order.total_mts = (
+                teeth_per_inch / repetition) * 25.4 * quantity
+
+    @api.depends("total_mts")
+    def _compute_total_ft(self):
+        self.total_ft = 0
+        for order in self:
+            if bool(order.total_mts) and order.total_mts > 0:
+                order.total_ft = order.total_mts * 3.2808399
+
+    @api.depends("paper_cut_inches", "total_ft")
+    def _compute_estimate_msi(self):
+        self.estimate_msi = 0
+        for order in self:
+            paper_cut = order.paper_cut_inches if order.paper_cut_inches > 0 else 1
+            total_ft = order.total_ft if order.total_ft > 0 else 1
+            order.estimate_msi = paper_cut * total_ft * 0.012
+
     @api.depends("move_raw_ids")
     def _compute_coil_cost(self):
         self.coil_cost = 0
