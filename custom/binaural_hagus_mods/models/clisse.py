@@ -55,12 +55,6 @@ class HagusClisse(models.Model):
         ('production', 'En Producción')],
         'Estado', default="draft")
 
-    payment_method_id = fields.Many2one(
-        "account.payment.method", string="Tipo de Pago",
-        domain="[('payment_type', '=', 'inbound')]")
-    payment_term = fields.Many2one(
-        "account.payment.term", string="Plazo de Pago")
-
     @api.model
     def create(self, vals):
         # Set Code

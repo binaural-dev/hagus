@@ -23,6 +23,12 @@ class ClisseSales(models.Model):
         "product.template", "clisse_id", string="Producto")
     seller_id = fields.Many2one(
         'res.partner', string='Vendedor', domain="[('active', '=', True)]")
+    payment_method_id = fields.Many2one(
+        "account.payment.method", string="Tipo de Pago",
+        domain="[('payment_type', '=', 'inbound')]")
+    payment_term = fields.Many2one(
+        "account.payment.term", string="Plazo de Pago")
+
 
     has_rubber = fields.Boolean(string="Tiene Caucho", default=True)
     rubber_base = fields.Float(
@@ -275,6 +281,7 @@ class ClisseSales(models.Model):
                 "target": "self",
                 "context": {
                     "default_partner_id": clisse.partner_id.id,
+                    "default_payment_term_id": clisse.payment_term.id,
                     "default_order_line": [
                         (
                             0,
