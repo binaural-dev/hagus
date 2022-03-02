@@ -230,8 +230,6 @@ class ClisseSales(models.Model):
             if not clisse.active:
                 raise UserError(
                     "Este Clisse está inactivo.")
-            last_order_quantity = clisse.sale_order_ids[0].order_line[0].product_uom_qty if bool(
-                clisse.sale_order_ids) else None
             if not bool(clisse.partner_id):
                 raise ValidationError(
                     "Antes de generar un presupuesto debe seleccionar al cliente.")
@@ -266,40 +264,34 @@ class ClisseSales(models.Model):
                     "Antes de generar una orden de venta debe agregar al menos " +
                     "un producto de tipo \"Tinta\" en la lista de materiales.")
 
-            sale_order = self.env["sale.order"].create({
-                "partner_id": clisse.partner_id.id,
-            })
-            sale_order.write({
-                "order_line": [
-                    (
-                        0,
-                        0,
-                        {
-                            "order_id": sale_order.id,
-                            "name": clisse.product_template_ids[0].name,
-                            "product_id": clisse.product_template_ids[0].product_variant_id.id,
-                            "product_uom_qty": clisse.quantity,
-                            "price_unit": clisse.thousand_price,
-                            "customer_lead": 7,
-                        }
-                    ),
-                ]
-            })
+            opportunity_id = clisse.crm_lead_id.id if clisse.crm_lead_id else None
 
-            if bool(clisse.crm_lead_id):
-                sale_order.write({"opportunity_id": clisse.crm_lead_id.id})
-
-            clisse.sale_order_ids += sale_order
-
-        return {
-            "type": "ir.actions.act_window",
-            "name": "sale.order.form",
-            "res_model": "sale.order",
-            "res_id": sale_order.id,
-            "view_type": "form",
-            "view_mode": "form",
-            "target": "self",
-        }
+            return {
+                "type": "ir.actions.act_window",
+                "name": "sale.order.form",
+                "res_model": "sale.order",
+                "view_type": "form",
+                "view_mode": "form",
+                "target": "self",
+                "context": {
+                    "default_partner_id": clisse.partner_id.id,
+                    "default_order_line": [
+                        (
+                            0,
+                            0,
+                            {
+                                "name": clisse.product_template_ids[0].name,
+                                "product_id": clisse.product_template_ids[0].product_variant_id.id,
+                                "product_uom_qty": clisse.quantity,
+                                "product_uom": clisse.product_template_ids[0].product_variant_id.uom_id.id,
+                                "price_unit": clisse.thousand_price,
+                                "customer_lead": 7,
+                            }
+                        ),
+                    ],
+                    "default_opportunity_id": opportunity_id,
+                },
+            }
 
     @api.onchange("materials_lines_id", "total_ft", "quantity", "labels_per_roll")
     def _onchange_materials_lines_id(self):
