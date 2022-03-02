@@ -12,6 +12,16 @@
 		</div>
 	    </xpath>
 
+	    <xpath expr="//th[@t-if='has_product_barcode']" position="before">
+		<th>Consumido</th>
+	    </xpath>
+	    <xpath expr="//td[@t-if='has_product_barcode']" position="before">
+		<td>
+		    <span t-field="raw_line.quantity_done"/>
+		    <span t-field="raw_line.product_uom" groups="uom.group_uom"/>
+	        </td>
+	    </xpath>
+
 	    <xpath expr="//table[@t-if='o.move_raw_ids']" position="after">
 		<t t-if="not o.product_is_not_sticker">
 		    <h5>General</h5>
