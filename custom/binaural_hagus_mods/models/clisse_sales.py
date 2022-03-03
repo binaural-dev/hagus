@@ -177,12 +177,19 @@ class ClisseSales(models.Model):
                 material.unlink()
                 continue
             # Actualizando cada linea de material de la lista.
-            for bom_line in self.product_template_ids.bom_ids.bom_line_ids:
-                if bom_line.product_id == material.product_id:
-                    bom_line.write({
-                        "product_qty": material.qty,
-                        "product_uom_id": material.product_id.uom_id.id,
-                    })
+            bom_lines = self.product_template_ids.bom_ids.bom_line_ids
+            if material.product_id not in bom_lines.mapped("product_id"):
+                bom_lines += self.env["mrp.bom.line"].create({
+                    "bom_id": self.product_template_ids.bom_ids.id,
+                    "product_id": material.product_id.id,
+                    "product_qty": material.qty,
+                })
+            else:
+                line_to_update = bom_lines.search([("product_id", '=', material.product_id.id)])
+                line_to_update.write({
+                    "product_qty": material.qty,
+                    "product_uom_id": material.product_id.uom_id.id,
+                })
 
         # Publicando un mensaje notificando cada uno de los cambios realizados.
         if len(vals) > 0:
@@ -319,6 +326,9 @@ class ClisseSales(models.Model):
             if bushing > 1:
                 raise ValidationError(
                     "Un clisse no puede tener más de un buje como material.")
+            if len(self.materials_lines_id.filtered(lambda l: l.product_id == material.product_id)) > 1:
+                raise ValidationError(
+                    "No puedes agregar dos lineas con el mismo producto.")
 
     @api.onchange("quantity")
     def _onchange_quantity(self):
